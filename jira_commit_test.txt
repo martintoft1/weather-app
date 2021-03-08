@@ -1,1 +1,0 @@
-Tom fil for testing av commits med Jira issue key.
