@@ -1,4 +1,4 @@
 package com.team48.applikasjon.data.repository
 
-class MainRepository {
+class Repository {
 }
