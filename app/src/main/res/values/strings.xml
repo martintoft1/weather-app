@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Applikasjon</string>
+
+    <!--Mapbox: Puclic key-->
+    <string name="mapbox_access_token">pk.eyJ1IjoiY2hyb2xzZW4iLCJhIjoiY2ttbXZyMXhxMGJpMjJvcGUzenM2OTBocSJ9.twfpyglvue99P0qqPbkxvA</string>
+
 </resources>
