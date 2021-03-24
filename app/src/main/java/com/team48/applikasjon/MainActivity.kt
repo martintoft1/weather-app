@@ -20,7 +20,17 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun loadMapbox(savedInstanceState: Bundle?) {
+
+
+
+
+
+
+
+
+
+
+    private fun loadMapbox(savedInstanceState: Bundle?) {
         mapView = findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync { mapboxMap ->
@@ -31,5 +41,46 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        mapView?.onStart()
+    }
 
+    override fun onResume() {
+        super.onResume()
+        mapView?.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView?.onPause()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mapView?.onStop()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapView?.onLowMemory()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapView?.onDestroy()
+    }
+
+    /*
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        mapView?.onSaveInstanceState(outState)
+    }
+     */
+    /*
+    override fun onDestroyView() {
+        super.onDestroyView()
+        mapView?.onDestroy()
+    }
+    */
 }
