@@ -21,22 +21,11 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
-
-
-
-
-
-
-
     private fun loadMapbox(savedInstanceState: Bundle?) {
         mapView = findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync { mapboxMap ->
-
-            mapboxMap.setStyle(Style.MAPBOX_STREETS) {
-
+            mapboxMap.setStyle(Style.OUTDOORS) {
             }
         }
     }
@@ -71,12 +60,13 @@ class MainActivity : AppCompatActivity() {
         mapView?.onDestroy()
     }
 
-    /*
+
+ /*
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         mapView?.onSaveInstanceState(outState)
     }
-     */
+  */
     /*
     override fun onDestroyView() {
         super.onDestroyView()
