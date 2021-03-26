@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_graph"
+    app:startDestination="@id/mapView">
+
+    <fragment
+        android:id="@+id/mapView"
+        android:name="com.team48.applikasjon.ui.map.MapView"
+        android:label="fragment_map_view"
+        tools:layout="@layout/fragment_map_view" />
+    <fragment
+        android:id="@+id/weatherView"
+        android:name="com.team48.applikasjon.ui.dailyweather.WeatherView"
+        android:label="fragment_weather_view"
+        tools:layout="@layout/fragment_weather_view" />
+    <fragment
+        android:id="@+id/settingsView"
+        android:name="com.team48.applikasjon.ui.settings.SettingsView"
+        android:label="fragment_settings_view"
+        tools:layout="@layout/fragment_settings_view" />
+</navigation>
