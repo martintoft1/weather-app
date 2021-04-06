@@ -46,11 +46,20 @@ dependencies {
 
 
     // Bottom navigation
-    def nav_version = "2.3.4"
-    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
-    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.4"
+    implementation "androidx.navigation:navigation-ui-ktx:2.3.4"
 
-    def fragment_version = "1.3.1"
-    implementation "androidx.fragment:fragment-ktx:$fragment_version"
+    // Fragments
+    implementation "androidx.fragment:fragment-ktx:1.3.2"
+
+    // MapBox SDK
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.6.1'
+
+    // Android Coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
+
+    // Fuel
+    implementation 'com.github.kittinunf.fuel:fuel:2.3.1'
+    implementation 'com.github.kittinunf.fuel:fuel-coroutines:2.3.1'
 
 }

@@ -5,4 +5,7 @@
     <string name="weather">Weather</string>
     <string name="map">Map</string>
     <string name="settings">Settings</string>
+
+    // Public MapBox access token
+    <string name="mapbox_access_token">pk.eyJ1Ijoic2ltb2FuOTIiLCJhIjoiY2tta3ZuNnJrMTBsZTJvbWsyczY1dnF2cyJ9.XdVLefOEBBMH4nJnBT4zQg</string>
 </resources>
