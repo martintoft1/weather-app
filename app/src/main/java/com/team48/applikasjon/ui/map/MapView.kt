@@ -5,11 +5,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.coroutines.awaitString
+import com.google.gson.Gson
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.style.layers.CircleLayer
+import com.mapbox.mapboxsdk.style.sources.TileSet
+import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
+import com.team48.applikasjon.VectorTile
 
 class MapView : Fragment(R.layout.fragment_map_view) {
 
@@ -37,8 +44,24 @@ class MapView : Fragment(R.layout.fragment_map_view) {
 
             mapboxMap.setStyle(Style.OUTDOORS) {
 
-                // Her skal vi (kanskje?) legge til data fra MET-API
+                val url = "https://test.openmaps.met.no/in2000/map/services"
+                val tile = "https://test.openmaps.met.no/services/air_temperature/20210308T060000/001"
+                val tiles = arrayOf("https://test.openmaps.met.no/services/air_temperature/20210308T060000/001",
+                "https://test.openmaps.met.no/services/air_temperature/20210308T060000/002",
+                "https://test.openmaps.met.no/services/air_temperature/20210308T060000/003",
+                "https://test.openmaps.met.no/services/air_temperature/20210308T060000/004",
+                "https://test.openmaps.met.no/services/air_temperature/20210308T060000/005")
 
+
+                //val vectorTile = Gson().fromJson(Fuel.get(tile).awaitString(), VectorTile::class.java)
+
+                val tileSet = TileSet(tile, url)
+
+                val vectorSource = VectorSource("vector-source", tileSet)
+                it.addSource(vectorSource)
+                val circleLayer = CircleLayer("circle-layer-id", "vector-source")
+                circleLayer.sourceLayer = tile
+                it.addLayer(circleLayer)
             }
         }
 
