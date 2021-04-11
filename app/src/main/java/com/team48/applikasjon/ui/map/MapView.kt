@@ -23,7 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class MapView : Fragment(R.layout.fragment_map_view) {
+class MapView : Fragment() {
 
     private lateinit var mapViewModel: MapViewModel
     var mapView: MapView? = null
@@ -42,20 +42,17 @@ class MapView : Fragment(R.layout.fragment_map_view) {
         Log.i("MapFragment", "Called ViewModelProvider.get")
         mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
 
-        // MapBox-relatert, skal prob flyttes til ViewModel eller MainActivity
+        // Initialisering av mapbox instans
         Mapbox.getInstance(requireContext().applicationContext, getString(R.string.mapbox_access_token))
 
         // Oppsett av View
-        val view = inflater.inflate(R.layout.fragment_map_view, container, false)
-        mapView = view.findViewById(R.id.mapView)
+        val root = inflater.inflate(R.layout.fragment_map_view, container, false)
+        mapView = root.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
-
-
 
         // ------------------------------------------- //
         // TEMP LØSNING: Legger API-koden her for å teste layers i MapBox
         // ------------------------------------------- //
-        /*
 
         val metPath = "https://test.openmaps.met.no/in2000/map/services"
         var metData: List<MetVectorData> = emptyList()
@@ -76,7 +73,7 @@ class MapView : Fragment(R.layout.fragment_map_view) {
         val layers = styleBuild.layers
         Log.i("layers", layers.toString())
 
-         */
+
         // ------------------------------------------- //
         // ------------------------------------------- //
 
@@ -94,7 +91,7 @@ class MapView : Fragment(R.layout.fragment_map_view) {
             }
         })
 
-        return view
+        return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

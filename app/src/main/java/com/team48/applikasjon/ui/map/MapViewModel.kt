@@ -12,6 +12,10 @@ class MapViewModel : ViewModel() {
         Log.i("MapViewModel", "MapViewModel created!")
     }
 
+
+
+
+
     // Kalles før ViewModel blir destroyed (ved fragment detaching eller activity finished)
     override fun onCleared() {
         super.onCleared()
