@@ -1,6 +1,7 @@
 package com.team48.applikasjon.ui.map
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -24,7 +25,6 @@ class MapView : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         Mapbox.getInstance(requireContext().applicationContext, getString(R.string.mapbox_access_token))
 
         val view = inflater.inflate(R.layout.fragment_map_view, container, false)
