@@ -1,21 +1,28 @@
 package com.team48.applikasjon.ui.map
 
+import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.createBitmap
 import androidx.lifecycle.ViewModelProvider
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitString
 import com.google.gson.Gson
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.camera.CameraPosition
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.Layer
+import com.mapbox.mapboxsdk.style.sources.Source
+import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
+import com.team48.applikasjon.data.models.MetVector2
 import com.team48.applikasjon.data.models.MetVectorData
 import com.team48.applikasjon.data.repository.Repository
 import kotlinx.coroutines.CoroutineScope
@@ -50,6 +57,7 @@ class MapView : Fragment() {
         mapView = root.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
 
+
         // ------------------------------------------- //
         // TEMP LØSNING: Legger API-koden her for å teste layers i MapBox
         // ------------------------------------------- //
@@ -65,28 +73,61 @@ class MapView : Fragment() {
             }
         }
 
-        val jsonString = Gson().toJson(metData[0])
-        Log.i("jsonString metData[0]", jsonString)
+        var metMetaData: String = ""
+
+        runBlocking {
+            try {
+                metMetaData = Fuel.get(metData[0].url.toString()).awaitString()
+            } catch (exception: Exception) {
+                exception.message?.let { Log.e("getting metMeta-data", it) }
+            }
+        }
+
+        Log.d("metMetaData", metMetaData)
+
+        val metMetaJson = Gson().toJson(metMetaData)
+        Log.d("metMetaJson", metMetaJson)
+
+        /*
+        val vector2: MetVector2 = MetVector2(
+            "vector",
+            metData[0].url.toString(),
+            metData[0].name.toString())
+
+        val jsonString = Gson().toJson(vector2)
+        Log.d("jsonString vector2", jsonString)
 
         val styleBuild: Style.Builder = Style.Builder().fromJson(jsonString)
 
         val layers = styleBuild.layers
-        Log.i("layers", layers.toString())
-
+        Log.d("layers", layers.toString())
+         */
 
         // ------------------------------------------- //
         // ------------------------------------------- //
+
+
+        val startPos: CameraPosition = CameraPosition.Builder()
+            .target(LatLng(62.0, 16.0,1.0))
+            .zoom(3.0)
+            .tilt(0.0)
+            .build()
+
+        val styleBuilder = Style.Builder().fromJson(metMetaData)
+
 
         mapView?.getMapAsync(OnMapReadyCallback { mapboxMap ->
 
-            mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
+            //mapboxMap.setStyle(styleBuilder) {
 
-                // Ved bruk av lambdaen(?) (style ->) så kan vi legge til data til MAXBOX_STREETS style
+            mapboxMap.setStyle(Style.MAPBOX_STREETS) {
 
-                // Dette kan gjøres med:
-                //style.addLayer(layer)
+                //mapboxMap.cameraPosition = startPos
 
-                // Men inntil videre er variabelen layers på linje 76 tom, ukjent hvorfor
+                val vectorSource: VectorSource = VectorSource("metDataJsonTest", metMetaJson)
+                it.addSource(vectorSource)
+
+
 
             }
         })
