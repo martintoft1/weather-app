@@ -2,31 +2,26 @@ package com.team48.applikasjon.ui.map
 
 import android.graphics.Color
 import android.os.Bundle
-import android.service.quicksettings.Tile
 import android.util.Log
-import androidx.fragment.app.Fragment
+import android.util.Property
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.core.extensions.httpString
-import com.github.kittinunf.fuel.coroutines.awaitString
+import androidx.fragment.app.Fragment
 import com.google.gson.Gson
 import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.layers.CircleLayer
 import com.mapbox.mapboxsdk.style.layers.FillLayer
+import com.mapbox.mapboxsdk.style.layers.LineLayer
+import com.mapbox.mapboxsdk.style.layers.Property.LINE_JOIN_ROUND
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import com.mapbox.mapboxsdk.style.sources.TileSet
 import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
 import com.team48.applikasjon.VectorTile
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+
 
 class MapView : Fragment(R.layout.fragment_map_view) {
 
@@ -39,9 +34,9 @@ class MapView : Fragment(R.layout.fragment_map_view) {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
 
         Mapbox.getInstance(requireContext().applicationContext, getString(R.string.mapbox_access_token))
@@ -50,7 +45,7 @@ class MapView : Fragment(R.layout.fragment_map_view) {
 
         mapView = view.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
-
+        loadMetdata()
 
         return view
     }
@@ -64,32 +59,55 @@ class MapView : Fragment(R.layout.fragment_map_view) {
         //val founderListType: Type = object : TypeToken<MutableList<VectorTile?>?>() {}.type
         val tile = Gson().fromJson(eksStr, VectorTile::class.java)
 
-        Log.d("test", "test")
+        //Log.d("test", "test")
 
 
-
-
-        mapView?.getMapAsync { map ->
-            map.getStyle { style ->
+        mapView!!.getMapAsync { map ->
+            map.setStyle(Style.OUTDOORS) { style ->
 
                 val tileSet = TileSet(tile.tilejson, tile.tiles.toString())
-                Log.d("tileset", tileSet.bounds.toString())
-
-
                 val vectorSource = VectorSource("metData", tileSet)
                 style.addSource(vectorSource)
 
 
                 val fillLayer = FillLayer("fillId", "metData")
                 fillLayer.setProperties(PropertyFactory.fillColor(Color.GREEN))
+                //fillLayer.sourceLayer = tile.name.toString()
 
                 // Add fill layer to map
+                // her kommer feilmeldingen
                 style.addLayer(fillLayer)
 
             }
+
+
+        }
+/*
+        // koden under er hentet fra et eksempel fra mapbox.com med brukav geojson
+        mapView!!.getMapAsync { mapboxMap ->
+            mapboxMap.setStyle(Style.LIGHT) { style ->
+                style.addSource(
+                        VectorSource("terrain-data", "mapbox://mapbox.mapbox-terrain-v2")
+                )
+                val terrainData = LineLayer("terrain-data", "terrain-data")
+                terrainData.sourceLayer = "contour"
+                terrainData.setProperties(
+                        //lineJoin(Property.LINE_JOIN_ROUND),
+                        //lineCap(Property.LINE_CAP_ROUND),
+                        lineColor(Color.parseColor("#ff69b4")),
+                        lineWidth(1.9f)
+                )
+                style.addLayer(terrainData)
+            }
         }
 
+
+ */
+
+
+
     }
+
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -99,7 +117,7 @@ class MapView : Fragment(R.layout.fragment_map_view) {
     override fun onStart() {
         super.onStart()
         mapView?.onStart()
-        loadMetdata()
+
     }
 
     override fun onResume() {
