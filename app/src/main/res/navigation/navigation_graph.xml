@@ -7,17 +7,17 @@
 
     <fragment
         android:id="@+id/mapView"
-        android:name="com.team48.applikasjon.ui.map.MapView"
+        android:name="com.team48.applikasjon.ui.map.MapFragment"
         android:label="fragment_map_view"
         tools:layout="@layout/fragment_map_view" />
     <fragment
         android:id="@+id/weatherView"
-        android:name="com.team48.applikasjon.ui.dailyweather.WeatherView"
+        android:name="com.team48.applikasjon.ui.dailyweather.WeatherFragment"
         android:label="fragment_weather_view"
         tools:layout="@layout/fragment_weather_view" />
     <fragment
         android:id="@+id/settingsView"
-        android:name="com.team48.applikasjon.ui.settings.SettingsView"
+        android:name="com.team48.applikasjon.ui.settings.SettingsFragment"
         android:label="fragment_settings_view"
         tools:layout="@layout/fragment_settings_view" />
 </navigation>

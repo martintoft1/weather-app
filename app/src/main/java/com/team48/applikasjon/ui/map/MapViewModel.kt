@@ -1,8 +1,8 @@
 package com.team48.applikasjon.ui.map
 
-class MapViewModel {
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 
-
-
+class MapViewModel(application: Application) : AndroidViewModel(application) {
 
 }

@@ -14,12 +14,8 @@ import com.rx2androidnetworking.Rx2AndroidNetworking
 
 interface ApiService {
 
-    fun getWeather(): Single<List<Weather>> {
-        return Rx2AndroidNetworking.get("http://localhost:3000/weather")
-            .build()
-            .getObjectListSingle(Weather::class.java)
-        }
-    }
+    fun getWeather(): Single<List<Weather>>
+}
     /*
     fun getWeather(): MutableList<Weather> {
         var path = "http://localhost:3000/weather"

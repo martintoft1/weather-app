@@ -10,7 +10,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class WeatherViewModel(private val mainRepository: Repository) : ViewModel() {
+class WeatherViewModel(private val repository: Repository) : ViewModel() {
 
     private val weatherList = MutableLiveData<Resource<List<Weather>>>()
     private val compositeDisposable = CompositeDisposable()
@@ -22,12 +22,12 @@ class WeatherViewModel(private val mainRepository: Repository) : ViewModel() {
     private fun fetchWeather() {
         weatherList.postValue(Resource.loading(null))
         compositeDisposable.add(
-            mainRepository.getWeather()
+            repository.getWeather()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ userList ->
                     weatherList.postValue(Resource.success(userList))
-                }, { throwable ->
+                }, {
                     weatherList.postValue(Resource.error("Something Went Wrong", null))
                 })
         )

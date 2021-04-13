@@ -11,7 +11,7 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.team48.applikasjon.R
 
 
-class MapView : Fragment(R.layout.fragment_map_view) {
+class MapFragment : Fragment(R.layout.fragment_map_view) {
 
     var mapView: MapView? = null
 
