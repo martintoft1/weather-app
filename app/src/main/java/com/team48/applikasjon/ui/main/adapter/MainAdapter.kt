@@ -26,7 +26,7 @@ class MainAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         DataViewHolder(
             LayoutInflater.from(parent.context).inflate(
-                R.layout.fragment_weather_view, parent,
+                R.layout.fragment_weather, parent,
                 false
             )
         )

@@ -11,7 +11,7 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.team48.applikasjon.R
 
 
-class MapFragment : Fragment(R.layout.fragment_map_view) {
+class MapFragment : Fragment(R.layout.fragment_map) {
 
     var mapView: MapView? = null
 
@@ -27,7 +27,7 @@ class MapFragment : Fragment(R.layout.fragment_map_view) {
 
         Mapbox.getInstance(requireContext().applicationContext, getString(R.string.mapbox_access_token))
 
-        val view = inflater.inflate(R.layout.fragment_map_view, container, false)
+        val view = inflater.inflate(R.layout.fragment_map, container, false)
 
         mapView = view.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)

@@ -18,7 +18,7 @@ import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.utils.StatusUI
 
 
-class WeatherFragment : Fragment(R.layout.fragment_weather_view) {
+class WeatherFragment : Fragment(R.layout.fragment_weather) {
 
     private lateinit var rootView: View
     private lateinit var weatherViewModel: WeatherViewModel
@@ -36,9 +36,9 @@ class WeatherFragment : Fragment(R.layout.fragment_weather_view) {
             this,
             ViewModelFactory(ApiHelper(ApiServiceImpl()))
         ).get(WeatherViewModel::class.java)
-        weatherAdapter = WeatherAdapter()
+        weatherAdapter = WeatherAdapter(mutableListOf())
         weatherRecyclerView = rootView.findViewById(R.id.recyclerView)
-        weatherRecyclerView.layoutManager = LinearLayoutManager(context)
+        weatherRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         weatherRecyclerView.adapter = weatherAdapter
     }
 
@@ -49,6 +49,7 @@ class WeatherFragment : Fragment(R.layout.fragment_weather_view) {
                 StatusUI.SUCCESS -> {
                     progressBar.visibility = View.GONE
                     renderWeather(it.data!!)
+                    weatherRecyclerView.visibility = View.VISIBLE
                 }
 
                 StatusUI.LOADING -> {
@@ -78,7 +79,7 @@ class WeatherFragment : Fragment(R.layout.fragment_weather_view) {
         savedInstanceState: Bundle?
     ): View {
 
-        rootView = inflater.inflate(R.layout.fragment_weather_view, container, false)
+        rootView = inflater.inflate(R.layout.fragment_weather, container, false)
         // Inflate the layout for this fragment
         return rootView
     }

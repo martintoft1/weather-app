@@ -20,15 +20,15 @@ class WeatherViewModel(private val repository: Repository) : ViewModel() {
     }
 
     private fun fetchWeather() {
-        weatherList.postValue(Resource.loading(null))
+        this.weatherList.postValue(Resource.loading(null))
         compositeDisposable.add(
             repository.getWeather()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ userList ->
-                    weatherList.postValue(Resource.success(userList))
+                .subscribe({ weatherList ->
+                    this.weatherList.postValue(Resource.success(weatherList))
                 }, {
-                    weatherList.postValue(Resource.error("Something Went Wrong", null))
+                    this.weatherList.postValue(Resource.error("Something Went Wrong", null))
                 })
         )
     }

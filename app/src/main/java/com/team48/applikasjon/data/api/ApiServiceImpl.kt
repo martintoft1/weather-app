@@ -9,8 +9,7 @@ import io.reactivex.Single
 class ApiServiceImpl : ApiService {
 
     override fun getWeather(): Single<List<Weather>> {
-                                        // Denne stemmer vel ikke helt eeee?
-        return Rx2AndroidNetworking.get("https://5e510330f2c0d300147c034c.mockapi.io/users")
+        return Rx2AndroidNetworking.get("https://run.mocky.io/v3/7f30d519-4597-48b5-8abf-3da7b0a9063f")
             .build()
             .getObjectListSingle(Weather::class.java)
     }
