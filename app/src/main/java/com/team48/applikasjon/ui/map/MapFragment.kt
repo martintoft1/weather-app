@@ -2,28 +2,21 @@ package com.team48.applikasjon.ui.map
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.coroutines.awaitString
-import com.google.gson.Gson
+import androidx.lifecycle.ViewModelProviders
 import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.mapboxsdk.camera.CameraPosition
-import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.FillLayer
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
-import com.team48.applikasjon.data.models.MetVectorData
-import kotlinx.coroutines.runBlocking
-
+import com.team48.applikasjon.data.api.ApiHelper
+import com.team48.applikasjon.data.api.ApiServiceImpl
+import com.team48.applikasjon.ui.main.ViewModelFactory
 
 class MapFragment : Fragment(R.layout.fragment_map) {
 
@@ -40,41 +33,19 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         savedInstanceState: Bundle?
     ): View? {
 
-        // ----------------------------------------------------------- //
-        // TODO: Most of the code here will be moved to Api/Repo/MapModel
-        // ----------------------------------------------------------- //
-
-        // Binding fragment with ViewModel
-        Log.i("MapFragment", "Called ViewModelProvider.get")
-        mapViewModel = ViewModelProvider(this).get(MapViewModel::class.java)
-
         // Initializing MapBox instance
         Mapbox.getInstance(requireContext().applicationContext, getString(R.string.mapbox_access_token))
 
-        val view = inflater.inflate(R.layout.fragment_map, container, false)
+        // Creating fragment based on ViewModel
+        mapViewModel = ViewModelProviders.of(
+            this,
+            ViewModelFactory(ApiHelper(ApiServiceImpl()))
+        ).get(MapViewModel::class.java)
 
-        mapView = view.findViewById(R.id.mapView)
+        val rootView = inflater.inflate(R.layout.fragment_map, container, false)
+
+        mapView = rootView.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
-
-        val metPath = "https://test.openmaps.met.no/in2000/map/services"
-        var metData: List<MetVectorData> = emptyList()
-
-        // TODO: Remove runBlocking when moving code to ApiService
-        runBlocking {
-            try {
-                metData = Gson().fromJson(Fuel.get(metPath).awaitString(), Array<MetVectorData>::class.java).toList()
-            } catch (exception: Exception) {
-                exception.message?.let { Log.e("getting MET-data", it) }
-            }
-        }
-
-        // Access metadata-URL for arbitrary dataset, example is air temp
-        // TODO: Implement logic for choosing which kind of weather stats to be shown
-        val tileURL: String = metData[0].url.toString()
-
-        // Parse URL to get layer-ID
-        val tileID: String = tileURL.substringAfterLast("/")
-        Log.d("tileID", tileID)
 
         // Initializing map from MapBox servers
         mapView?.getMapAsync{ mapboxMap ->
@@ -104,12 +75,14 @@ class MapFragment : Fragment(R.layout.fragment_map) {
             }
         }
 
-        return view
+        return rootView
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Legge håndtering av knapper og layers her
     }
 
     override fun onStart() {
