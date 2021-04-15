@@ -1,4 +1,4 @@
-package com.team48.applikasjon.ui.dailyweather
+package com.team48.applikasjon.ui.settings
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import com.team48.applikasjon.R
 
 
-class WeatherView : Fragment() {
+class SettingsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,6 +19,6 @@ class WeatherView : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_weather_view, container, false)
+        return inflater.inflate(R.layout.fragment_settings, container, false)
     }
 }
