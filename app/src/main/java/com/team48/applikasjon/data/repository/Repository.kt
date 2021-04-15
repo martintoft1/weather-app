@@ -1,13 +1,12 @@
 package com.team48.applikasjon.data.repository
 
 import com.team48.applikasjon.data.api.ApiHelper
-import com.team48.applikasjon.data.models.MetVectorData
+import com.team48.applikasjon.data.models.Weather
+import io.reactivex.Single
 
-class Repository(private val apiHelper: ApiHelper) {
+class Repository (private val apiHelper: ApiHelper) {
 
-    suspend fun getMetData(): List<MetVectorData> {
-        return apiHelper.getMetData()
+    fun getWeather(): Single<List<Weather>>  {
+        return apiHelper.getWeather()
     }
-
-
 }

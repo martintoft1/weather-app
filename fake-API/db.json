@@ -1,0 +1,12 @@
+{
+"weather": [
+{
+ "location": "oslo",
+ "temperature": 15.5
+},
+{
+ "location": "bergen",
+ "temperature" : 10.2
+} 
+]
+}

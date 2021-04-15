@@ -10,7 +10,10 @@ class MapViewModel : ViewModel() {
     init {
         Log.i("MapViewModel", "MapViewModel created!")
     }
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 
+class MapViewModel(application: Application) : AndroidViewModel(application) {
 
     // onCleared is called prior to viewmodel destruction (or fragment detached / activity finished)
     override fun onCleared() {

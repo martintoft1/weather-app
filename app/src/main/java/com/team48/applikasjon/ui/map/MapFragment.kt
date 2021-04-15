@@ -24,7 +24,8 @@ import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.MetVectorData
 import kotlinx.coroutines.runBlocking
 
-class MapView : Fragment() {
+
+class MapFragment : Fragment(R.layout.fragment_map) {
 
     private lateinit var mapViewModel: MapViewModel
     var mapView: MapView? = null
@@ -34,9 +35,9 @@ class MapView : Fragment() {
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
 
         // ----------------------------------------------------------- //
@@ -50,9 +51,9 @@ class MapView : Fragment() {
         // Initializing MapBox instance
         Mapbox.getInstance(requireContext().applicationContext, getString(R.string.mapbox_access_token))
 
-        // Creating view
-        val root = inflater.inflate(R.layout.fragment_map_view, container, false)
-        mapView = root.findViewById(R.id.mapView)
+        val view = inflater.inflate(R.layout.fragment_map, container, false)
+
+        mapView = view.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
 
         val metPath = "https://test.openmaps.met.no/in2000/map/services"
@@ -103,8 +104,9 @@ class MapView : Fragment() {
             }
         }
 
-        return root
+        return view
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
