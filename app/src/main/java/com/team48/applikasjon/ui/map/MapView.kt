@@ -55,14 +55,6 @@ class MapView : Fragment() {
         mapView = root.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
 
-        // Creating start position over Norway
-        // TODO: Access user location as start position
-        val startPos: CameraPosition = CameraPosition.Builder()
-                .target(LatLng(62.0, 16.0, 1.0))
-                .zoom(3.0)
-                .tilt(0.0)
-                .build()
-
         val metPath = "https://test.openmaps.met.no/in2000/map/services"
         var metData: List<MetVectorData> = emptyList()
 
@@ -87,10 +79,10 @@ class MapView : Fragment() {
         mapView?.getMapAsync{ mapboxMap ->
 
             // Initializing map style
-            mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
+            mapboxMap.setStyle(Style.OUTDOORS) { style ->
 
                 // Setting camera position over Norway
-                mapboxMap.cameraPosition = startPos
+                mapboxMap.cameraPosition = mapViewModel.getCamStartPos()
 
                 // Adding source to style
                 style.addSource(VectorSource("metData", tileURL))
