@@ -1,42 +1,72 @@
 package com.team48.applikasjon.ui.main
 
-import com.team48.applikasjon.ui.main.adapter.MainAdapter
-import com.team48.applikasjon.ui.dailyweather.WeatherViewModel
-
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.mapbox.mapboxsdk.Mapbox
 import com.team48.applikasjon.R
 
-import android.view.View
-import android.widget.Toast
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.team48.applikasjon.data.api.ApiHelper
-import com.team48.applikasjon.data.api.ApiService
-import com.team48.applikasjon.utils.StatusUI
+import androidx.viewpager2.widget.ViewPager2
+import com.team48.applikasjon.ui.dailyweather.WeatherFragment
+import com.team48.applikasjon.ui.main.adapter.FragmentContainerAdapter
+import com.team48.applikasjon.ui.map.MapFragment
+import com.team48.applikasjon.ui.settings.SettingsFragment
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var WeatherViewModel: WeatherViewModel
+    private lateinit var fragmentContainer: ViewPager2
+    private lateinit var bottomNavigationView: BottomNavigationView
+
+    private val weatherFragment  = WeatherFragment()
+    private val mapFragment      = MapFragment()
+    private val settingsFragment = SettingsFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
-        val navController = findNavController(R.id.nav_host_fragment)
-        val appBarConfiguration = AppBarConfiguration(setOf(R.id.weatherView, R.id.mapView, R.id.settingsView))
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        fragmentContainer = findViewById(R.id.fragment_container)
+        bottomNavigationView = findViewById(R.id.bottom_navigation)
 
-        bottomNavigationView.setupWithNavController(navController)
+        setupFragmentContainer()
+        setupBottomNavigation()
     }
 
+
+    private fun setupFragmentContainer() {
+        val adapter = FragmentContainerAdapter(supportFragmentManager, lifecycle)
+        adapter.addFragment(weatherFragment)
+        adapter.addFragment(mapFragment)
+        adapter.addFragment(settingsFragment)
+        fragmentContainer.adapter = adapter
+
+        fragmentContainer.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                when (position) {
+                    // Valgt ikon i bottom navigation blir "checked"
+                    0 -> bottomNavigationView.menu.findItem(R.id.weatherView).isChecked = true
+                    1 -> bottomNavigationView.menu.findItem(R.id.mapView).isChecked = true
+                    2 -> bottomNavigationView.menu.findItem(R.id.settingsView).isChecked = true
+                }
+            }
+        })
+
+        // Skru av swipe-animasjon mellom fragments
+        fragmentContainer.isUserInputEnabled = false
+        // Setter fragment som åpnes først
+        fragmentContainer.post { fragmentContainer.setCurrentItem(1, false) }
+    }
+
+
+    private fun setupBottomNavigation() {
+        // Bytter fragment ved bottomnav navigering
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.weatherView  -> fragmentContainer.setCurrentItem(0, false)
+                R.id.mapView      -> fragmentContainer.setCurrentItem(1, false)
+                R.id.settingsView -> fragmentContainer.setCurrentItem(2, false)
+            }
+            false
+        }
+    }
 }
