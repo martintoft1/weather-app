@@ -11,19 +11,19 @@ class Repository (private val apiHelper: ApiHelper) {
         return apiHelper.getWeather()
     }
 
-    fun getAirTemp(): Single<List<VectorTile>> {
+    fun getAirTemp(): MutableList<VectorTile> {
         return apiHelper.getAirTemp()
     }
 
-    fun getClouds(): Single<List<VectorTile>> {
+    fun getClouds(): MutableList<VectorTile> {
         return apiHelper.getClouds()
     }
 
-    fun getPrecipitation(): Single<List<VectorTile>> {
+    fun getPrecipitation(): MutableList<VectorTile> {
         return apiHelper.getPrecipitation()
     }
 
-    fun getPressure(): Single<List<VectorTile>> {
+    fun getPressure(): MutableList<VectorTile> {
         return apiHelper.getPressure()
     }
 }

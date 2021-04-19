@@ -1,10 +1,14 @@
 package com.team48.applikasjon.ui.map
 
 import android.util.Log
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.maps.MapView
+import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.VectorTile
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.utils.Resource
@@ -22,12 +26,22 @@ class MapViewModel(private val repository: Repository) : ViewModel() {
     private val compositeDisposable = CompositeDisposable()
 
     init {
+
+        // Fikse init basert på apply, observe og livedata
+        /*
         fetchWeatherType(airTempList)
         fetchWeatherType(cloudList)
         fetchWeatherType(precipitationList)
         fetchWeatherType(pressureList)
+         */
+
+
+        // Initializing MapBox instance
+        //Mapbox.getInstance(requireContext().applicationContext, getString(R.string.mapbox_access_token))
     }
 
+    // Denne må fjernes, singles-implementasjon er ikke det vi bør gå for
+    /*
     private fun fetchWeatherType(weatherType: MutableLiveData<Resource<List<VectorTile>>>) {
 
         // Originalt var det this.weatherType. Ikke sikkert dette funker?
@@ -43,6 +57,7 @@ class MapViewModel(private val repository: Repository) : ViewModel() {
                 })
         )
     }
+     */
 
     // Get tileID from VectorTile
     fun getTileID(tile: VectorTile): String {

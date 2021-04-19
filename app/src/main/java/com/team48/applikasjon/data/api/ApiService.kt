@@ -8,12 +8,12 @@ interface ApiService {
 
     fun getWeather(): Single<List<Weather>>
 
-    fun getAirTemp(): Single<List<VectorTile>>
+    fun getAirTemp(): MutableList<VectorTile>
 
-    fun getClouds(): Single<List<VectorTile>>
+    fun getClouds(): MutableList<VectorTile>
 
-    fun getPrecipitation(): Single<List<VectorTile>>
+    fun getPrecipitation(): MutableList<VectorTile>
 
-    fun getPressure(): Single<List<VectorTile>>
+    fun getPressure(): MutableList<VectorTile>
 
 }

@@ -33,14 +33,15 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         savedInstanceState: Bundle?
     ): View? {
 
-        // Initializing MapBox instance
-        Mapbox.getInstance(requireContext().applicationContext, getString(R.string.mapbox_access_token))
 
         // Creating fragment based on ViewModel
         mapViewModel = ViewModelProviders.of(
             this,
             ViewModelFactory(ApiHelper(ApiServiceImpl()))
         ).get(MapViewModel::class.java)
+
+        // Initializing MapBox instance
+        Mapbox.getInstance(requireContext().applicationContext, getString(R.string.mapbox_access_token))
 
         val rootView = inflater.inflate(R.layout.fragment_map, container, false)
 
@@ -54,8 +55,9 @@ class MapFragment : Fragment(R.layout.fragment_map) {
             mapboxMap.setStyle(Style.OUTDOORS) { style ->
 
                 // Setting camera position over Norway
-                mapboxMap.cameraPosition = mapViewModel.getCamStartPos()
+                //mapboxMap.cameraPosition = mapViewModel.getCamStartPos()
 
+                /*
                 // Adding source to style
                 style.addSource(VectorSource("metData", tileURL))
 
@@ -71,6 +73,7 @@ class MapFragment : Fragment(R.layout.fragment_map) {
 
                 // Adding layer to style
                 style.addLayer(fillLayer)
+                 */
 
             }
         }
