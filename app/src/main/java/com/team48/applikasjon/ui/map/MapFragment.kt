@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.maps.MapView
@@ -15,6 +16,7 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.api.ApiHelper
+import com.team48.applikasjon.data.api.ApiService
 import com.team48.applikasjon.data.api.ApiServiceImpl
 import com.team48.applikasjon.ui.main.ViewModelFactory
 
@@ -33,16 +35,17 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         savedInstanceState: Bundle?
     ): View? {
 
+        mapViewModel = ViewModelProviders.of(this).get(MapViewModel::class.java)
 
+        /*
         // Creating fragment based on ViewModel
         mapViewModel = ViewModelProviders.of(
             this,
-            ViewModelFactory(ApiHelper(ApiServiceImpl()))
         ).get(MapViewModel::class.java)
 
-        // Initializing MapBox instance
-        Mapbox.getInstance(requireContext().applicationContext, getString(R.string.mapbox_access_token))
+         */
 
+        Mapbox.getInstance(requireContext().applicationContext, getString(R.string.mapbox_access_token))
         val rootView = inflater.inflate(R.layout.fragment_map, container, false)
 
         mapView = rootView.findViewById(R.id.mapView)
@@ -84,8 +87,6 @@ class MapFragment : Fragment(R.layout.fragment_map) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Legge håndtering av knapper og layers her
     }
 
     override fun onStart() {

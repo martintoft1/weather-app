@@ -16,11 +16,15 @@ import com.team48.applikasjon.R
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.team48.applikasjon.data.api.ApiHelper
 import com.team48.applikasjon.data.api.ApiService
+import com.team48.applikasjon.data.api.ApiServiceImpl
+import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.utils.StatusUI
 
 class MainActivity : AppCompatActivity() {
@@ -32,7 +36,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // Initializing MapBox instance
-        Mapbox.getInstance(this.applicationContext, getString(R.string.mapbox_access_token))
+        //Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
+
+        val apiServiceImpl = ApiServiceImpl()
+        val apiHelper = ApiHelper(apiServiceImpl)
+        val repository = Repository(apiHelper)
+        val viewModelFactory = ViewModelFactory(repository)
+
+
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         val navController = findNavController(R.id.nav_host_fragment)

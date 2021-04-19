@@ -80,4 +80,6 @@ class MapViewModel(private val repository: Repository) : ViewModel() {
         super.onCleared()
         Log.i("MapViewModel", "MapViewModel destroyed!")
     }
+
+
 }

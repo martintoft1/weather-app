@@ -3,19 +3,19 @@ package com.team48.applikasjon.data.api
 import com.team48.applikasjon.data.models.VectorTile
 import io.reactivex.Single
 
-class ApiHelper (private  val apiService : ApiService) {
+class ApiHelper (private  val apiServiceImpl : ApiServiceImpl) {
 
    // alle kall på data skjer her, repository kaller  igjen på ApiHelper, hvorfor det går gjennom så mange ledd
    // er uklart for øyeblikken, men kommer sikkert frem under utivikling/research
 
-   fun getWeather() = apiService.getWeather()
+   fun getWeather() = apiServiceImpl.getWeather()
 
-   fun getAirTemp() = apiService.getAirTemp()
+   fun getAirTemp() = apiServiceImpl.getAirTemp()
 
-   fun getClouds() = apiService.getClouds()
+   fun getClouds() = apiServiceImpl.getClouds()
 
-   fun getPrecipitation() = apiService.getPrecipitation()
+   fun getPrecipitation() = apiServiceImpl.getPrecipitation()
 
-   fun getPressure() = apiService.getPressure()
+   fun getPressure() = apiServiceImpl.getPressure()
 
 }

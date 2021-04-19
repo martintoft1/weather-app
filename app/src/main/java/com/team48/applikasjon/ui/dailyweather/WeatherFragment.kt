@@ -34,7 +34,6 @@ class WeatherFragment : Fragment(R.layout.fragment_weather) {
     private fun setupRecyclerView() {
         weatherViewModel = ViewModelProviders.of(
             this,
-            ViewModelFactory(ApiHelper(ApiServiceImpl()))
         ).get(WeatherViewModel::class.java)
         weatherAdapter = WeatherAdapter(mutableListOf())
         weatherRecyclerView = rootView.findViewById(R.id.recyclerView)
