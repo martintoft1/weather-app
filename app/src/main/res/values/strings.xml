@@ -7,5 +7,5 @@
     <string name="settings">Settings</string>
 
     // Public MapBox access token
-    <string name="mapbox_access_token">pk.eyJ1Ijoic2ltb2FuOTIiLCJhIjoiY2tta3ZuNnJrMTBsZTJvbWsyczY1dnF2cyJ9.XdVLefOEBBMH4nJnBT4zQg</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoiY2hyb2xzZW4iLCJhIjoiY2ttbXZyMXhxMGJpMjJvcGUzenM2OTBocSJ9.twfpyglvue99P0qqPbkxvA</string>
 </resources>
