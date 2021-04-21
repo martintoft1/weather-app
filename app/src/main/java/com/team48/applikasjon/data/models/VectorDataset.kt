@@ -3,7 +3,8 @@ package com.team48.applikasjon.data.models
 data class VectorDataset(
     val imageType: String?,
     val url: String?,
-    val name: String?)
+    val name: String?
+    )
 
 data class VectorTile(
     val bounds: List<Number>?,
@@ -23,7 +24,9 @@ data class VectorTile(
     val type: String?,
     val vector_layers: List<Vector_layers>?,
     val version: String?
-)
+) {
+    fun getTileId() = tilestats?.layers?.get(0)?.layer.toString()
+}
 
 data class Attributes(
     val attribute: String?,

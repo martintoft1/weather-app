@@ -1,5 +1,9 @@
 package com.team48.applikasjon.data.api
 
+import android.content.res.Resources
+import android.provider.Settings.Global.getString
+import androidx.core.content.res.TypedArrayUtils.getString
+import androidx.lifecycle.MutableLiveData
 import com.rx2androidnetworking.Rx2AndroidNetworking
 import com.team48.applikasjon.data.models.Weather
 import io.reactivex.Single
@@ -7,24 +11,22 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitString
 import com.google.gson.Gson
 import com.mapbox.mapboxsdk.maps.Style
+import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.VectorDataset
 import com.team48.applikasjon.data.models.VectorTile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.coroutines.coroutineContext
 
 // Klarte ikke opprette instans av ApiService direkte, så kanskje er ikke denne klassen helt ubrukelig likevel? Idk
 
-class ApiServiceImpl : ApiService {
+class ApiServiceImpl : MutableLiveData<ApiService>() {
 
     // URL til met værdata
     private val metUri = "https://test.openmaps.met.no/in2000/map/services"
 
-    // URL til egen designet mapbox stil
-    private val mapStyleUri = "mapbox://styles/wipi-48/cknilzu8v0eok17nyuucg7mfb"
-
     private val gson = Gson()
-    private lateinit var mapStyle: Style.Builder
 
     private var airTemp = mutableListOf<VectorTile>()
     private var clouds = mutableListOf<VectorTile>()
@@ -33,20 +35,15 @@ class ApiServiceImpl : ApiService {
 
     // Initialiserer API-kall
     init {
-        requestMapStyle(mapStyleUri)
         requestVectorDatasets(metUri)
     }
 
     // Grensesnitt for klassen
-    fun getMapStyle() = mapStyle
-    override fun getAirTemp() = airTemp
-    override fun getClouds() = clouds
-    override fun getPrecipitation() = precipitation
-    override fun getPressure() = pressure
+    fun getAirTemp() = airTemp
+    fun getClouds() = clouds
+    fun getPrecipitation() = precipitation
+    fun getPressure() = pressure
 
-    private fun requestMapStyle(uri: String) {
-        mapStyle = Style.Builder().fromUri(uri)
-    }
 
     // Henter hele datasettet til met og gjør om til liste over objekter med link til vektordata som attributt
     private fun requestVectorDatasets(vectorDataUri: String) {

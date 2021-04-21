@@ -1,28 +1,22 @@
 package com.team48.applikasjon.data.repository
 
+import androidx.lifecycle.MutableLiveData
 import com.team48.applikasjon.data.api.ApiHelper
 import com.team48.applikasjon.data.api.ApiServiceImpl
 import com.team48.applikasjon.data.models.VectorTile
 import com.team48.applikasjon.data.models.Weather
 import io.reactivex.Single
 
-class Repository () {
+class Repository {
 
-    val apiHelper = ApiHelper(ApiServiceImpl())
+    private val apiHelper = ApiHelper(ApiServiceImpl())
 
-    fun getAirTemp(): MutableList<VectorTile> {
-        return apiHelper.getAirTemp()
-    }
+    fun getAirTemp() = apiHelper.getAirTemp()
 
-    fun getClouds(): MutableList<VectorTile> {
-        return apiHelper.getClouds()
-    }
+    fun getClouds() = apiHelper.getClouds()
 
-    fun getPrecipitation(): MutableList<VectorTile> {
-        return apiHelper.getPrecipitation()
-    }
+    fun getPrecipitation() = apiHelper.getPrecipitation()
 
-    fun getPressure(): MutableList<VectorTile> {
-        return apiHelper.getPressure()
-    }
+    fun getPressure() = apiHelper.getPressure()
+
 }
