@@ -12,7 +12,7 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.team48.applikasjon.R
 import com.team48.applikasjon.ui.main.ViewModelFactory
 
-class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(R.layout.fragment_map) {
+class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
     private lateinit var mapViewModel: MapViewModel
     var mapView: MapView? = null
@@ -45,7 +45,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(R.layout.fr
             mapboxMap.setStyle(Style.OUTDOORS) { style ->
 
                 // Setting camera position over Norway
-                //mapboxMap.cameraPosition = mapViewModel.getCamStartPos()
+                mapboxMap.cameraPosition = mapViewModel.getCamStartPos()
 
                 /*
                 // Adding source to style
