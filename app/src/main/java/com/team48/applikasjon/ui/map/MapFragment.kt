@@ -32,7 +32,6 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 viewModelFactory
         ).get(MapViewModel::class.java)
 
-        Mapbox.getInstance(requireContext().applicationContext, getString(R.string.mapbox_access_token))
         val rootView = inflater.inflate(R.layout.fragment_map, container, false)
 
         mapView = rootView.findViewById(R.id.mapView)

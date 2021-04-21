@@ -5,6 +5,7 @@ import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.team48.applikasjon.R
 import androidx.viewpager2.widget.ViewPager2
+import com.mapbox.mapboxsdk.Mapbox
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.dailyweather.WeatherFragment
 import com.team48.applikasjon.ui.main.adapter.FragmentContainerAdapter
@@ -24,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private val settingsFragment = SettingsFragment(viewModelFactory)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
