@@ -6,8 +6,6 @@ import com.team48.applikasjon.data.models.VectorTile
 
 interface ApiService {
 
-    fun getWeather(): Single<List<Weather>>
-
     fun getAirTemp(): MutableList<VectorTile>
 
     fun getClouds(): MutableList<VectorTile>

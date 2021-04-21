@@ -6,9 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.team48.applikasjon.R
+import com.team48.applikasjon.data.repository.Repository
+import com.team48.applikasjon.ui.main.ViewModelFactory
 
 
-class SettingsFragment : Fragment() {
+class SettingsFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

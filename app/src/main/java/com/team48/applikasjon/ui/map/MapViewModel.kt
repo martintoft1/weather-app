@@ -1,22 +1,16 @@
 package com.team48.applikasjon.ui.map
 
 import android.util.Log
-import androidx.core.content.ContentProviderCompat.requireContext
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.mapbox.mapboxsdk.Mapbox
-import com.mapbox.mapboxsdk.maps.MapView
-import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.VectorTile
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.utils.Resource
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 
-class MapViewModel(private val repository: Repository) : ViewModel() {
+class MapViewModel(val repository: Repository) : ViewModel() {
 
     private val airTempList = MutableLiveData<Resource<List<VectorTile>>>()
     private val cloudList = MutableLiveData<Resource<List<VectorTile>>>()

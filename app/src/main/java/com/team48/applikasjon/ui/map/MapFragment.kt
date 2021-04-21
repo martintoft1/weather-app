@@ -1,26 +1,18 @@
 package com.team48.applikasjon.ui.map
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.layers.FillLayer
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
-import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
-import com.team48.applikasjon.data.api.ApiHelper
-import com.team48.applikasjon.data.api.ApiService
-import com.team48.applikasjon.data.api.ApiServiceImpl
 import com.team48.applikasjon.ui.main.ViewModelFactory
 
-class MapFragment : Fragment(R.layout.fragment_map) {
+class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(R.layout.fragment_map) {
 
     private lateinit var mapViewModel: MapViewModel
     var mapView: MapView? = null
@@ -35,15 +27,10 @@ class MapFragment : Fragment(R.layout.fragment_map) {
         savedInstanceState: Bundle?
     ): View? {
 
-        mapViewModel = ViewModelProviders.of(this).get(MapViewModel::class.java)
-
-        /*
-        // Creating fragment based on ViewModel
         mapViewModel = ViewModelProviders.of(
-            this,
+                this,
+                viewModelFactory
         ).get(MapViewModel::class.java)
-
-         */
 
         Mapbox.getInstance(requireContext().applicationContext, getString(R.string.mapbox_access_token))
         val rootView = inflater.inflate(R.layout.fragment_map, container, false)

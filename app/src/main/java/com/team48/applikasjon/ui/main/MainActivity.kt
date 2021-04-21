@@ -4,8 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.team48.applikasjon.R
-
 import androidx.viewpager2.widget.ViewPager2
+import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.dailyweather.WeatherFragment
 import com.team48.applikasjon.ui.main.adapter.FragmentContainerAdapter
 import com.team48.applikasjon.ui.map.MapFragment
@@ -16,9 +16,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fragmentContainer: ViewPager2
     private lateinit var bottomNavigationView: BottomNavigationView
 
-    private val weatherFragment  = WeatherFragment()
-    private val mapFragment      = MapFragment()
-    private val settingsFragment = SettingsFragment()
+    private val repository = Repository()
+    private val viewModelFactory = ViewModelFactory(repository)
+
+    private val weatherFragment  = WeatherFragment(viewModelFactory)
+    private val mapFragment      = MapFragment(viewModelFactory)
+    private val settingsFragment = SettingsFragment(viewModelFactory)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +33,6 @@ class MainActivity : AppCompatActivity() {
         setupFragmentContainer()
         setupBottomNavigation()
     }
-
 
     private fun setupFragmentContainer() {
         val adapter = FragmentContainerAdapter(supportFragmentManager, lifecycle)
@@ -56,7 +58,6 @@ class MainActivity : AppCompatActivity() {
         // Setter fragment som åpnes først
         fragmentContainer.post { fragmentContainer.setCurrentItem(1, false) }
     }
-
 
     private fun setupBottomNavigation() {
         // Bytter fragment ved bottomnav navigering

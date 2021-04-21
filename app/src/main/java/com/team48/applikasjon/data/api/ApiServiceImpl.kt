@@ -83,12 +83,4 @@ class ApiServiceImpl : ApiService {
             }
         }
     }
-
-    // TODO: Fjerne denne når egen implementasjon er på plass
-    override fun getWeather(): Single<List<Weather>> {
-        return Rx2AndroidNetworking.get("https://run.mocky.io/v3/7f30d519-4597-48b5-8abf-3da7b0a9063f")
-            .build()
-            .getObjectListSingle(Weather::class.java)
-    }
-
 }
