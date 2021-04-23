@@ -1,57 +1,69 @@
 package com.team48.applikasjon.ui.map
 
+import android.graphics.Color
 import android.util.Log
+import androidx.lifecycle.LiveData
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.mapbox.mapboxsdk.style.expressions.Expression
+import com.mapbox.mapboxsdk.style.layers.Layer
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory
+import com.mapbox.mapboxsdk.style.sources.TileSet
 import com.team48.applikasjon.data.models.VectorTile
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.utils.Resource
-import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 
 class MapViewModel(val repository: Repository) : ViewModel() {
 
-    private val airTempList = MutableLiveData<Resource<List<VectorTile>>>()
+    //private val airTempList = MutableLiveData<Resource<List<VectorTile>>>()
     private val cloudList = MutableLiveData<Resource<List<VectorTile>>>()
     private val precipitationList = MutableLiveData<Resource<List<VectorTile>>>()
     private val pressureList = MutableLiveData<Resource<List<VectorTile>>>()
 
-    private val compositeDisposable = CompositeDisposable()
-
-    init {
-
-        // Fikse init basert på apply, observe og livedata
-        /*
-        fetchWeatherType(airTempList)
-        fetchWeatherType(cloudList)
-        fetchWeatherType(precipitationList)
-        fetchWeatherType(pressureList)
-         */
+    private val airTempList = repository.getAirTemp()
 
 
-        // Initializing MapBox instance
-        //Mapbox.getInstance(requireContext().applicationContext, getString(R.string.mapbox_access_token))
+    fun getTileSet(airTempList: MutableList<VectorTile>): TileSet {
+
+        // TODO: Håndtere på en annen måte en runBlocking
+        runBlocking {
+            delay(5000)
+        }
+
+        val index: Int = 0
+        val tileSet = TileSet(airTempList[index].tilejson, airTempList[index].tiles?.get(0))
+
+        return tileSet
     }
 
-    // Denne må fjernes, singles-implementasjon er ikke det vi bør gå for
-    /*
-    private fun fetchWeatherType(weatherType: MutableLiveData<Resource<List<VectorTile>>>) {
+    // LiveData handling of TileSet
+    private val _tileSet = MutableLiveData<TileSet>().apply {
+        value = getTileSet(airTempList)
+    }
+    val tileSet: LiveData<TileSet> = _tileSet
 
-        // Originalt var det this.weatherType. Ikke sikkert dette funker?
-        weatherType.postValue(Resource.loading(null))
-        compositeDisposable.add(
-            repository.getAirTemp()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ airTempList ->
-                    weatherType.postValue(Resource.success(airTempList))
-                }, {
-                   weatherType.postValue(Resource.error("airTempList update error", null))
-                })
+    // Setting (fill)layer properties
+    fun setLayerProperties(fillLayer: Layer, weatherType: String) {
+
+        // TODO: Create better presentation based on weather type
+        fillLayer.setProperties(
+            PropertyFactory.fillOpacity(0.4F),
+            PropertyFactory.fillColor(
+                Expression.interpolate(
+                    Expression.linear(), Expression.zoom(),
+                    Expression.stop(-20f, Expression.color(Color.RED)),
+                    Expression.stop(0f, Expression.color(Color.WHITE)),
+                    Expression.stop(20f, Expression.color(Color.BLUE))
+                )
+            )
         )
     }
-     */
+
+
 
     // Get tileID from VectorTile
     fun getTileID(tile: VectorTile): String {

@@ -2,15 +2,14 @@ package com.team48.applikasjon.ui.map
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.expressions.Expression.*
 import com.mapbox.mapboxsdk.style.layers.FillLayer
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor
@@ -48,9 +47,6 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         mapView = rootView.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
 
-
-
-
         // Initializing map from MapBox servers
         mapView?.getMapAsync{ map ->
 
@@ -61,10 +57,11 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
             val customStyle = Style.Builder().fromUri(getString(R.string.mapStyleUri))
             map.setStyle(customStyle) { style ->
 
-
                 // her må vi vente til apiet er lastet inn
                 // TODO: IMPLEMENTERE LIVEDATA FOR REPOSITORY ELLER APISERVICEIMPL
                 // runblocking på 5 sekunder er midlertidig løsning
+
+                // jEg eR en dYkTIg ANdrOiDutVikLer ?:)
                 runBlocking {
                     delay(5000)
                 }
@@ -82,41 +79,26 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                     3 -> weatherTile = repository.getPressure()[0]
                 }
 
+                var tileSet: TileSet
 
+                mapViewModel.tileSet.observe(viewLifecycleOwner, Observer {
 
-                val tileSet = TileSet(weatherTile.tilejson, weatherTile.tiles?.get(0))
+                    // TileSet based on update value in ViewModel
+                    tileSet = it
 
-                // Adding source to style
-                val vectorSource = VectorSource("weatherData", tileSet)
-                style.addSource(vectorSource)
+                    // Adding source to style
+                    val vectorSource = VectorSource("weatherData", tileSet)
+                    style.addSource(vectorSource)
 
-                // Creating and adding a layer
-                val fillLayer = FillLayer("airTemp", "weatherData")
+                    // Creating and adding a layer
+                    val fillLayer = FillLayer("airTemp", "weatherData")
+                    mapViewModel.setLayerProperties(fillLayer, "airTemp")
+                    fillLayer.sourceLayer = weatherTile.getTileId()
 
-                // TODO: Create better presentation based on weather type
-                fillLayer.setProperties(
-                    fillOpacity(0.4F),
-                    fillColor(interpolate(
-                        linear(), zoom(),
-                        stop(-20f, color(Color.RED)),
-                        stop(0f, color(Color.WHITE)),
-                        stop(20f, color(Color.BLUE))
-                    ))
-                )
-                Log.d("tileset", fillLayer.toString())
+                    // Adding layer to style
+                    style.addLayer(fillLayer)
 
-
-
-
-                // Spesifiserer hvilke zoomnivåer dataen vil være tilgjengelig
-                fillLayer.minZoom = weatherTile.minzoom!!.toFloat()
-                fillLayer.maxZoom = weatherTile.maxzoom!!.toFloat()
-
-                fillLayer.sourceLayer = weatherTile.getTileId()
-
-                // Adding layer to style
-                style.addLayer(fillLayer)
-
+                })
             }
         }
         return rootView
