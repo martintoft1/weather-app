@@ -1,23 +1,14 @@
 package com.team48.applikasjon.data.api
 
-import android.content.res.Resources
-import android.provider.Settings.Global.getString
-import androidx.core.content.res.TypedArrayUtils.getString
 import androidx.lifecycle.MutableLiveData
-import com.rx2androidnetworking.Rx2AndroidNetworking
-import com.team48.applikasjon.data.models.Weather
-import io.reactivex.Single
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitString
 import com.google.gson.Gson
-import com.mapbox.mapboxsdk.maps.Style
-import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.VectorDataset
 import com.team48.applikasjon.data.models.VectorTile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlin.coroutines.coroutineContext
 
 // Klarte ikke opprette instans av ApiService direkte, så kanskje er ikke denne klassen helt ubrukelig likevel? Idk
 
