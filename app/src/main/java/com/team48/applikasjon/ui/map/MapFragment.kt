@@ -83,11 +83,10 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 }
 
 
-                // Adding source to style
 
                 val tileSet = TileSet(weatherTile.tilejson, weatherTile.tiles?.get(0))
 
-
+                // Adding source to style
                 val vectorSource = VectorSource("weatherData", tileSet)
                 style.addSource(vectorSource)
 
@@ -95,28 +94,6 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 val fillLayer = FillLayer("airTemp", "weatherData")
 
                 // TODO: Create better presentation based on weather type
-                /*
-                fillLayer.setProperties(
-                    fillColor(Color.BLUE),
-                    fillOpacity(0.4f),
-                )
-
-                 */
-/*
-                fillLayer.setProperties(
-                    fillOpacity(0.4F),
-                    fillColor(
-                        interpolate( linear(), zoom(),
-                            stop(12, step(get("stroke-width"),
-                                color(Color.YELLOW),
-                                stop(-20f, color(Color.RED)),
-                                stop(0f, color(Color.WHITE)),
-                                stop(20f, color(Color.BLUE))
-                            ))
-                        )
-                    )
-                )
- */
                 fillLayer.setProperties(
                     fillOpacity(0.4F),
                     fillColor(interpolate(
@@ -140,23 +117,8 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 // Adding layer to style
                 style.addLayer(fillLayer)
 
-                //Log.d("minZoom", fillLayer.)
-
-
             }
         }
-/*
-        mapView?.getMapAsync{ map ->
-
-            map.addOnMapClickListener {
-                Log.d("latlng", it.toString())
-            }
-        }
-
- */
-
-
-
         return rootView
     }
 
