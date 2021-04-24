@@ -31,7 +31,7 @@ class MapViewModel(val repository: Repository) : ViewModel() {
 
         // TODO: Håndtere på en annen måte en runBlocking
         runBlocking {
-            delay(5000)
+            delay(9000)
         }
 
         val index: Int = 0

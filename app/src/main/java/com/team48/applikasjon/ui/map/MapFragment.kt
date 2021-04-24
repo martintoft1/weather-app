@@ -1,10 +1,11 @@
 package com.team48.applikasjon.ui.map
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.Spinner
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -15,35 +16,53 @@ import com.mapbox.mapboxsdk.style.sources.TileSet
 import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.VectorTile
+import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.main.ViewModelFactory
+import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
-class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
-
+class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(), AdapterView.OnItemSelectedListener  {
+    private lateinit var rootView: View
     private lateinit var mapViewModel: MapViewModel
+    private lateinit var spinnerAdapter: SpinnerAdapter
+    private lateinit var weatherTile: VectorTile
+    private lateinit var repository: Repository
+
     var mapView: MapView? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+        rootView = inflater.inflate(R.layout.fragment_map, container, false)
+        return rootView
+    }
 
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupViewModel()
+        setupMap(savedInstanceState)
+        setupSpinner()
+    }
+
+
+    private fun setupViewModel() {
         mapViewModel = ViewModelProviders.of(
                 this,
                 viewModelFactory
         ).get(MapViewModel::class.java)
 
-        val rootView = inflater.inflate(R.layout.fragment_map, container, false)
+        repository = mapViewModel.repository
+    }
 
+
+    private fun setupMap(savedInstanceState: Bundle?) {
         mapView = rootView.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
-
         // Initializing map from MapBox servers
         mapView?.getMapAsync{ map ->
 
@@ -60,21 +79,11 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
                 // jEg eR en dYkTIg ANdrOiDutVikLer ?:)
                 runBlocking {
-                    delay(5000)
+                    delay(9000)
                 }
 
-                val repository = mapViewModel.repository
+                weatherTile = repository.getClouds()[0]
 
-                // TODO: Lag UI for å sette dette valget av værtype som skal vises
-                var weatherType = 0;
-                lateinit var weatherTile: VectorTile
-
-                when (weatherType) {
-                    0 -> weatherTile = repository.getAirTemp()[0]
-                    1 -> weatherTile = repository.getClouds()[0]
-                    2 -> weatherTile = repository.getPrecipitation()[0]
-                    3 -> weatherTile = repository.getPressure()[0]
-                }
 
                 var tileSet: TileSet
 
@@ -98,15 +107,20 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 })
             }
         }
-        return rootView
     }
 
 
+    private fun setupSpinner() {
+        val spinner: Spinner = rootView.findViewById(R.id.spinner_weather_filter)
+        val icons = mutableListOf<Int>()
+        icons.add(R.drawable.ic_cloud)
+        icons.add(R.drawable.ic_umbrella)
+        icons.add(R.drawable.ic_temperature)
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        spinnerAdapter  = SpinnerAdapter(requireContext(), icons)
+        spinner.adapter = spinnerAdapter
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -146,5 +160,21 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         mapView?.onDestroy()
+    }
+
+    /* Spinner onItemSelected */
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        when (position) {
+            0 -> weatherTile = repository.getAirTemp()[0]
+            1 -> weatherTile = repository.getClouds()[0]
+            2 -> weatherTile = repository.getPrecipitation()[0]
+            3 -> weatherTile = repository.getPressure()[0]
+        }
+        TODO("Her skal filter endres basert på valgt element i spinner")
+    }
+
+    /* Spinner onNothingSelected */
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        return
     }
 }
