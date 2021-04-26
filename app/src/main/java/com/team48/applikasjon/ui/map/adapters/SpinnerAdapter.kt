@@ -20,7 +20,15 @@ class SpinnerAdapter(
 
     /* Returnerer valgt spinner view */
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return initView(position, convertView, parent)
+        var view = convertView // Må gjøre om til var for å manipulere viewet
+        if (view == null) {
+            view = LayoutInflater.from(context).inflate(
+                    R.layout.spinner_selected_item, parent, false
+            )
+        }
+        val iconView: ImageView? = view?.findViewById(R.id.weather_icon)
+        iconView?.setImageResource(icons[position])
+        return view!!
     }
 
     /* Returnerer dropdown view på position */
@@ -33,7 +41,7 @@ class SpinnerAdapter(
         var view = convertView // Må gjøre om til var for å manipulere viewet
         if (view == null) {
             view = LayoutInflater.from(context).inflate(
-                    R.layout.spinner_item, parent, false
+                    R.layout.spinner_dropdown_item, parent, false
             )
         }
         val iconView: ImageView? = view?.findViewById(R.id.weather_icon)

@@ -1,6 +1,7 @@
 package com.team48.applikasjon.ui.map
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -81,8 +82,14 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(), AdapterV
                 runBlocking {
                     delay(9000)
                 }
+                val weatherType: Int = 0
 
-                weatherTile = repository.getClouds()[0]
+                when (weatherType) {
+                    0 -> weatherTile = repository.getAirTemp()[0]
+                    1 -> weatherTile = repository.getClouds()[0]
+                    2 -> weatherTile = repository.getPrecipitation()[0]
+                    3 -> weatherTile = repository.getPressure()[0]
+                }
 
 
                 var tileSet: TileSet
@@ -164,12 +171,6 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(), AdapterV
 
     /* Spinner onItemSelected */
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        when (position) {
-            0 -> weatherTile = repository.getAirTemp()[0]
-            1 -> weatherTile = repository.getClouds()[0]
-            2 -> weatherTile = repository.getPrecipitation()[0]
-            3 -> weatherTile = repository.getPressure()[0]
-        }
         TODO("Her skal filter endres basert på valgt element i spinner")
     }
 
