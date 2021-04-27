@@ -15,4 +15,12 @@
     // URL til egen designet mapbox stil
     <string name="mapStyleUri">mapbox://styles/wipi-48/cknilzu8v0eok17nyuucg7mfb</string>
 
+    // MapFragment Spinner elementer
+    <string-array name="map_overlays">
+        <item>Skyer</item>
+        <item>Regn</item>
+        <item>Temperatur</item>
+        <item>Trykk</item>
+    </string-array>
+
 </resources>

@@ -1,4 +1,4 @@
-package com.team48.applikasjon.ui.main.adapter
+package com.team48.applikasjon.ui.main.adapters
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
