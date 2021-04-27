@@ -2,51 +2,33 @@ package com.team48.applikasjon.ui.map
 
 import android.graphics.Color
 import android.util.Log
-import androidx.lifecycle.LiveData
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.layers.Layer
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
-import com.mapbox.mapboxsdk.style.sources.TileSet
-import com.team48.applikasjon.data.models.VectorTile
+import com.team48.applikasjon.data.models.VectorDataset
 import com.team48.applikasjon.data.repository.Repository
-import com.team48.applikasjon.utils.Resource
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 
 class MapViewModel(val repository: Repository) : ViewModel() {
 
-    //private val airTempList = MutableLiveData<Resource<List<VectorTile>>>()
-    private val cloudList = MutableLiveData<Resource<List<VectorTile>>>()
-    private val precipitationList = MutableLiveData<Resource<List<VectorTile>>>()
-    private val pressureList = MutableLiveData<Resource<List<VectorTile>>>()
+    private val weatherList = repository.getWeather()
 
-    private val airTempList = repository.getAirTemp()
-
-
-    fun getTileSet(airTempList: MutableList<VectorTile>): TileSet {
-
-        // TODO: Håndtere på en annen måte en runBlocking
-        runBlocking {
-            delay(5000)
-        }
-
-        val index: Int = 0
-        val tileSet = TileSet(airTempList[index].tilejson, airTempList[index].tiles?.get(0))
-
-        return tileSet
-    }
-
+    /*
     // LiveData handling of TileSet
     private val _tileSet = MutableLiveData<TileSet>().apply {
         value = getTileSet(airTempList)
     }
     val tileSet: LiveData<TileSet> = _tileSet
+     */
 
-    // Setting (fill)layer properties
+    // Gets ID from name attribute in vector dataset
+    fun getIDfromURL(vectorDataset: VectorDataset): String {
+        return vectorDataset.name!!.substringAfterLast("/")
+    }
+
+    // Setting layer properties
     fun setLayerProperties(fillLayer: Layer, weatherType: String) {
 
         // TODO: Create better presentation based on weather type
@@ -61,13 +43,6 @@ class MapViewModel(val repository: Repository) : ViewModel() {
                 )
             )
         )
-    }
-
-
-
-    // Get tileID from VectorTile
-    fun getTileID(tile: VectorTile): String {
-        return tile.vector_layers!![0].id!!
     }
 
     // Creating start position over Norway
@@ -86,6 +61,5 @@ class MapViewModel(val repository: Repository) : ViewModel() {
         super.onCleared()
         Log.i("MapViewModel", "MapViewModel destroyed!")
     }
-
 
 }

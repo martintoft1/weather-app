@@ -5,36 +5,29 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitString
 import com.google.gson.Gson
 import com.team48.applikasjon.data.models.VectorDataset
-import com.team48.applikasjon.data.models.VectorTile
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-
-// Klarte ikke opprette instans av ApiService direkte, så kanskje er ikke denne klassen helt ubrukelig likevel? Idk
+import kotlinx.coroutines.*
+import java.util.*
 
 class ApiServiceImpl : MutableLiveData<ApiService>() {
 
     // URL til met værdata
     private val metUri = "https://test.openmaps.met.no/in2000/map/services"
-
     private val gson = Gson()
 
-    private var airTemp = mutableListOf<VectorTile>()
-    private var clouds = mutableListOf<VectorTile>()
-    private var precipitation = mutableListOf<VectorTile>()
-    private var pressure = mutableListOf<VectorTile>()
+    // Felles liste for alle værtyper
+    // 0 = precipitation, 1 = clouds, 2 = airTemp
+    private var weatherDataset = mutableListOf<VectorDataset>()
 
     // Initialiserer API-kall
     init {
         requestVectorDatasets(metUri)
     }
 
-    // Grensesnitt for klassen
-    fun getAirTemp() = airTemp
-    fun getClouds() = clouds
-    fun getPrecipitation() = precipitation
-    fun getPressure() = pressure
+    fun getWeather() = weatherDataset
 
+    fun refreshWeather() {
+        requestVectorDatasets(metUri)
+    }
 
     // Henter hele datasettet til met og gjør om til liste over objekter med link til vektordata som attributt
     private fun requestVectorDatasets(vectorDataUri: String) {
@@ -42,32 +35,54 @@ class ApiServiceImpl : MutableLiveData<ApiService>() {
 
         CoroutineScope(Dispatchers.IO).launch {
             vectorDatasets = gson.fromJson(Fuel.get(vectorDataUri).awaitString(), Array<VectorDataset>::class.java).toList()
-            requestVectorTiles(vectorDatasets)
+
+            withContext(Dispatchers.Main) {
+                updateWeatherList(vectorDatasets)
+            }
         }
     }
 
-    // Henter data fra hver enkelt vectortile
-    private fun requestVectorTiles(vectorDatasets: List<VectorDataset>) {
+    // Finne nyeste data på hver værtype og legge i liste
+    private fun updateWeatherList(vectorDataSets: List<VectorDataset>) {
 
-        val vectorTiles = mutableListOf<VectorTile>()
-        CoroutineScope(Dispatchers.IO).launch {
-            for (vectorDataset in vectorDatasets) {
-                vectorTiles.add(gson.fromJson(Fuel.get(vectorDataset.url.toString()).awaitString(), VectorTile::class.java))
+        var name: String
+
+        var airTempUpdated = false
+        var cloudsUpdated = false
+        var precipitationUpdated = false
+
+        var airTempIndex = 0
+        var cloudsIndex = 0
+        var precipitationIndex = 0
+
+        for (i in vectorDataSets.indices.reversed()) {
+
+            if (vectorDataSets[i].name != null) {
+
+                name = vectorDataSets[i].name!!
+
+                when {
+                    name.contains("precipitation") && !precipitationUpdated -> {
+                        precipitationIndex = i
+                        precipitationUpdated = true
+                    }
+                    name.contains("cloud") && !cloudsUpdated -> {
+                        cloudsIndex = i
+                        cloudsUpdated = true
+                    }
+                    name.contains("air_temperature_2m") && !airTempUpdated-> {
+                        airTempIndex = i
+                        airTempUpdated = true
+                    }
+                } // TODO: Trenger vi else?
             }
 
-            sortVectorTiles(vectorTiles)
-        }
-    }
-
-    // Sorterer vectortiles etter type værdata de tilbyr
-    private fun sortVectorTiles(vectorTiles: List<VectorTile>) {
-        for (vectorTile in vectorTiles) {
-            val weatherType = vectorTile.description?.substringBefore('/')
-            when (weatherType) {
-                "air_temperature" -> airTemp.add(vectorTile)
-                "cloud" -> clouds.add(vectorTile)
-                "precipitation" -> precipitation.add(vectorTile)
-                "pressure" -> pressure.add(vectorTile)
+            // Returner når værtypene er oppdatert
+            if (precipitationUpdated && cloudsUpdated && airTempUpdated) {
+                weatherDataset.add(0, vectorDataSets[precipitationIndex])
+                weatherDataset.add(1, vectorDataSets[cloudsIndex])
+                weatherDataset.add(2, vectorDataSets[airTempIndex])
+                return
             }
         }
     }

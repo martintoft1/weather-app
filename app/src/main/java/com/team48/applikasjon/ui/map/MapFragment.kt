@@ -1,6 +1,5 @@
 package com.team48.applikasjon.ui.map
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,10 +13,7 @@ import com.mapbox.mapboxsdk.style.layers.FillLayer
 import com.mapbox.mapboxsdk.style.sources.TileSet
 import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
-import com.team48.applikasjon.data.models.VectorTile
 import com.team48.applikasjon.ui.main.ViewModelFactory
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 
 class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
@@ -52,32 +48,12 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
             // Initializing map style
             val customStyle = Style.Builder().fromUri(getString(R.string.mapStyleUri))
+
             map.setStyle(customStyle) { style ->
 
-                // her må vi vente til apiet er lastet inn
-                // TODO: IMPLEMENTERE LIVEDATA FOR REPOSITORY ELLER APISERVICEIMPL
-                // runblocking på 5 sekunder er midlertidig løsning
+                lateinit var tileSet: TileSet
 
-                // jEg eR en dYkTIg ANdrOiDutVikLer ?:)
-                runBlocking {
-                    delay(5000)
-                }
-
-                val repository = mapViewModel.repository
-
-                // TODO: Lag UI for å sette dette valget av værtype som skal vises
-                var weatherType = 0;
-                lateinit var weatherTile: VectorTile
-
-                when (weatherType) {
-                    0 -> weatherTile = repository.getAirTemp()[0]
-                    1 -> weatherTile = repository.getClouds()[0]
-                    2 -> weatherTile = repository.getPrecipitation()[0]
-                    3 -> weatherTile = repository.getPressure()[0]
-                }
-
-                var tileSet: TileSet
-
+                /*
                 mapViewModel.tileSet.observe(viewLifecycleOwner, Observer {
 
                     // TileSet based on update value in ViewModel
@@ -87,22 +63,25 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                     val vectorSource = VectorSource("weatherData", tileSet)
                     style.addSource(vectorSource)
 
-                    // Creating and adding a layer
+                    // Creating layer
                     val fillLayer = FillLayer("airTemp", "weatherData")
+
+                    // Setting layer properties
                     mapViewModel.setLayerProperties(fillLayer, "airTemp")
-                    fillLayer.sourceLayer = weatherTile.getTileId()
+
+                    // Adding sourcelayer ID
+                    fillLayer.sourceLayer = tileSet.getTileId()
 
                     // Adding layer to style
                     style.addLayer(fillLayer)
 
+
                 })
+                 */
             }
         }
         return rootView
     }
-
-
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
