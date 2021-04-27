@@ -8,7 +8,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.mapbox.mapboxsdk.Mapbox
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.dailyweather.WeatherFragment
-import com.team48.applikasjon.ui.main.adapter.FragmentContainerAdapter
+import com.team48.applikasjon.ui.main.adapters.FragmentContainerAdapter
 import com.team48.applikasjon.ui.map.MapFragment
 import com.team48.applikasjon.ui.settings.SettingsFragment
 

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="spinner_icons">
+        <item>@drawable/ic_cloud</item>
+        <item>@drawable/ic_settings</item>
+        <item>@drawable/ic_launcher_foreground</item>
+    </integer-array>
+</resources>
