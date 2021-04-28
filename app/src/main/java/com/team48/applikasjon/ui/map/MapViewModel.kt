@@ -15,13 +15,9 @@ class MapViewModel(val repository: Repository) : ViewModel() {
 
     private val weatherList = repository.getWeather()
 
-    /*
-    // LiveData handling of TileSet
-    private val _tileSet = MutableLiveData<TileSet>().apply {
-        value = getTileSet(airTempList)
-    }
-    val tileSet: LiveData<TileSet> = _tileSet
-     */
+
+
+
 
     // Gets ID from name attribute in vector dataset
     fun getIDfromURL(vectorDataset: VectorDataset): String {
@@ -61,5 +57,15 @@ class MapViewModel(val repository: Repository) : ViewModel() {
         super.onCleared()
         Log.i("MapViewModel", "MapViewModel destroyed!")
     }
+
+
+    // TODO: Fjernes seinere hvis det ikke trengs
+    /*
+    // LiveData handling of TileSet
+    private val _tileSet = MutableLiveData<TileSet>().apply {
+        value = getTileSet(airTempList)
+    }
+    val tileSet: LiveData<TileSet> = _tileSet
+     */
 
 }
