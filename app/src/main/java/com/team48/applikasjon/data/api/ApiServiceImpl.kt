@@ -1,5 +1,6 @@
 package com.team48.applikasjon.data.api
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.coroutines.awaitString
@@ -14,42 +15,42 @@ class ApiServiceImpl : MutableLiveData<ApiService>() {
     private val metUri = "https://test.openmaps.met.no/in2000/map/services"
     private val gson = Gson()
 
-    // Felles liste for alle værtyper
-    // 0 = precipitation, 1 = clouds, 2 = airTemp
-    private var weatherDataset = mutableListOf<VectorDataset>()
+    // Felles liste for alle værtyper, 0 = precipitation, 1 = clouds, 2 = airTemp
+    //private var weatherDataset = mutableListOf<VectorDataset>()
 
-    // Initialiserer API-kall
     init {
-        requestVectorDatasets(metUri)
+        //requestVectorDatasets(metUri)
     }
 
-    fun getWeather() = weatherDataset
+    suspend fun getWeather(): MutableList<VectorDataset> = requestVectorDatasets(metUri)
 
-    fun refreshWeather() {
-        requestVectorDatasets(metUri)
-    }
+    // TODO: Funksjon for å refreshe api, funker ikke enda
+    //fun refreshWeather() = requestVectorDatasets(metUri)
 
     // Henter hele datasettet til met og gjør om til liste over objekter med link til vektordata som attributt
-    private fun requestVectorDatasets(vectorDataUri: String) {
+    suspend private fun requestVectorDatasets(vectorDataUri: String): MutableList<VectorDataset> {
+
         var vectorDatasets: List<VectorDataset>
 
-        CoroutineScope(Dispatchers.IO).launch {
+
+        //CoroutineScope(Dispatchers.IO).launch {
             vectorDatasets = gson.fromJson(Fuel.get(vectorDataUri).awaitString(), Array<VectorDataset>::class.java).toList()
 
-            withContext(Dispatchers.Main) {
-                updateWeatherList(vectorDatasets)
-            }
-        }
+            val weatherDataset = updateWeatherList(vectorDatasets)
+
+            return weatherDataset
     }
 
     // Finne nyeste data på hver værtype og legge i liste
-    private fun updateWeatherList(vectorDataSets: List<VectorDataset>) {
+    private fun updateWeatherList(vectorDataSets: List<VectorDataset>): MutableList<VectorDataset> {
+
+        val weatherDataset = mutableListOf<VectorDataset>()
 
         var name: String
 
-        var airTempUpdated = false
-        var cloudsUpdated = false
-        var precipitationUpdated = false
+        var updateAirTemp = true
+        var updateClouds = true
+        var updatePrecipitation = true
 
         var airTempIndex = 0
         var cloudsIndex = 0
@@ -62,28 +63,33 @@ class ApiServiceImpl : MutableLiveData<ApiService>() {
                 name = vectorDataSets[i].name!!
 
                 when {
-                    name.contains("precipitation") && !precipitationUpdated -> {
+                    (name.contains("precipitation") && updatePrecipitation) -> {
                         precipitationIndex = i
-                        precipitationUpdated = true
+                        updatePrecipitation = false
                     }
-                    name.contains("cloud") && !cloudsUpdated -> {
+                    (name.contains("cloud") && updateClouds) -> {
                         cloudsIndex = i
-                        cloudsUpdated = true
+                        updateClouds = false
                     }
-                    name.contains("air_temperature_2m") && !airTempUpdated-> {
+                    (name.contains("air_temperature_2m") && updateAirTemp) -> {
                         airTempIndex = i
-                        airTempUpdated = true
+                        updateAirTemp = false
                     }
-                } // TODO: Trenger vi else?
+                    else -> {
+                        //Log.d("name when else", name)
+                    }
+                } // TODO: Utbedre else
             }
 
             // Returner når værtypene er oppdatert
-            if (precipitationUpdated && cloudsUpdated && airTempUpdated) {
+            if (!updatePrecipitation && !updateClouds && !updateAirTemp) {
                 weatherDataset.add(0, vectorDataSets[precipitationIndex])
                 weatherDataset.add(1, vectorDataSets[cloudsIndex])
                 weatherDataset.add(2, vectorDataSets[airTempIndex])
-                return
+
+                break
             }
         }
+        return weatherDataset
     }
 }

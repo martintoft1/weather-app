@@ -11,18 +11,24 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.style.layers.FillLayer
+import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.VectorTile
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
 
-class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(), AdapterView.OnItemSelectedListener  {
+class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     private lateinit var rootView: View
     private lateinit var mapViewModel: MapViewModel
     private lateinit var spinnerAdapter: SpinnerAdapter
     private lateinit var weatherTile: VectorTile
     private lateinit var repository: Repository
+    private lateinit var spinner: Spinner
+
+
+    private lateinit var layerURL: String
 
     var mapView: MapView? = null
 
@@ -66,23 +72,47 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(), AdapterV
             val customStyle = Style.Builder().fromUri(getString(R.string.mapStyleUri))
             map.setStyle(customStyle) { style ->
 
-                /*
-                // Adding source to style
-                val vectorSource = VectorSource("weatherData", tileSet)
-                style.addSource(vectorSource)
+                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
-                // Creating layer
-                val fillLayer = FillLayer("airTemp", "weatherData")
+                    override fun onItemSelected(
+                        parent: AdapterView<*>?,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        /* Position index: cloud = 0, umbrella = 1, temp = 2 */
 
-                // Setting layer properties
-                mapViewModel.setLayerProperties(fillLayer, "airTemp")
+                        Log.d("dataRready", mapViewModel.dataReady.toString())
 
-                // Adding sourcelayer ID
-                fillLayer.sourceLayer = tileSet.getTileId()
+                        if (mapViewModel.dataReady) {
+                            updateLayerURL(position)
 
-                // Adding layer to style
-                style.addLayer(fillLayer)
-                 */
+                            Log.d("layerURL", layerURL)
+
+                            //addLayer(style)
+                            // Adding source to style
+                            val vectorSource = VectorSource("weatherData", layerURL)
+                            style.addSource(vectorSource)
+
+                            // Creating layer
+                            val fillLayer = FillLayer("airTemp", "weatherData")
+
+                            // Setting layer properties
+                            mapViewModel.setLayerProperties(fillLayer, "airTemp")
+
+                            // Adding sourcelayer ID
+                            fillLayer.sourceLayer = mapViewModel.getIDfromURL(layerURL)
+
+                            // Adding layer to style
+                            style.addLayer(fillLayer)
+                        }
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {
+                        // TODO: Legge til mulighet for å fjerne filter
+                    }
+
+                }
 
             }
         }
@@ -90,8 +120,32 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(), AdapterV
 
     }
 
+    private fun updateLayerURL(position: Int) {
+        layerURL = mapViewModel.weatherList.value!![position].url!!
+    }
+
+    private fun addLayer(style: Style) {
+
+        // Adding source to style
+        val vectorSource = VectorSource("weatherData", layerURL)
+        style.addSource(vectorSource)
+
+        // Creating layer
+        val fillLayer = FillLayer("airTemp", "weatherData")
+
+        // Setting layer properties
+        mapViewModel.setLayerProperties(fillLayer, "airTemp")
+
+        // Adding sourcelayer ID
+        fillLayer.sourceLayer = mapViewModel.getIDfromURL(layerURL)
+
+        // Adding layer to style
+        style.addLayer(fillLayer)
+
+    }
+
     private fun setupSpinner() {
-        val spinner: Spinner = rootView.findViewById(R.id.spinner_weather_filter)
+        spinner = rootView.findViewById(R.id.spinner_weather_filter)
         val icons = mutableListOf<Int>()
         icons.add(R.drawable.ic_cloud)
         icons.add(R.drawable.ic_umbrella)
@@ -99,8 +153,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(), AdapterV
 
         spinnerAdapter  = SpinnerAdapter(requireContext(), icons)
         spinner.adapter = spinnerAdapter
-
-        spinner.onItemSelectedListener
+        //spinner.isEnabled = false
     }
 
 
@@ -144,16 +197,4 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(), AdapterV
         mapView?.onDestroy()
     }
 
-    /* Spinner onItemSelected */
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        TODO("Her skal filter endres basert på valgt element i spinner")
-
-        Log.d("position change", position.toString())
-
-    }
-
-    /* Spinner onNothingSelected */
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-        return
-    }
 }
