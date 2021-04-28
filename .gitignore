@@ -1,6 +1,6 @@
 # content of .gitignore
 *.iml
-.gradle/*
+/.gradle/*
 /local.properties
 /.idea/*
 .DS_Store
@@ -8,3 +8,4 @@
 /captures
 .externalNativeBuild    
 .cxx
+.gradle
