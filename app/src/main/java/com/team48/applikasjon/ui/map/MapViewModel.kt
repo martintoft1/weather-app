@@ -2,9 +2,9 @@ package com.team48.applikasjon.ui.map
 
 import android.graphics.Color
 import android.util.Log
+import androidx.lifecycle.*
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
-import androidx.lifecycle.ViewModel
 import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.layers.Layer
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
@@ -13,15 +13,49 @@ import com.team48.applikasjon.data.repository.Repository
 
 class MapViewModel(val repository: Repository) : ViewModel() {
 
-    private val weatherList = repository.getWeather()
+    //private val weatherList = repository.getWeather()
+
+    /*
+    val weatherList = liveData {
+        emit(repository.getWeather())
+    }
+     */
 
 
+    var dataReady = false
+
+    val weatherList: LiveData<MutableList<VectorDataset>> = liveData {
+
+        Log.d("dataready livedata, pre call", dataReady.toString())
+        val data = repository.getWeather()
+        emit(data)
+
+        Log.d("dataready livedata, post call", dataReady.toString())
+
+        dataReady = true
+    }
+
+    /*
+    val _weatherList: MutableList<VectorDataset> = weatherList.value!!.apply {
+       _weatherList = weatherList.value!!
+    }
+     */
+
+    // TODO: Fjernes seinere hvis det ikke trengs
+    /*
+    // LiveData handling of TileSet
+    private val _tileSet = MutableLiveData<TileSet>().apply {
+        value = getTileSet(airTempList)
+    }
+    val tileSet: LiveData<TileSet> = _tileSet
+     */
 
 
+    fun getAirTempURL(): String { return weatherList.value!![2].url!! }
 
     // Gets ID from name attribute in vector dataset
-    fun getIDfromURL(vectorDataset: VectorDataset): String {
-        return vectorDataset.name!!.substringAfterLast("/")
+    fun getIDfromURL(url: String): String {
+        return url.substringAfterLast("/")
     }
 
     // Setting layer properties
@@ -59,13 +93,5 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     }
 
 
-    // TODO: Fjernes seinere hvis det ikke trengs
-    /*
-    // LiveData handling of TileSet
-    private val _tileSet = MutableLiveData<TileSet>().apply {
-        value = getTileSet(airTempList)
-    }
-    val tileSet: LiveData<TileSet> = _tileSet
-     */
 
 }
