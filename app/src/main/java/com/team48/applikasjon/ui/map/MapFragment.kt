@@ -1,27 +1,21 @@
 package com.team48.applikasjon.ui.map
 
 import android.os.Bundle
-import android.view.Gravity
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.layers.FillLayer
-import com.mapbox.mapboxsdk.style.sources.TileSet
-import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.VectorTile
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 
 class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(), AdapterView.OnItemSelectedListener  {
     private lateinit var rootView: View
@@ -32,16 +26,14 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(), AdapterV
 
     var mapView: MapView? = null
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         rootView = inflater.inflate(R.layout.fragment_map, container, false)
         return rootView
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,20 +42,20 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(), AdapterV
         setupSpinner()
     }
 
-
     private fun setupViewModel() {
         mapViewModel = ViewModelProviders.of(
-                this,
-                viewModelFactory
+            this,
+            viewModelFactory
         ).get(MapViewModel::class.java)
 
         repository = mapViewModel.repository
     }
 
-
     private fun setupMap(savedInstanceState: Bundle?) {
+
         mapView = rootView.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
+
         // Initializing map from MapBox servers
         mapView?.getMapAsync{ map ->
 
@@ -74,48 +66,29 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(), AdapterV
             val customStyle = Style.Builder().fromUri(getString(R.string.mapStyleUri))
             map.setStyle(customStyle) { style ->
 
-                // her må vi vente til apiet er lastet inn
-                // TODO: IMPLEMENTERE LIVEDATA FOR REPOSITORY ELLER APISERVICEIMPL
-                // runblocking på 5 sekunder er midlertidig løsning
+                /*
+                // Adding source to style
+                val vectorSource = VectorSource("weatherData", tileSet)
+                style.addSource(vectorSource)
 
-                // jEg eR en dYkTIg ANdrOiDutVikLer ?:)
-                runBlocking {
-                    delay(9000)
-                }
-                val weatherType: Int = 0
+                // Creating layer
+                val fillLayer = FillLayer("airTemp", "weatherData")
 
-                when (weatherType) {
-                    0 -> weatherTile = repository.getAirTemp()[0]
-                    1 -> weatherTile = repository.getClouds()[0]
-                    2 -> weatherTile = repository.getPrecipitation()[0]
-                    3 -> weatherTile = repository.getPressure()[0]
-                }
+                // Setting layer properties
+                mapViewModel.setLayerProperties(fillLayer, "airTemp")
 
+                // Adding sourcelayer ID
+                fillLayer.sourceLayer = tileSet.getTileId()
 
-                var tileSet: TileSet
+                // Adding layer to style
+                style.addLayer(fillLayer)
+                 */
 
-                mapViewModel.tileSet.observe(viewLifecycleOwner, Observer {
-
-                    // TileSet based on update value in ViewModel
-                    tileSet = it
-
-                    // Adding source to style
-                    val vectorSource = VectorSource("weatherData", tileSet)
-                    style.addSource(vectorSource)
-
-                    // Creating and adding a layer
-                    val fillLayer = FillLayer("airTemp", "weatherData")
-                    mapViewModel.setLayerProperties(fillLayer, "airTemp")
-                    fillLayer.sourceLayer = weatherTile.getTileId()
-
-                    // Adding layer to style
-                    style.addLayer(fillLayer)
-
-                })
             }
         }
-    }
 
+
+    }
 
     private fun setupSpinner() {
         val spinner: Spinner = rootView.findViewById(R.id.spinner_weather_filter)
@@ -126,6 +99,8 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(), AdapterV
 
         spinnerAdapter  = SpinnerAdapter(requireContext(), icons)
         spinner.adapter = spinnerAdapter
+
+        spinner.onItemSelectedListener
     }
 
 
@@ -172,6 +147,9 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment(), AdapterV
     /* Spinner onItemSelected */
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         TODO("Her skal filter endres basert på valgt element i spinner")
+
+        Log.d("position change", position.toString())
+
     }
 
     /* Spinner onNothingSelected */
