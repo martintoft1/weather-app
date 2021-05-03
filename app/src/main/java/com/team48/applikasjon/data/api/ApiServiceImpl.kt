@@ -15,34 +15,32 @@ class ApiServiceImpl : MutableLiveData<ApiService>() {
     private val metUri = "https://test.openmaps.met.no/in2000/map/services"
     private val gson = Gson()
 
-    // Felles liste for alle værtyper, 0 = precipitation, 1 = clouds, 2 = airTemp
-    //private var weatherDataset = mutableListOf<VectorDataset>()
+    // Felles liste for alle værtyper, 0 = clouds, 1 = precipitation, 2 = airTemp
+    lateinit var weatherList: MutableList<VectorDataset>
 
     init {
-        //requestVectorDatasets(metUri)
+
+        // Oppdaterer weatherList ved API-kall
+        requestVectorDatasets(metUri)
     }
 
-    suspend fun getWeather(): MutableList<VectorDataset> = requestVectorDatasets(metUri)
-
-    // TODO: Funksjon for å refreshe api, funker ikke enda
-    //fun refreshWeather() = requestVectorDatasets(metUri)
+    fun getWeather(): MutableList<VectorDataset> = weatherList
 
     // Henter hele datasettet til met og gjør om til liste over objekter med link til vektordata som attributt
-    suspend private fun requestVectorDatasets(vectorDataUri: String): MutableList<VectorDataset> {
+    private fun requestVectorDatasets(vectorDataUri: String) {
 
         var vectorDatasets: List<VectorDataset>
 
-
-        //CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             vectorDatasets = gson.fromJson(Fuel.get(vectorDataUri).awaitString(), Array<VectorDataset>::class.java).toList()
-
-            val weatherDataset = updateWeatherList(vectorDatasets)
-
-            return weatherDataset
+            weatherList = updateWeatherList(vectorDatasets)
+        }
     }
 
     // Finne nyeste data på hver værtype og legge i liste
     private fun updateWeatherList(vectorDataSets: List<VectorDataset>): MutableList<VectorDataset> {
+
+        // TODO: Fikse algoritme mtp. airTemp
 
         val weatherDataset = mutableListOf<VectorDataset>()
 
@@ -83,8 +81,8 @@ class ApiServiceImpl : MutableLiveData<ApiService>() {
 
             // Returner når værtypene er oppdatert
             if (!updatePrecipitation && !updateClouds && !updateAirTemp) {
-                weatherDataset.add(0, vectorDataSets[precipitationIndex])
-                weatherDataset.add(1, vectorDataSets[cloudsIndex])
+                weatherDataset.add(0, vectorDataSets[cloudsIndex])
+                weatherDataset.add(1, vectorDataSets[precipitationIndex])
                 weatherDataset.add(2, vectorDataSets[airTempIndex])
 
                 break

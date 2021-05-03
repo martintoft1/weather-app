@@ -5,7 +5,7 @@ import com.team48.applikasjon.data.models.VectorTile
 
 interface ApiService {
 
-    suspend fun getWeather(): MutableList<VectorDataset>
+    fun getWeather(): MutableList<VectorDataset>
 
     /*
     fun getAirTemp(): MutableList<VectorTile>

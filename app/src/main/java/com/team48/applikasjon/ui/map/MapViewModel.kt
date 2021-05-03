@@ -10,56 +10,46 @@ import com.mapbox.mapboxsdk.style.layers.Layer
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.team48.applikasjon.data.models.VectorDataset
 import com.team48.applikasjon.data.repository.Repository
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 
 class MapViewModel(val repository: Repository) : ViewModel() {
 
-    //private val weatherList = repository.getWeather()
+    // Felles liste for alle værtyper, 0 = precipitation, 1 = clouds, 2 = airTemp
+    private lateinit var weatherList: MutableList<VectorDataset>
 
-    /*
-    val weatherList = liveData {
-        emit(repository.getWeather())
-    }
-     */
-
-
+    // Forhindrer innlasting av layers før data er tilgjengelig
     var dataReady = false
 
-    val weatherList: LiveData<MutableList<VectorDataset>> = liveData {
+    // Kalles på i MapFragment
+    fun updateWeather() {
 
-        Log.d("dataready livedata, pre call", dataReady.toString())
-        val data = repository.getWeather()
-        emit(data)
+        // TODO: Fjerning av runBlocking
 
-        Log.d("dataready livedata, post call", dataReady.toString())
-
-        dataReady = true
+        runBlocking {
+            delay(5000)
+            weatherList = repository.getWeather()
+            dataReady = true
+        }
     }
-
-    /*
-    val _weatherList: MutableList<VectorDataset> = weatherList.value!!.apply {
-       _weatherList = weatherList.value!!
-    }
-     */
-
-    // TODO: Fjernes seinere hvis det ikke trengs
-    /*
-    // LiveData handling of TileSet
-    private val _tileSet = MutableLiveData<TileSet>().apply {
-        value = getTileSet(airTempList)
-    }
-    val tileSet: LiveData<TileSet> = _tileSet
-     */
-
-
-    fun getAirTempURL(): String { return weatherList.value!![2].url!! }
 
     // Gets ID from name attribute in vector dataset
     fun getIDfromURL(url: String): String {
         return url.substringAfterLast("/")
     }
 
+    // Kalles på av MapFragment, posistion iht. spinner
+    // Clouds: 0, Precipitiation: 1, airTemp = 2
+    fun getWeatherTypeURL(position: Int): String {
+        return weatherList[position].url!!
+    }
+
     // Setting layer properties
-    fun setLayerProperties(fillLayer: Layer, weatherType: String) {
+    fun setLayerProperties(fillLayer: Layer, weatherType: Int) {
+
+        // weatherType = 0: Clouds
+        // = 1: Precipitiation
+        // = 2: AirTemp
 
         // TODO: Create better presentation based on weather type
         fillLayer.setProperties(

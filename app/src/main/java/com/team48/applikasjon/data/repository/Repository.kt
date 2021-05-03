@@ -7,7 +7,7 @@ class Repository {
 
     private val apiHelper = ApiHelper(ApiServiceImpl())
 
-    suspend fun getWeather() = apiHelper.getWeather()
+    fun getWeather() = apiHelper.getWeather()
 
     //fun refreshWeather() = apiHelper.refreshWeather()
 
