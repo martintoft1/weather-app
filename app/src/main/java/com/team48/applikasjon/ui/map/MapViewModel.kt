@@ -17,6 +17,7 @@ import com.team48.applikasjon.data.models.VectorDataset
 import com.team48.applikasjon.data.repository.Repository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import java.util.stream.IntStream.range
 
 class MapViewModel(val repository: Repository) : ViewModel() {
 
@@ -56,11 +57,13 @@ class MapViewModel(val repository: Repository) : ViewModel() {
         2: AirTemp
         */
 
+        // Opacity settes til 0 initielt
+
         // TODO: Create better presentation based on weather type
         when (weatherType) {
             0 -> {
                 fillLayer.setProperties( // clouds
-                    fillOpacity(0.4F),
+                    fillOpacity(0.0F),
                     fillColor(interpolate(
                         exponential(1F), get("value"),
                         stop(0, color(Color.TRANSPARENT)),
@@ -72,7 +75,7 @@ class MapViewModel(val repository: Repository) : ViewModel() {
             }
             1 -> {
                 fillLayer.setProperties( // percipation
-                    fillOpacity(0.4F),
+                    fillOpacity(0.0F),
                     fillColor(interpolate(
                         linear(), get("value"),
                         stop(0, color(Color.TRANSPARENT)),
@@ -84,7 +87,7 @@ class MapViewModel(val repository: Repository) : ViewModel() {
             }
             2 -> {
                 fillLayer.setProperties( // airTemp
-                    fillOpacity(0.4F),
+                    fillOpacity(0.0F),
                     fillColor(interpolate(
                         exponential(2F), get("value"),
                         stop(-10, color(Color.BLUE)),
@@ -98,21 +101,6 @@ class MapViewModel(val repository: Repository) : ViewModel() {
         }
     }
 
-    // Velger et nytt filter, oppretter det hvis det ikke eksisterer
-    fun chooseLayer(style: Style, position: Int) {
-
-        // Hvis layer allerede er opprettet
-        if (layerHashMap.containsKey(position)) {
-
-            // Skjul eventuelle nåværende layers og vis ønsket layer
-            hideAllLayers()
-            layerHashMap[position]!!.setProperties(PropertyFactory.visibility(Property.VISIBLE))
-        }
-
-        // Om layer ikke tidligere er opprettet
-        else addNewLayer(style, position)
-    }
-
     // Henter metadataURL fra weatherList basert på spinnerposisjon
     fun getLayerURL(position: Int): String {
 
@@ -120,12 +108,34 @@ class MapViewModel(val repository: Repository) : ViewModel() {
         return weatherList[position - 1].url!!
     }
 
-    // Skjuler alle layers ved å sette opacity til 0
-    fun hideAllLayers() {
+    // Skjuler ett layer
+    fun hideLayer(layer: Layer) {
+        layer.setProperties(fillOpacity(0.0f))
+    }
 
-        // TODO: Endre til opacity-justering i stedet for visibility NONE
+    // Skjuler alle layers
+    fun hideAllLayers() {
         for ((index, layer) in layerHashMap)
-            layer.setProperties(PropertyFactory.visibility(Property.NONE))
+            hideLayer(layer)
+    }
+
+    // Viser et layer ved å sette opacity > 0.0
+    fun showLayer(layer: Layer) {
+        layer.setProperties(fillOpacity(0.4f))
+    }
+
+    // Velger et nytt filter, skjuler forrige
+    fun chooseLayer(style: Style, position: Int) {
+
+        // Skjul eventuelle nåværende layers og vis ønsket layer
+        hideAllLayers()
+        showLayer(layerHashMap[position]!!)
+    }
+
+    // Funksjon som legger til alle filtere basert på en ID
+    fun addAllLayers(style: Style) {
+        for (i in range(1,4))
+            addNewLayer(style, i)
     }
 
     // Legger til data i style for å generere et nytt layer
@@ -135,26 +145,21 @@ class MapViewModel(val repository: Repository) : ViewModel() {
         val layerId = "layer$position"
         val layerURL = getLayerURL(position)
 
-        // Adding source to style
+        // Legger til ny source i style
         val vectorSource = VectorSource(sourceId, layerURL)
         style.addSource(vectorSource)
 
-        // Creating layer
+        // Oppretter layer og setter egenskaper
         val fillLayer = FillLayer(layerId, sourceId)
-
-        // Setting layer properties
         setLayerProperties(fillLayer, position - 1)
 
         // Adding sourcelayer ID
         fillLayer.sourceLayer = getIDfromURL(layerURL)
 
-        // Skjul nåværende layers
-        hideAllLayers()
-
         // Adding layer to style
         style.addLayer(fillLayer)
 
-        // Legger til referanse til layer i hashmap, oppdaterer index
+        // Legger til referanse til layer i HashMap
         layerHashMap[position] = fillLayer
 
     }

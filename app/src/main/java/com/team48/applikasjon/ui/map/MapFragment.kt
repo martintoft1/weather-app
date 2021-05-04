@@ -70,6 +70,9 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 // Henter værdata fra oppdatert liste i mapViewModel
                 mapViewModel.updateWeather()
 
+                // Laster inn alle layers fra starten, men de vil ikke vises
+                mapViewModel.addAllLayers(style)
+
                 spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
                     override fun onItemSelected(
