@@ -1,21 +1,23 @@
 package com.team48.applikasjon.ui.map
 
 import android.graphics.Color
-import android.util.Log
 import androidx.lifecycle.*
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.style.expressions.Expression
+import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression.*
+import com.mapbox.mapboxsdk.style.layers.FillLayer
 import com.mapbox.mapboxsdk.style.layers.Layer
+import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillOpacity
+import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.data.models.VectorDataset
 import com.team48.applikasjon.data.repository.Repository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlin.concurrent.thread
+import java.util.stream.IntStream.range
 
 class MapViewModel(val repository: Repository) : ViewModel() {
 
@@ -25,7 +27,10 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     // Forhindrer innlasting av layers før data er tilgjengelig
     var dataReady = false
 
-    // Kalles på i MapFragment
+    // Hashmap som holder på opprettede layers
+    private var layerHashMap: HashMap<Int, Layer> = hashMapOf()
+
+    // Henter oppdatert data fra repository
     fun updateWeather() {
 
         // TODO: Fjerning av runBlocking
@@ -37,29 +42,28 @@ class MapViewModel(val repository: Repository) : ViewModel() {
         }
     }
 
-    // Gets ID from name attribute in vector dataset
+    // Parser ut layerID fra metadataURL
     fun getIDfromURL(url: String): String {
         return url.substringAfterLast("/")
     }
 
-    // Kalles på av MapFragment, posistion iht. spinner
-    // Clouds: 0, Precipitiation: 1, airTemp = 2
-    fun getWeatherTypeURL(position: Int): String {
-        return weatherList[position].url!!
-    }
-
-    // Setting layer properties
+    // Justering av hvordan layers presenteres på skjerm
     fun setLayerProperties(fillLayer: Layer, weatherType: Int) {
 
-        // weatherType = 0: Clouds
-        // = 1: Precipitiation
-        // = 2: AirTemp
+        /*
+        WeatherType:
+        0: Clouds
+        1: Precipitiation
+        2: AirTemp
+        */
+
+        // Opacity settes til 0 initielt
 
         // TODO: Create better presentation based on weather type
         when (weatherType) {
             0 -> {
                 fillLayer.setProperties( // clouds
-                    fillOpacity(0.4F),
+                    fillOpacity(0.0F),
                     fillColor(interpolate(
                         exponential(1F), get("value"),
                         stop(0, color(Color.TRANSPARENT)),
@@ -71,7 +75,7 @@ class MapViewModel(val repository: Repository) : ViewModel() {
             }
             1 -> {
                 fillLayer.setProperties( // percipation
-                    fillOpacity(0.4F),
+                    fillOpacity(0.0F),
                     fillColor(interpolate(
                         linear(), get("value"),
                         stop(0, color(Color.TRANSPARENT)),
@@ -83,7 +87,7 @@ class MapViewModel(val repository: Repository) : ViewModel() {
             }
             2 -> {
                 fillLayer.setProperties( // airTemp
-                    fillOpacity(0.4F),
+                    fillOpacity(0.0F),
                     fillColor(interpolate(
                         exponential(2F), get("value"),
                         stop(-10, color(Color.BLUE)),
@@ -97,20 +101,76 @@ class MapViewModel(val repository: Repository) : ViewModel() {
         }
     }
 
-    // Creating start position over Norway
-    // TODO: Access user location as start position
+    // Henter metadataURL fra weatherList basert på spinnerposisjon
+    fun getLayerURL(position: Int): String {
+
+        // Position nedskiftet med 1, ettersom spinner posision 0 indikerer noLayer
+        return weatherList[position - 1].url!!
+    }
+
+    // Skjuler ett layer
+    fun hideLayer(layer: Layer) {
+        layer.setProperties(fillOpacity(0.0f))
+    }
+
+    // Skjuler alle layers
+    fun hideAllLayers() {
+        for ((index, layer) in layerHashMap)
+            hideLayer(layer)
+    }
+
+    // Viser et layer ved å sette opacity > 0.0
+    fun showLayer(layer: Layer) {
+        layer.setProperties(fillOpacity(0.4f))
+    }
+
+    // Velger et nytt filter, skjuler forrige
+    fun chooseLayer(style: Style, position: Int) {
+
+        // Skjul eventuelle nåværende layers og vis ønsket layer
+        hideAllLayers()
+        showLayer(layerHashMap[position]!!)
+    }
+
+    // Funksjon som legger til alle filtere basert på en ID
+    fun addAllLayers(style: Style) {
+        for (i in range(1,4))
+            addNewLayer(style, i)
+    }
+
+    // Legger til data i style for å generere et nytt layer
+    fun addNewLayer(style: Style, position: Int) {
+
+        val sourceId = "vectorsource$position"
+        val layerId = "layer$position"
+        val layerURL = getLayerURL(position)
+
+        // Legger til ny source i style
+        val vectorSource = VectorSource(sourceId, layerURL)
+        style.addSource(vectorSource)
+
+        // Oppretter layer og setter egenskaper
+        val fillLayer = FillLayer(layerId, sourceId)
+        setLayerProperties(fillLayer, position - 1)
+
+        // Adding sourcelayer ID
+        fillLayer.sourceLayer = getIDfromURL(layerURL)
+
+        // Adding layer to style
+        style.addLayer(fillLayer)
+
+        // Legger til referanse til layer i HashMap
+        layerHashMap[position] = fillLayer
+
+    }
+
+    // Setter startposisjon til over Norge
+    // TODO: Begynne ved brukers posisjon i stedet?
     fun getCamStartPos(): CameraPosition {
         return CameraPosition.Builder()
             .target(LatLng(62.0, 16.0, 1.0))
             .zoom(3.0)
             .tilt(0.0)
             .build()
-    }
-
-    // Function onCleared is called prior to ViewModel destruction
-    // (fragment detached / activity finished)
-    override fun onCleared() {
-        super.onCleared()
-        Log.i("MapViewModel", "MapViewModel destroyed!")
     }
 }
