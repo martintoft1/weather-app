@@ -73,11 +73,8 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
             val customStyle = Style.Builder().fromUri(getString(R.string.mapStyleUri))
             map.setStyle(customStyle) { style ->
 
-                // Henter værdata fra oppdatert liste i mapViewModel
-                mapViewModel.updateWeather()
-
-                // Laster inn alle layers fra starten, men de vil ikke vises
-                mapViewModel.addAllLayers(style)
+                // Oppretter layers når data er tilgjengelig etter API-kall
+                mapViewModel.updateWeather(style)
 
                 spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
@@ -98,7 +95,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                             if (position == 0) mapViewModel.hideAllLayers()
 
                             // Position = 1: Clouds | 2: Precipitiation | 3: airTemp
-                            else mapViewModel.chooseLayer(style, position)
+                            else mapViewModel.chooseLayer(style, position - 1)
 
                         }
                     }

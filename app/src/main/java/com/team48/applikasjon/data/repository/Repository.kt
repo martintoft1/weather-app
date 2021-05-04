@@ -9,6 +9,4 @@ class Repository {
 
     fun getWeather() = apiHelper.getWeather()
 
-    //fun refreshWeather() = apiHelper.refreshWeather()
-
 }
