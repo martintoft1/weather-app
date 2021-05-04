@@ -103,42 +103,10 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
             }
 
             map.addOnMapClickListener { point ->
-                getWeatherFrom(map, point)
+                mapViewModel.getWeatherFrom(map, point)
                 true
             }
         }
-    }
-
-
-    private fun getWeatherFrom(map: MapboxMap, point: LatLng) {
-        // Convert LatLng coordinates to screen pixel and only query the rendered features.
-        val pixel = map.projection.toScreenLocation(point)
-        val features = map.queryRenderedFeatures(pixel, "layer1","layer2","layer3")
-
-        if (features.isEmpty()) {
-            Toast.makeText(requireContext(), "We ain't got no weatherdata here!", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        // indexes os pointData:
-        // 0: value
-        // 1: min
-        // 2: max
-        // 3: date
-        var pointData = mutableListOf<String>()
-        if (features.size > 0) {
-            val feature = features[0]
-
-            // Ensure the feature has properties defined
-            for ((key, value) in feature.properties()!!.entrySet()) {
-
-                pointData.add(value.toString())
-            }
-        }
-
-        // TODO: MapViewModel to display data???
-        // temporary toast
-        Toast.makeText(requireContext(), pointData.toString(), Toast.LENGTH_LONG).show()
     }
 
     private fun setupSpinner() {
