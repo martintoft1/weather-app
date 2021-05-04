@@ -1,6 +1,7 @@
 package com.team48.applikasjon.ui.map
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -107,35 +108,25 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     }
 
 
-    private fun getWeatherFrom(map: MapboxMap, point: LatLng) {
+    fun getWeatherFrom(map: MapboxMap, point: LatLng) {
         // Convert LatLng coordinates to screen pixel and only query the rendered features.
         val pixel = map.projection.toScreenLocation(point)
-        val features = map.queryRenderedFeatures(pixel, "layer0","layer1","layer2")
+        var dataArr = arrayOfNulls<String>(3)
 
-        if (features.isEmpty()) {
-            Toast.makeText(requireContext(), "We ain't got no weatherdata here!", Toast.LENGTH_LONG).show()
+        if (map.queryRenderedFeatures(pixel, "layer1","layer2","layer3").size > 0) {
+            for (i in dataArr.indices) {
+                val jsonData = map.queryRenderedFeatures(pixel, "layer${i+1}")
+                if (jsonData.size > 0) {
+                    dataArr[i] = jsonData[0].properties()!!["value"].toString()
+                }
+            }
+        } else {
+            Log.d("getWeatherFrom()", "Trykk innenfor Norden!")
             return
         }
 
-        // indexes os pointData:
-        // 0: value
-        // 1: min
-        // 2: max
-        // 3: date
-        var pointData = mutableListOf<String>()
-        if (features.size > 0) {
-            val feature = features[0]
-
-            // Ensure the feature has properties defined
-            for ((key, value) in feature.properties()!!.entrySet()) {
-
-                pointData.add(value.toString())
-            }
-        }
-
-        // TODO: MapViewModel to display data???
-        // temporary toast
-        Toast.makeText(requireContext(), pointData.toString(), Toast.LENGTH_LONG).show()
+        // TODO: opprett xml eller boks til å displaye data
+        Log.d("features", dataArr.contentToString())
     }
 
     private fun setupSpinner() {
