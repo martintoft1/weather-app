@@ -1,9 +1,12 @@
 package com.team48.applikasjon.ui.map
 
 import android.graphics.Color
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.*
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression.*
 import com.mapbox.mapboxsdk.style.layers.FillLayer
@@ -99,6 +102,32 @@ class MapViewModel(val repository: Repository) : ViewModel() {
                 )
             }
         }
+    }
+
+    // Kalles på av async i MapFragment. Oppretter array med verdier for værdata fra gitt punkt
+    // dataArr[3]:
+    // 0: clouds (enhet skydekke)
+    // 1: rain (mm)
+    // 2: temp (celcius)
+    fun getWeatherFrom(map: MapboxMap, point: LatLng) {
+        // Convert LatLng coordinates to screen pixel and only query the rendered features.
+        val pixel = map.projection.toScreenLocation(point)
+        var dataArr = arrayOfNulls<String>(3)
+
+        if (map.queryRenderedFeatures(pixel, "layer1","layer2","layer3").size > 0) {
+            for (i in dataArr.indices) {
+                val jsonData = map.queryRenderedFeatures(pixel, "layer${i+1}")
+                if (jsonData.size > 0) {
+                    dataArr[i] = jsonData[0].properties()!!["value"].toString()
+                }
+            }
+        } else {
+            Log.d("getWeatherFrom()", "Trykk innenfor Norden!")
+            return
+        }
+
+        // TODO: opprett xml eller boks til å displaye data
+        Log.d("features", dataArr.contentToString())
     }
 
     // Henter metadataURL fra weatherList basert på spinnerposisjon
