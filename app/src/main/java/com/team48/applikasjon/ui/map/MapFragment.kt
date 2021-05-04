@@ -1,5 +1,6 @@
 package com.team48.applikasjon.ui.map
 
+import android.graphics.Point
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,19 +8,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
+import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.FillLayer
 import com.mapbox.mapboxsdk.style.layers.Layer
-import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.Property.NONE
 import com.mapbox.mapboxsdk.style.layers.Property.VISIBLE
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility
 import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
-import com.team48.applikasjon.data.models.VectorTile
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
@@ -43,7 +45,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         rootView = inflater.inflate(R.layout.fragment_map, container, false)
         return rootView
     }
@@ -118,8 +120,47 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                     }
                 }
             }
+
+            map.addOnMapClickListener { point ->
+                getWeatherFrom(map, point)
+                true
+            }
+
         }
     }
+
+    private fun getWeatherFrom(map: MapboxMap, point: LatLng) {
+        // Convert LatLng coordinates to screen pixel and only query the rendered features.
+        val pixel = map.projection.toScreenLocation(point)
+        val features = map.queryRenderedFeatures(pixel, "layer0","layer1","layer2")
+
+        if (features.isEmpty()) {
+            Toast.makeText(requireContext(), "We ain't got no weatherdata here!", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        // indexes os pointData:
+        // 0: value
+        // 1: min
+        // 2: max
+        // 3: date
+        var pointData = mutableListOf<String>()
+        if (features.size > 0) {
+            val feature = features[0]
+
+            // Ensure the feature has properties defined
+            for ((key, value) in feature.properties()!!.entrySet()) {
+
+                pointData.add(value.toString())
+            }
+        }
+
+        // TODO: MapViewModel to display data???
+        // temporary toast
+        Toast.makeText(requireContext(), pointData.toString(), Toast.LENGTH_LONG).show()
+    }
+
+
 
     private fun updateLayerURL(position: Int) {
         layerURL = mapViewModel.getWeatherTypeURL(position)
@@ -146,18 +187,18 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
     private fun addNewLayer(style: Style, position: Int) {
 
-        val sourceString = "source$position"
-        val layerString = "layer$position"
+        val sourceId = "vectorsource$position"
+        val layerId = "layer$position"
 
         // Oppdaterer layerURL fra værtype med indeks: position
         updateLayerURL(position)
 
         // Adding source to style
-        val vectorSource = VectorSource(sourceString, layerURL)
+        val vectorSource = VectorSource(sourceId, layerURL)
         style.addSource(vectorSource)
 
         // Creating layer
-        val fillLayer = FillLayer(layerString, sourceString)
+        val fillLayer = FillLayer(layerId, sourceId)
 
         // Setting layer properties
         mapViewModel.setLayerProperties(fillLayer, position)
@@ -180,7 +221,6 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         spinnerAdapter  = SpinnerAdapter(requireContext(), icons)
         spinner.adapter = spinnerAdapter
     }
-
 
     override fun onStart() {
         super.onStart()
@@ -221,5 +261,4 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         super.onDestroyView()
         mapView?.onDestroy()
     }
-
 }
