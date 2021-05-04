@@ -214,9 +214,11 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     private fun setupSpinner() {
         spinner = rootView.findViewById(R.id.spinner_weather_filter)
         val icons = mutableListOf<Int>()
+        icons.add(R.drawable.ic_empty_filter)
         icons.add(R.drawable.ic_cloud)
         icons.add(R.drawable.ic_umbrella)
         icons.add(R.drawable.ic_temperature)
+
 
         spinnerAdapter  = SpinnerAdapter(requireContext(), icons)
         spinner.adapter = spinnerAdapter
