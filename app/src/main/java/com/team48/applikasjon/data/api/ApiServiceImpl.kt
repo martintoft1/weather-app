@@ -16,7 +16,7 @@ class ApiServiceImpl : MutableLiveData<ApiService>() {
     private val gson = Gson()
 
     // Felles liste for alle værtyper, 0 = clouds, 1 = precipitation, 2 = airTemp
-    lateinit var weatherList: MutableList<VectorDataset>
+    var weatherList: List<VectorDataset> = emptyList()
 
     init {
 
@@ -24,7 +24,8 @@ class ApiServiceImpl : MutableLiveData<ApiService>() {
         requestVectorDatasets(metUri)
     }
 
-    fun getWeather(): MutableList<VectorDataset> = weatherList
+    // Grensesnitt for viewModels for å få tak i weatherList
+    fun getWeather(): List<VectorDataset> = weatherList
 
     // Henter hele datasettet til met og gjør om til liste over objekter med link til vektordata som attributt
     private fun requestVectorDatasets(vectorDataUri: String) {

@@ -1,6 +1,7 @@
 package com.team48.applikasjon.ui.map
 
 import android.graphics.Color
+import android.util.Log
 import androidx.lifecycle.*
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -8,37 +9,38 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression.*
 import com.mapbox.mapboxsdk.style.layers.FillLayer
 import com.mapbox.mapboxsdk.style.layers.Layer
-import com.mapbox.mapboxsdk.style.layers.Property
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillOpacity
 import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.data.models.VectorDataset
 import com.team48.applikasjon.data.repository.Repository
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
+import java.util.Collections.emptyList
 import java.util.stream.IntStream.range
 
 class MapViewModel(val repository: Repository) : ViewModel() {
 
     // Felles liste for alle værtyper, 0 = precipitation, 1 = clouds, 2 = airTemp
-    private lateinit var weatherList: MutableList<VectorDataset>
+    var liveWeather: List<VectorDataset> = emptyList()
 
-    // Forhindrer innlasting av layers før data er tilgjengelig
+    // Forhindrer vising av layers før de er initialisert
     var dataReady = false
 
     // Hashmap som holder på opprettede layers
     private var layerHashMap: HashMap<Int, Layer> = hashMapOf()
 
-    // Henter oppdatert data fra repository
-    fun updateWeather() {
+    // Opprettelse av layers basert på API-data
+    fun updateWeather(style: Style) {
 
-        // TODO: Fjerning av runBlocking
-
-        runBlocking {
-            delay(5000)
-            weatherList = repository.getWeather()
-            dataReady = true
+        CoroutineScope(Dispatchers.IO).launch {
+            while (liveWeather.isEmpty()) {
+                delay(500)
+                liveWeather = repository.getWeather()
+            }
+            withContext(Dispatchers.Main) {
+                addAllLayers(style)
+                dataReady = true
+            }
         }
     }
 
@@ -56,7 +58,6 @@ class MapViewModel(val repository: Repository) : ViewModel() {
         1: Precipitiation
         2: AirTemp
         */
-
         // Opacity settes til 0 initielt
 
         // TODO: Create better presentation based on weather type
@@ -105,7 +106,8 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     fun getLayerURL(position: Int): String {
 
         // Position nedskiftet med 1, ettersom spinner posision 0 indikerer noLayer
-        return weatherList[position - 1].url!!
+        Log.d("liveweather in getLayerURL", liveWeather.toString())
+        return liveWeather[position].url!!
     }
 
     // Skjuler ett layer
@@ -134,7 +136,7 @@ class MapViewModel(val repository: Repository) : ViewModel() {
 
     // Funksjon som legger til alle filtere basert på en ID
     fun addAllLayers(style: Style) {
-        for (i in range(1,4))
+        for (i in range(0,3))
             addNewLayer(style, i)
     }
 
@@ -151,7 +153,7 @@ class MapViewModel(val repository: Repository) : ViewModel() {
 
         // Oppretter layer og setter egenskaper
         val fillLayer = FillLayer(layerId, sourceId)
-        setLayerProperties(fillLayer, position - 1)
+        setLayerProperties(fillLayer, position)
 
         // Adding sourcelayer ID
         fillLayer.sourceLayer = getIDfromURL(layerURL)

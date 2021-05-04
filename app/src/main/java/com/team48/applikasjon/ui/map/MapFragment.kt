@@ -67,11 +67,8 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
             val customStyle = Style.Builder().fromUri(getString(R.string.mapStyleUri))
             map.setStyle(customStyle) { style ->
 
-                // Henter værdata fra oppdatert liste i mapViewModel
-                mapViewModel.updateWeather()
-
-                // Laster inn alle layers fra starten, men de vil ikke vises
-                mapViewModel.addAllLayers(style)
+                // Oppretter layers når data er tilgjengelig etter API-kall
+                mapViewModel.updateWeather(style)
 
                 spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
@@ -92,7 +89,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                             if (position == 0) mapViewModel.hideAllLayers()
 
                             // Position = 1: Clouds | 2: Precipitiation | 3: airTemp
-                            else mapViewModel.chooseLayer(style, position)
+                            else mapViewModel.chooseLayer(style, position - 1)
 
                         }
                     }
@@ -113,7 +110,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     private fun getWeatherFrom(map: MapboxMap, point: LatLng) {
         // Convert LatLng coordinates to screen pixel and only query the rendered features.
         val pixel = map.projection.toScreenLocation(point)
-        val features = map.queryRenderedFeatures(pixel, "layer1","layer2","layer3")
+        val features = map.queryRenderedFeatures(pixel, "layer0","layer1","layer2")
 
         if (features.isEmpty()) {
             Toast.makeText(requireContext(), "We ain't got no weatherdata here!", Toast.LENGTH_LONG).show()
