@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
@@ -27,6 +29,8 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     private lateinit var spinner: Spinner
     var mapView: MapView? = null
 
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -41,6 +45,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         setupViewModel()
         setupMap(savedInstanceState)
         setupSpinner()
+        setupBottomSheet()
     }
 
     private fun setupViewModel() {
@@ -151,6 +156,25 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
         spinnerAdapter  = SpinnerAdapter(requireContext(), icons)
         spinner.adapter = spinnerAdapter
+    }
+
+
+    private fun setupBottomSheet() {
+        bottomSheetBehavior = BottomSheetBehavior.from(rootView.findViewById(R.id.bottom_sheet))
+
+        bottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                TODO("Not yet implemented")
+            }
+
+        }
+
+        )
     }
 
     override fun onStart() {
