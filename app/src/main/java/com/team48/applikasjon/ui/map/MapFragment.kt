@@ -1,6 +1,7 @@
 package com.team48.applikasjon.ui.map
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -108,11 +109,18 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
             }
 
             map.addOnMapClickListener { point ->
-                mapViewModel.getWeatherFrom(map, point)
+                mapViewModel.getWeatherFrom(map, point, bottomSheetBehavior)
                 true
+            }
+
+            map.addOnCameraMoveStartedListener {
+                if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
+                    bottomSheetBehavior.state =  BottomSheetBehavior.STATE_COLLAPSED
+                    Log.d("ondrag", "collapsing")
             }
         }
     }
+
 
     private fun setupSpinner() {
         spinner = rootView.findViewById(R.id.spinner_weather_filter)
@@ -129,20 +137,6 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
     private fun setupBottomSheet() {
         bottomSheetBehavior = BottomSheetBehavior.from(rootView.findViewById(R.id.bottom_sheet))
-
-        bottomSheetBehavior.addBottomSheetCallback(object :
-            BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                TODO("Not yet implemented")
-            }
-
-        }
-
-        )
     }
 
     override fun onStart() {

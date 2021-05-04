@@ -1,9 +1,13 @@
 package com.team48.applikasjon.ui.map
 
 import android.graphics.Color
+import android.os.SystemClock
 import android.util.Log
+import android.view.View
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.*
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
@@ -18,11 +22,13 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillOpacity
 import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.data.models.VectorDataset
 import com.team48.applikasjon.data.repository.Repository
+import com.team48.applikasjon.utils.SafeClickListener
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import java.util.stream.IntStream.range
 
 class MapViewModel(val repository: Repository) : ViewModel() {
+
 
     // Felles liste for alle værtyper, 0 = precipitation, 1 = clouds, 2 = airTemp
     private lateinit var weatherList: MutableList<VectorDataset>
@@ -109,7 +115,9 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     // 0: clouds (enhet skydekke)
     // 1: rain (mm)
     // 2: temp (celcius)
-    fun getWeatherFrom(map: MapboxMap, point: LatLng) {
+    fun getWeatherFrom(map: MapboxMap, point: LatLng, bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>) {
+
+
         // Convert LatLng coordinates to screen pixel and only query the rendered features.
         val pixel = map.projection.toScreenLocation(point)
         var dataArr = arrayOfNulls<String>(3)
@@ -126,9 +134,18 @@ class MapViewModel(val repository: Repository) : ViewModel() {
             return
         }
 
-        // TODO: opprett xml eller boks til å displaye data
         Log.d("features", dataArr.contentToString())
+        // Skyer, regn, temp
+
+
+        // Vise bottom sheet
+        if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+
+            Log.d("onclick", "collapsing")
+            bottomSheetBehavior.state =  BottomSheetBehavior.STATE_EXPANDED
+        }
     }
+
 
     // Henter metadataURL fra weatherList basert på spinnerposisjon
     fun getLayerURL(position: Int): String {
