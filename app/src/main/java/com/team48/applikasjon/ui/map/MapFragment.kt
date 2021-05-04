@@ -101,33 +101,10 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
             }
 
             map.addOnMapClickListener { point ->
-                getWeatherFrom(map, point)
+                mapViewModel.getWeatherFrom(map, point)
                 true
             }
         }
-    }
-
-    fun getWeatherFrom(map: MapboxMap, point: LatLng) {
-        // Convert LatLng coordinates to screen pixel and only query the rendered features.
-        val pixel = map.projection.toScreenLocation(point)
-        var dataArr = arrayOfNulls<Float>(3)
-
-        if (map.queryRenderedFeatures(pixel, "layer1","layer2","layer3").size > 0) {
-            for (i in dataArr.indices) {
-                val jsonData = map.queryRenderedFeatures(pixel, "layer${i+1}")
-                if (jsonData.size > 0) {
-                    dataArr[i] = jsonData[0].properties()!!["value"].toString().toFloat()
-                } else {
-                    dataArr[i] = 0F
-                }
-            }
-        } else {
-            Log.d("getWeatherFrom()", "Trykk innenfor Norden!")
-            return
-        }
-
-        // TODO: opprett xml eller boks til å displaye data
-        Log.d("features", dataArr.contentToString())
     }
 
     private fun setupSpinner() {

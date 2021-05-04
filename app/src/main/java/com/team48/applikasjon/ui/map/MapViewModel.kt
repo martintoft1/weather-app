@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression.*
 import com.mapbox.mapboxsdk.style.layers.FillLayer
@@ -100,6 +101,29 @@ class MapViewModel(val repository: Repository) : ViewModel() {
                 )
             }
         }
+    }
+
+    fun getWeatherFrom(map: MapboxMap, point: LatLng) {
+        // Convert LatLng coordinates to screen pixel and only query the rendered features.
+        val pixel = map.projection.toScreenLocation(point)
+        var dataArr = arrayOfNulls<Float>(3)
+
+        if (map.queryRenderedFeatures(pixel, "layer0","layer1","layer2").size > 0) {
+            for (i in dataArr.indices) {
+                val jsonData = map.queryRenderedFeatures(pixel, "layer${i}")
+                if (jsonData.size > 0) {
+                    dataArr[i] = jsonData[0].properties()!!["value"].toString().toFloat()
+                } else {
+                    dataArr[i] = 0F
+                }
+            }
+        } else {
+            Log.d("getWeatherFrom()", "Trykk innenfor Norden!")
+            return
+        }
+
+        // TODO: opprett xml eller boks til å displaye data
+        Log.d("features", dataArr.contentToString())
     }
 
     // Henter metadataURL fra weatherList basert på spinnerposisjon
