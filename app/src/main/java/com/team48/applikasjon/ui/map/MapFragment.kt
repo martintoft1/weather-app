@@ -1,8 +1,6 @@
 package com.team48.applikasjon.ui.map
 
-import android.graphics.Point
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,12 +13,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.layers.FillLayer
-import com.mapbox.mapboxsdk.style.layers.Layer
-import com.mapbox.mapboxsdk.style.layers.Property.NONE
-import com.mapbox.mapboxsdk.style.layers.Property.VISIBLE
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility
-import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.main.ViewModelFactory
@@ -29,16 +21,10 @@ import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
 class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
     private lateinit var rootView: View
+    private lateinit var repository: Repository
     private lateinit var mapViewModel: MapViewModel
     private lateinit var spinnerAdapter: SpinnerAdapter
-    private lateinit var repository: Repository
     private lateinit var spinner: Spinner
-    private lateinit var layerURL: String
-    private var lastSpinnerPosition: Int = -1
-
-    // Indeks basert på spinnerindekser, 0 indikerer at layer ikke er initialisert
-    private var layerLoaded: MutableList<Int> = mutableListOf(0,0,0)
-
     var mapView: MapView? = null
 
     override fun onCreateView(
@@ -95,28 +81,20 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
                         // TODO: Fikse håndtering av spinner startpos = 0 (cloud)
 
-                        /* Spinner position index: cloud = 0, umbrella/precipitiation = 1, temp = 2 */
+                        /* Spinner position index: noLayer = 0, cloud = 1, umbrella/precipitiation = 2, temp = 3 */
                         // Dataready = true når API-kall er ferdig
                         if (mapViewModel.dataReady) {
 
-                            // Initialiser layer om det ikke er gjort tidligere
-                            if (layerLoaded[position] == 0) {
-                                addNewLayer(style, position)
-                                layerLoaded[position] = 1
-                            }
+                            // Position = No filter
+                            if (position == 0) mapViewModel.hideAllLayers()
 
-                            // Endre synlighet av layers
-                            else if (position != lastSpinnerPosition) {
-                                changeLayer(style, lastSpinnerPosition, position)
-                            }
+                            // Position = 1: Clouds | 2: Precipitiation | 3: airTemp
+                            else mapViewModel.chooseLayer(style, position)
 
-                            // Oppdaterer spinnerhistorikk
-                            lastSpinnerPosition = position
                         }
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
-                        // TODO: Legge til mulighet for å fjerne filter
                     }
                 }
             }
@@ -125,14 +103,14 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 getWeatherFrom(map, point)
                 true
             }
-
         }
     }
+
 
     private fun getWeatherFrom(map: MapboxMap, point: LatLng) {
         // Convert LatLng coordinates to screen pixel and only query the rendered features.
         val pixel = map.projection.toScreenLocation(point)
-        val features = map.queryRenderedFeatures(pixel, "layer0","layer1","layer2")
+        val features = map.queryRenderedFeatures(pixel, "layer1","layer2","layer3")
 
         if (features.isEmpty()) {
             Toast.makeText(requireContext(), "We ain't got no weatherdata here!", Toast.LENGTH_LONG).show()
@@ -160,57 +138,6 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         Toast.makeText(requireContext(), pointData.toString(), Toast.LENGTH_LONG).show()
     }
 
-
-
-    private fun updateLayerURL(position: Int) {
-        layerURL = mapViewModel.getWeatherTypeURL(position)
-    }
-
-    private fun changeLayer(style: Style, oldPosition: Int, newPosition: Int) {
-
-        var oldLayer: Layer? = null
-        var newLayer: Layer? = null
-
-        // Henter layers-referanse for forrige og neste layer
-        for (layer in style.layers) {
-            if (layer.id == "layer$oldPosition") oldLayer = layer
-            else if (layer.id == "layer$newPosition") newLayer = layer
-
-            if (oldLayer != null && newLayer != null) break
-        }
-
-        // Endre synlighet av layers
-        oldLayer!!.setProperties(visibility(NONE))
-        newLayer!!.setProperties(visibility(VISIBLE))
-
-    }
-
-    private fun addNewLayer(style: Style, position: Int) {
-
-        val sourceId = "vectorsource$position"
-        val layerId = "layer$position"
-
-        // Oppdaterer layerURL fra værtype med indeks: position
-        updateLayerURL(position)
-
-        // Adding source to style
-        val vectorSource = VectorSource(sourceId, layerURL)
-        style.addSource(vectorSource)
-
-        // Creating layer
-        val fillLayer = FillLayer(layerId, sourceId)
-
-        // Setting layer properties
-        mapViewModel.setLayerProperties(fillLayer, position)
-
-        // Adding sourcelayer ID
-        fillLayer.sourceLayer = mapViewModel.getIDfromURL(layerURL)
-
-        // Adding layer to style
-        style.addLayer(fillLayer)
-
-    }
-
     private fun setupSpinner() {
         spinner = rootView.findViewById(R.id.spinner_weather_filter)
         val icons = mutableListOf<Int>()
@@ -218,7 +145,6 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         icons.add(R.drawable.ic_cloud)
         icons.add(R.drawable.ic_umbrella)
         icons.add(R.drawable.ic_temperature)
-
 
         spinnerAdapter  = SpinnerAdapter(requireContext(), icons)
         spinner.adapter = spinnerAdapter
