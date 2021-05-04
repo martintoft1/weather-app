@@ -78,4 +78,7 @@ dependencies {
     // LiveData
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
 
+    // LottieAnimation (animationview for splash screen)
+    implementation 'com.airbnb.android:lottie:3.7.0'
+
 }
