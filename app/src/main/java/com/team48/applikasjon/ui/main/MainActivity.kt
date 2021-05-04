@@ -2,6 +2,7 @@ package com.team48.applikasjon.ui.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.team48.applikasjon.R
 import androidx.viewpager2.widget.ViewPager2
@@ -31,6 +32,8 @@ class MainActivity : AppCompatActivity() {
 
         fragmentContainer = findViewById(R.id.fragment_container)
         bottomNavigationView = findViewById(R.id.bottom_navigation)
+
+        Log.d("testing", "testing")
 
         setupFragmentContainer()
         setupBottomNavigation()

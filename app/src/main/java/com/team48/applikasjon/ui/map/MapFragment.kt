@@ -12,6 +12,11 @@ import androidx.lifecycle.ViewModelProviders
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.FillLayer
+import com.mapbox.mapboxsdk.style.layers.Layer
+import com.mapbox.mapboxsdk.style.layers.Property
+import com.mapbox.mapboxsdk.style.layers.Property.NONE
+import com.mapbox.mapboxsdk.style.layers.Property.VISIBLE
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.visibility
 import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.VectorTile
@@ -20,15 +25,17 @@ import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
 
 class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
+
     private lateinit var rootView: View
     private lateinit var mapViewModel: MapViewModel
     private lateinit var spinnerAdapter: SpinnerAdapter
-    private lateinit var weatherTile: VectorTile
     private lateinit var repository: Repository
     private lateinit var spinner: Spinner
-
-
     private lateinit var layerURL: String
+    private var lastSpinnerPosition: Int = -1
+
+    // Indeks basert på spinnerindekser, 0 indikerer at layer ikke er initialisert
+    private var layerLoaded: MutableList<Int> = mutableListOf(0,0,0)
 
     var mapView: MapView? = null
 
@@ -72,6 +79,9 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
             val customStyle = Style.Builder().fromUri(getString(R.string.mapStyleUri))
             map.setStyle(customStyle) { style ->
 
+                // Henter værdata fra oppdatert liste i mapViewModel
+                mapViewModel.updateWeather()
+
                 spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
                     override fun onItemSelected(
@@ -80,61 +90,77 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                         position: Int,
                         id: Long
                     ) {
-                        /* Position index: cloud = 0, umbrella = 1, temp = 2 */
 
-                        Log.d("dataRready", mapViewModel.dataReady.toString())
+                        // TODO: Fikse håndtering av spinner startpos = 0 (cloud)
 
+                        /* Spinner position index: cloud = 0, umbrella/precipitiation = 1, temp = 2 */
+                        // Dataready = true når API-kall er ferdig
                         if (mapViewModel.dataReady) {
-                            updateLayerURL(position)
 
-                            Log.d("layerURL", layerURL)
+                            // Initialiser layer om det ikke er gjort tidligere
+                            if (layerLoaded[position] == 0) {
+                                addNewLayer(style, position)
+                                layerLoaded[position] = 1
+                            }
 
-                            //addLayer(style)
-                            // Adding source to style
-                            val vectorSource = VectorSource("weatherData", layerURL)
-                            style.addSource(vectorSource)
+                            // Endre synlighet av layers
+                            else if (position != lastSpinnerPosition) {
+                                changeLayer(style, lastSpinnerPosition, position)
+                            }
 
-                            // Creating layer
-                            val fillLayer = FillLayer("airTemp", "weatherData")
-
-                            // Setting layer properties
-                            mapViewModel.setLayerProperties(fillLayer, "airTemp")
-
-                            // Adding sourcelayer ID
-                            fillLayer.sourceLayer = mapViewModel.getIDfromURL(layerURL)
-
-                            // Adding layer to style
-                            style.addLayer(fillLayer)
+                            // Oppdaterer spinnerhistorikk
+                            lastSpinnerPosition = position
                         }
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
                         // TODO: Legge til mulighet for å fjerne filter
                     }
-
                 }
-
             }
         }
-
-
     }
 
     private fun updateLayerURL(position: Int) {
-        layerURL = mapViewModel.weatherList.value!![position].url!!
+        layerURL = mapViewModel.getWeatherTypeURL(position)
     }
 
-    private fun addLayer(style: Style) {
+    private fun changeLayer(style: Style, oldPosition: Int, newPosition: Int) {
+
+        var oldLayer: Layer? = null
+        var newLayer: Layer? = null
+
+        // Henter layers-referanse for forrige og neste layer
+        for (layer in style.layers) {
+            if (layer.id == "layer$oldPosition") oldLayer = layer
+            else if (layer.id == "layer$newPosition") newLayer = layer
+
+            if (oldLayer != null && newLayer != null) break
+        }
+
+        // Endre synlighet av layers
+        oldLayer!!.setProperties(visibility(NONE))
+        newLayer!!.setProperties(visibility(VISIBLE))
+
+    }
+
+    private fun addNewLayer(style: Style, position: Int) {
+
+        val sourceString = "source$position"
+        val layerString = "layer$position"
+
+        // Oppdaterer layerURL fra værtype med indeks: position
+        updateLayerURL(position)
 
         // Adding source to style
-        val vectorSource = VectorSource("weatherData", layerURL)
+        val vectorSource = VectorSource(sourceString, layerURL)
         style.addSource(vectorSource)
 
         // Creating layer
-        val fillLayer = FillLayer("airTemp", "weatherData")
+        val fillLayer = FillLayer(layerString, sourceString)
 
         // Setting layer properties
-        mapViewModel.setLayerProperties(fillLayer, "airTemp")
+        mapViewModel.setLayerProperties(fillLayer, position)
 
         // Adding sourcelayer ID
         fillLayer.sourceLayer = mapViewModel.getIDfromURL(layerURL)
@@ -153,7 +179,6 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
         spinnerAdapter  = SpinnerAdapter(requireContext(), icons)
         spinner.adapter = spinnerAdapter
-        //spinner.isEnabled = false
     }
 
 
