@@ -1,5 +1,6 @@
 package com.team48.applikasjon.ui.map
 
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,17 +8,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Spinner
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.repository.Repository
+import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
+
 
 class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
@@ -53,6 +55,34 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         repository = mapViewModel.repository
     }
 
+    private fun getPosition(): CameraPosition {
+
+        val cameraPosition: CameraPosition
+
+        // Henter posisjon via kall i MainActivity
+        val location: Location? = (activity as MainActivity).getLastPosition()
+
+        if (location != null) {
+
+            Log.d("Location:", "Location is acquired!")
+            cameraPosition = CameraPosition.Builder()
+               .target(LatLng(location.latitude, location.longitude, 1.0))
+               .zoom(3.0)
+               .tilt(0.0)
+               .build()
+        } else {
+
+            Log.d("Location:", "Location is not acquired")
+            cameraPosition = CameraPosition.Builder()
+                .target(LatLng(62.0, 16.0, 1.0))
+                .zoom(3.0)
+                .tilt(0.0)
+                .build()
+        }
+        return cameraPosition
+
+    }
+
     private fun setupMap(savedInstanceState: Bundle?) {
 
         mapView = rootView.findViewById(R.id.mapView)
@@ -62,7 +92,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         mapView?.getMapAsync{ map ->
 
             // Setting camera position over Norway
-            map.cameraPosition = mapViewModel.getCamStartPos()
+            map.cameraPosition = getPosition()
 
             // Initializing map style
             val customStyle = Style.Builder().fromUri(getString(R.string.mapStyleUri))
@@ -70,6 +100,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
                 // Oppretter layers når data er tilgjengelig etter API-kall
                 mapViewModel.updateWeather(style)
+
 
                 spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
