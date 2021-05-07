@@ -60,7 +60,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     private fun getPosition(): CameraPosition {
         return CameraPosition.Builder()
                 .target(LatLng(cameraStringList[0], cameraStringList[1], 1.0))
-                .zoom(3.0)
+                .zoom(10.0)
                 .tilt(0.0)
                 .build()
     }
