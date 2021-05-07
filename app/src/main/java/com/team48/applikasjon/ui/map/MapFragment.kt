@@ -17,7 +17,6 @@ import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
 
-
 class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
     private lateinit var rootView: View
@@ -25,13 +24,15 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     private lateinit var mapViewModel: MapViewModel
     private lateinit var spinnerAdapter: SpinnerAdapter
     private lateinit var spinner: Spinner
+    private lateinit var customMapStyle: String
+    private lateinit var mapboxMap: MapboxMap
     var mapView: MapView? = null
     lateinit var cameraStringList: List<Double>
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         rootView = inflater.inflate(R.layout.fragment_map, container, false)
         return rootView
@@ -63,13 +64,24 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     }
 
     private fun setupMap(savedInstanceState: Bundle?) {
+    fun changeStyle(styleResource: Int) {
+        mapboxMap.setStyle(Style.Builder().fromUri(getString(styleResource)))
+    }
+
+    // Kan bli tvinget gjennom av repo, ved endringer i settings
+    fun setupMap(savedInstanceState: Bundle?) {
 
         mapView = rootView.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
 
-        // Initializing map from MapBox servers
+        // Initialiserer Mapbox-kartet fra Mapbox-server
         mapView?.getMapAsync{ map ->
 
+            // Lagre peker til map
+            mapboxMap = map
+
+            // Setting camera position over Norway
+            map.cameraPosition = mapViewModel.getCamStartPos()
             // Setter kameraposisjon til over Norge
             map.cameraPosition = mapViewModel.getCamNorwayPos()
 
@@ -77,9 +89,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
             if (this@MapFragment::cameraStringList.isInitialized)
                 map.cameraPosition = getPosition()
 
-            // Initializing map style
-            val customStyle = Style.Builder().fromUri(getString(R.string.mapStyleUri))
-            map.setStyle(customStyle) { style ->
+            map.setStyle(getString(mapViewModel.getDefaultStyleResource())) { style ->
 
                 // Oppretter layers når data er tilgjengelig etter API-kall
                 mapViewModel.updateWeather(style)

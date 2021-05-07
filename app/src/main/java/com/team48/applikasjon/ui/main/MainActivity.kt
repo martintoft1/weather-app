@@ -144,6 +144,10 @@ class MainActivity : AppCompatActivity() {
                 LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
+    fun changeMapStyle(styleResource: Int) {
+        mapFragment.changeStyle(styleResource)
+    }
+
     private fun setupFragmentContainer() {
         val adapter = FragmentContainerAdapter(supportFragmentManager, lifecycle)
         adapter.addFragment(weatherFragment)

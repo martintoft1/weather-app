@@ -15,6 +15,7 @@ import com.mapbox.mapboxsdk.style.layers.Layer
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillOpacity
 import com.mapbox.mapboxsdk.style.sources.VectorSource
+import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.VectorDataset
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.main.MainActivity
@@ -32,6 +33,18 @@ class MapViewModel(val repository: Repository) : ViewModel() {
 
     // Hashmap som holder på opprettede layers
     private var layerHashMap: HashMap<Int, Layer> = hashMapOf()
+
+    // Referanse til MapFragments MapboxMap, settes av fragmentet
+    lateinit var map: MapboxMap
+
+    fun getDefaultStyleResource(): Int {
+        return R.string.mapStyleLight
+    }
+
+    // Funksjon som bestemmer stilen til kartet
+    fun changeMapStyle(styleUrl: String) {
+        map.setStyle(Style.Builder().fromUri(styleUrl))
+    }
 
     // Opprettelse av layers basert på API-data
     fun updateWeather(style: Style) {
