@@ -1,23 +1,24 @@
 package com.team48.applikasjon.ui.map
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Spinner
-import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.repository.Repository
+import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
+
 
 class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
@@ -26,14 +27,31 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     private lateinit var mapViewModel: MapViewModel
     private lateinit var spinnerAdapter: SpinnerAdapter
     private lateinit var spinner: Spinner
+    private lateinit var customMapStyle: String
+    private val model: Repository by viewModels()
     var mapView: MapView? = null
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         rootView = inflater.inflate(R.layout.fragment_map, container, false)
+        /*
+        repository.customMapStyle.observe(requireActivity(), Observer { user ->
+            Log.d("test", user)
+            customMapStyle = user
+
+        })
+
+         */
+        val nameObserver = Observer<String> { newName ->
+            // Update the UI, in this case, a TextView.
+            customMapStyle = newName
+        }
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        model.customMapStyle.observe(requireActivity(), nameObserver)
         return rootView
     }
 
@@ -46,8 +64,8 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
     private fun setupViewModel() {
         mapViewModel = ViewModelProviders.of(
-            this,
-            viewModelFactory
+                this,
+                viewModelFactory
         ).get(MapViewModel::class.java)
 
         repository = mapViewModel.repository
@@ -65,7 +83,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
             map.cameraPosition = mapViewModel.getCamStartPos()
 
             // Initializing map style
-            val customStyle = Style.Builder().fromUri(getString(R.string.mapStyleUri))
+            val customStyle = Style.Builder().fromUri(repository.customMapStyle.value!!)
             map.setStyle(customStyle) { style ->
 
                 // Oppretter layers når data er tilgjengelig etter API-kall
@@ -74,10 +92,10 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
                     override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
+                            parent: AdapterView<*>?,
+                            view: View?,
+                            position: Int,
+                            id: Long
                     ) {
 
                         // TODO: Fikse håndtering av spinner startpos = 0 (cloud)

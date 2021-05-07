@@ -13,7 +13,10 @@
     <string name="metUri">https://test.openmaps.met.no/in2000/map/services</string>
 
     // URL til egen designet mapbox stil
-    <string name="mapStyleUri">mapbox://styles/wipi-48/cknilzu8v0eok17nyuucg7mfb</string>
+    <string name="mapStyleLight">mapbox://styles/wipi-48/cknilzu8v0eok17nyuucg7mfb</string>
+    <string name="mapStyleDark">mapbox://styles/chrolsen/ckn6a85vj04xj18pdhdd9pmus</string>
+
+    <string name="dark_mode">Dark mode</string>
 
     // MapFragment Spinner elementer
     <string-array name="map_overlays">
