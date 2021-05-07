@@ -22,7 +22,6 @@ import com.team48.applikasjon.ui.main.adapters.FragmentContainerAdapter
 import com.team48.applikasjon.ui.map.MapFragment
 import com.team48.applikasjon.ui.settings.SettingsFragment
 
-
 class MainActivity : AppCompatActivity() {
 
     private lateinit var fragmentContainer: ViewPager2
@@ -58,9 +57,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("MissingPermission")
-    fun getLastPosition(): Location? {
-
-        var locationResult: Location? = null
+    fun getLastPosition()  {
 
         if (checkPermission()) {
            if (isLocationEnabled()) {
@@ -74,7 +71,9 @@ class MainActivity : AppCompatActivity() {
                         Log.d("location.longitude", location.longitude.toString())
                         Log.d("LOCATION 1:", result)
 
-                        locationResult = location
+                        mapFragment.cameraStringList = listOf(
+                                location.latitude,
+                                location.longitude)
                     }
 
                }
@@ -91,8 +90,6 @@ class MainActivity : AppCompatActivity() {
         } else { // checkPermission == false
             requestPermission()
         }
-
-        return locationResult
     }
 
     @SuppressLint("MissingPermission")

@@ -112,7 +112,7 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     fun getWeatherFrom(map: MapboxMap, point: LatLng) {
         // Convert LatLng coordinates to screen pixel and only query the rendered features.
         val pixel = map.projection.toScreenLocation(point)
-        var dataArr = arrayOfNulls<Float>(3)
+        val dataArr = arrayOfNulls<Float>(3)
 
         if (map.queryRenderedFeatures(pixel, "layer0", "layer1", "layer2").size > 0) {
             for (i in dataArr.indices) {
@@ -156,7 +156,7 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     }
 
     // Velger et nytt filter, skjuler forrige
-    fun chooseLayer(style: Style, position: Int) {
+    fun chooseLayer(position: Int) {
 
         // Skjul eventuelle nåværende layers og vis ønsket layer
         hideAllLayers()
@@ -197,7 +197,7 @@ class MapViewModel(val repository: Repository) : ViewModel() {
 
     // Setter startposisjon til over Norge
     // TODO: Begynne ved brukers posisjon i stedet?
-    fun getCamStartPos(): CameraPosition {
+    fun getCamNorwayPos(): CameraPosition {
         return CameraPosition.Builder()
             .target(LatLng(62.0, 16.0, 1.0))
             .zoom(3.0)
