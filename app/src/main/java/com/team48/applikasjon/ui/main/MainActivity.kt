@@ -33,10 +33,12 @@ class MainActivity : AppCompatActivity() {
         fragmentContainer = findViewById(R.id.fragment_container)
         bottomNavigationView = findViewById(R.id.bottom_navigation)
 
-        Log.d("testing", "testing")
-
         setupFragmentContainer()
         setupBottomNavigation()
+    }
+
+    fun changeMapStyle(styleResource: Int) {
+        mapFragment.changeStyle(styleResource)
     }
 
     private fun setupFragmentContainer() {

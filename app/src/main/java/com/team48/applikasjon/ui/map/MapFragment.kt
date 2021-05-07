@@ -7,18 +7,14 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Spinner
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.mapbox.mapboxsdk.maps.MapView
+import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.repository.Repository
-import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
-
 
 class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
@@ -28,7 +24,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     private lateinit var spinnerAdapter: SpinnerAdapter
     private lateinit var spinner: Spinner
     private lateinit var customMapStyle: String
-    private val model: Repository by viewModels()
+    private lateinit var mapboxMap: MapboxMap
     var mapView: MapView? = null
 
     override fun onCreateView(
@@ -37,21 +33,6 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
             savedInstanceState: Bundle?
     ): View {
         rootView = inflater.inflate(R.layout.fragment_map, container, false)
-        /*
-        repository.customMapStyle.observe(requireActivity(), Observer { user ->
-            Log.d("test", user)
-            customMapStyle = user
-
-        })
-
-         */
-        val nameObserver = Observer<String> { newName ->
-            // Update the UI, in this case, a TextView.
-            customMapStyle = newName
-        }
-
-        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
-        model.customMapStyle.observe(requireActivity(), nameObserver)
         return rootView
     }
 
@@ -71,20 +52,26 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         repository = mapViewModel.repository
     }
 
-    private fun setupMap(savedInstanceState: Bundle?) {
+    fun changeStyle(styleResource: Int) {
+        mapboxMap.setStyle(Style.Builder().fromUri(getString(styleResource)))
+    }
+
+    // Kan bli tvinget gjennom av repo, ved endringer i settings
+    fun setupMap(savedInstanceState: Bundle?) {
 
         mapView = rootView.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
 
-        // Initializing map from MapBox servers
+        // Initialiserer Mapbox-kartet fra Mapbox-server
         mapView?.getMapAsync{ map ->
+
+            // Lagre peker til map
+            mapboxMap = map
 
             // Setting camera position over Norway
             map.cameraPosition = mapViewModel.getCamStartPos()
 
-            // Initializing map style
-            val customStyle = Style.Builder().fromUri(repository.customMapStyle.value!!)
-            map.setStyle(customStyle) { style ->
+            map.setStyle(getString(mapViewModel.getDefaultStyleResource())) { style ->
 
                 // Oppretter layers når data er tilgjengelig etter API-kall
                 mapViewModel.updateWeather(style)

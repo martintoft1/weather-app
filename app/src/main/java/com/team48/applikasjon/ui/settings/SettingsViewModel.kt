@@ -1,16 +1,18 @@
 package com.team48.applikasjon.ui.settings
 
+import androidx.core.content.res.TypedArrayUtils.getString
 import androidx.lifecycle.ViewModel
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.repository.Repository
 
 class SettingsViewModel(val repository: Repository) : ViewModel() {
 
-    fun enableDarkMode() {
-        repository.customMapStyle.value = R.string.mapStyleDark.toString()
+    fun enableDarkMode(): Int {
+        return R.string.mapStyleDark
     }
 
-    fun disableDarkMode() {
-        repository.customMapStyle.value = R.string.mapStyleLight.toString()
+    fun disableDarkMode(): Int {
+        return R.string.mapStyleLight
     }
+
 }

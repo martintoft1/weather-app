@@ -8,8 +8,9 @@ import com.team48.applikasjon.data.api.ApiServiceImpl
 class Repository {
 
     private val apiHelper = ApiHelper(ApiServiceImpl())
+    private val defaultStyle: String = R.string.mapStyleLight.toString()
 
-    val customMapStyle: MutableLiveData<String> by lazy {
+    val modeStyle: MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }
 
