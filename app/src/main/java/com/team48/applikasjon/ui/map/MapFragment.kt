@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
+import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.repository.Repository
@@ -30,9 +31,9 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     lateinit var cameraStringList: List<Double>
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         rootView = inflater.inflate(R.layout.fragment_map, container, false)
         return rootView
@@ -45,6 +46,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         setupSpinner()
     }
 
+    // Oppsett av ViewModel
     private fun setupViewModel() {
         mapViewModel = ViewModelProviders.of(
             this,
@@ -54,8 +56,8 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         repository = mapViewModel.repository
     }
 
+    // Henter brukerlokasjon, gitt det er tillatt
     private fun getPosition(): CameraPosition {
-
         return CameraPosition.Builder()
                 .target(LatLng(cameraStringList[0], cameraStringList[1], 1.0))
                 .zoom(3.0)
@@ -63,7 +65,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 .build()
     }
 
-    private fun setupMap(savedInstanceState: Bundle?) {
+    // Endrer stil ved valg i innstillinger
     fun changeStyle(styleResource: Int) {
         mapboxMap.setStyle(Style.Builder().fromUri(getString(styleResource)))
     }
@@ -75,13 +77,11 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         mapView?.onCreate(savedInstanceState)
 
         // Initialiserer Mapbox-kartet fra Mapbox-server
-        mapView?.getMapAsync{ map ->
+        mapView?.getMapAsync { map ->
 
             // Lagre peker til map
             mapboxMap = map
 
-            // Setting camera position over Norway
-            map.cameraPosition = mapViewModel.getCamStartPos()
             // Setter kameraposisjon til over Norge
             map.cameraPosition = mapViewModel.getCamNorwayPos()
 
@@ -97,10 +97,10 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
                     override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
+                            parent: AdapterView<*>?,
+                            view: View?,
+                            position: Int,
+                            id: Long
                     ) {
 
                         /* Spinner position index: noLayer = 0, cloud = 1, umbrella/precipitiation = 2, temp = 3 */

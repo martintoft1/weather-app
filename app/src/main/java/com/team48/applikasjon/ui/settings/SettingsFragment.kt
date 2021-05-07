@@ -19,6 +19,7 @@ class SettingsFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     private lateinit var repository: Repository
     private lateinit var settingsViewModel: SettingsViewModel
     private lateinit var switchDarkMode: SwitchCompat
+    private lateinit var switchLocation: SwitchCompat
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,15 +48,23 @@ class SettingsFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     private fun setupButtons() {
 
         switchDarkMode = rootView.findViewById(R.id.switchDarkMode)
-
+        switchLocation = rootView.findViewById(R.id.switchLocation)
 
         switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
 
-            // TODO: Sette flere darkmodes
+            // TODO: Sette flere darkmodes?
             if (isChecked) {
                 (activity as MainActivity).changeMapStyle(settingsViewModel.enableDarkMode())
             } else {
                 (activity as MainActivity).changeMapStyle(settingsViewModel.disableDarkMode())
+            }
+        }
+
+        switchLocation.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                (activity as MainActivity).enableLocation()
+            } else {
+                (activity as MainActivity).disableLocation()
             }
         }
     }

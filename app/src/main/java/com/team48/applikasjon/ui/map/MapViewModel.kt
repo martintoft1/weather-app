@@ -41,11 +41,6 @@ class MapViewModel(val repository: Repository) : ViewModel() {
         return R.string.mapStyleLight
     }
 
-    // Funksjon som bestemmer stilen til kartet
-    fun changeMapStyle(styleUrl: String) {
-        map.setStyle(Style.Builder().fromUri(styleUrl))
-    }
-
     // Opprettelse av layers basert på API-data
     fun updateWeather(style: Style) {
 

@@ -9,6 +9,7 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper.myLooper
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.viewpager2.widget.ViewPager2
@@ -28,8 +29,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomNavigationView: BottomNavigationView
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationManager: LocationManager
     private val PERMISSION_ID = 44
-    private var result : String = ""
+    private var result : String = "" // TODO: Fjern når debug er ferdig
 
     private val repository = Repository()
     private val viewModelFactory = ViewModelFactory(repository)
@@ -56,6 +58,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
+    fun changeMapStyle(styleResource: Int) {
+        mapFragment.changeStyle(styleResource)
+    }
+
     @SuppressLint("MissingPermission")
     fun getLastPosition()  {
 
@@ -75,16 +82,11 @@ class MainActivity : AppCompatActivity() {
                                 location.latitude,
                                 location.longitude)
                     }
-
                }
 
            } else { // isLocationEnabled == false
                Log.d("Location not enabled in settings", "enable it")
-               /*
-               Toast.makeText(this, "Please turn on" + " your location...", Toast.LENGTH_LONG).show()
-               val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-               startActivity(intent)
-                */
+               Toast.makeText(this, "Tilgang til brukerlokasjon må settes i innstillinger", Toast.LENGTH_LONG).show()
            }
 
         } else { // checkPermission == false
@@ -139,13 +141,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isLocationEnabled(): Boolean {
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(
                 LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
-    fun changeMapStyle(styleResource: Int) {
-        mapFragment.changeStyle(styleResource)
+    // Kalles på via switch i settings
+    fun enableLocation() {
+    }
+
+    // Kalles på via switch i settings
+    fun disableLocation() {
     }
 
     private fun setupFragmentContainer() {

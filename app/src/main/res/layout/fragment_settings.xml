@@ -27,10 +27,10 @@
             />
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switch1"
+            android:id="@+id/switchLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Permissionmanager123?"
+            android:text="@string/tillatt_brukerlokasjon"
             />
 
     </LinearLayout>
