@@ -13,8 +13,8 @@
     <string name="metUri">https://test.openmaps.met.no/in2000/map/services</string>
 
     // URL til egen designet mapbox stil
-    <string name="mapStyleLight">mapbox://styles/wipi-48/cknilzu8v0eok17nyuucg7mfb</string>
-    <string name="mapStyleDark">mapbox://styles/chrolsen/ckn6a85vj04xj18pdhdd9pmus</string>
+    <string name="mapStyleLight">mapbox://styles/wipi-48/cknipuh1m0pws17s5bfc7zzpj</string>
+    <string name="mapStyleDark">mapbox://styles/wipi-48/ckoa1jzmp6me718pglxq5i10t</string>
 
     <string name="dark_mode">Dark mode</string>
     <string name="tillatt_brukerlokasjon">Tillatt brukerlokasjon</string>
