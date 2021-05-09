@@ -47,8 +47,8 @@ class ApiServiceImpl : MutableLiveData<ApiService>() {
     private fun updateWeatherList(vectorDatasets: List<VectorDataset>): MutableList<VectorDataset> {
 
         /* Ettersom MET ikke er konsekvente på ID og datostempling blir vi nødt
-        å iterere gjennom alle dataene. Det er også forventet med update på API
-        "plutselig", så vi må forsøke å gardere oss mot dette også */
+         * å iterere gjennom alle dataene. Det er også forventet med update på API
+         * "plutselig", så vi må forsøke å gardere oss mot dette også */
 
         val weatherDataset = mutableListOf<VectorDataset>()
         var name: String
