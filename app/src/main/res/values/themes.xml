@@ -21,4 +21,10 @@
     </style>
 
 
+
+    <style name="bottomNavigationView.Active" parent="@style/TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+
 </resources>

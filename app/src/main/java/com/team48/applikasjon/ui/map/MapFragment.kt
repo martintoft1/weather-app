@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -47,6 +48,8 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         setupMap(savedInstanceState)
         setupSpinner()
         setupBottomSheet()
+
+
     }
 
     private fun setupViewModel() {
@@ -105,15 +108,15 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 }
             }
 
-            map.addOnMapClickListener { point ->
-                mapViewModel.getWeatherFrom(map, point, bottomSheetBehavior)
+            map.addOnMapLongClickListener { point ->
+                mapViewModel.getWeatherFrom(map, point, bottomSheetBehavior, rootView)
                 true
             }
 
-            map.addOnCameraMoveStartedListener {
+            map.addOnMapClickListener {
                 if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
                     bottomSheetBehavior.state =  BottomSheetBehavior.STATE_COLLAPSED
-                    Log.d("ondrag", "collapsing")
+                true
             }
         }
     }
@@ -134,6 +137,24 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
     private fun setupBottomSheet() {
         bottomSheetBehavior = BottomSheetBehavior.from(rootView.findViewById(R.id.bottom_sheet))
+
+
+        // On click add to favourites
+        val button_fav: ImageButton = rootView.findViewById(R.id.add_favourites)
+        button_fav.setOnClickListener {
+            when {
+                button_fav.isSelected -> {
+                    // Remove from favourites
+                    button_fav.isSelected = false
+                    Toast.makeText(requireContext(), "Fjernet fra favoritter", Toast.LENGTH_LONG).show()
+                }
+                else -> {
+                    // Add to favourites
+                    button_fav.isSelected = true;
+                    Toast.makeText(requireContext(), "Lagret i favoritter!", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     override fun onStart() {
