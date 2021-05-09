@@ -1,24 +1,27 @@
 package com.team48.applikasjon.ui.map
 
+import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.repository.Repository
+import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
 
@@ -29,6 +32,9 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     private lateinit var mapViewModel: MapViewModel
     private lateinit var spinnerAdapter: SpinnerAdapter
     private lateinit var spinner: Spinner
+    private lateinit var locationButton: ImageView
+    private lateinit var mapboxMap: MapboxMap
+    private var userLocation: Location? = null
     var mapView: MapView? = null
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
@@ -48,10 +54,10 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         setupMap(savedInstanceState)
         setupSpinner()
         setupBottomSheet()
-
-
+        setupLocationButton()
     }
 
+    // Oppsett av ViewModel
     private fun setupViewModel() {
         mapViewModel = ViewModelProviders.of(
             this,
@@ -61,51 +67,54 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         repository = mapViewModel.repository
     }
 
-    private fun setupMap(savedInstanceState: Bundle?) {
+    // Settes brukerlokasjon i kart basert på variabelen userLocation
+    private fun setUserLocation(): CameraPosition? {
+
+        if (userLocation == null) return null
+        return CameraPosition.Builder()
+                .target(LatLng(userLocation!!.latitude, userLocation!!.longitude, 1.0))
+                .zoom(10.0)
+                .tilt(0.0)
+                .build()
+    }
+
+    // Kalles på av MainActivity, oppdaterer lokal variabel userLocation
+    fun updateUserLocation(location: Location?) {
+        userLocation = location
+    }
+
+    // Endrer stil ved valg i innstillinger
+    fun changeStyle(styleResource: Int, visualMode: Int) {
+        mapboxMap.setStyle(Style.Builder().fromUri(getString(styleResource))) { style ->
+
+            // Layers må legges til på nytt.
+            // visualMode = 0: Default/Light, = 1: Dark
+            mapViewModel.addAllLayers(style, 1)
+        }
+    }
+
+    // Kan bli tvinget gjennom av repo, ved endringer i settings
+    fun setupMap(savedInstanceState: Bundle?) {
 
         mapView = rootView.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
 
-        // Initializing map from MapBox servers
-        mapView?.getMapAsync{ map ->
+        // Initialiserer Mapbox-kartet fra Mapbox-server
+        mapView?.getMapAsync { map ->
 
-            // Setting camera position over Norway
-            map.cameraPosition = mapViewModel.getCamStartPos()
+            // Lagre peker til map for Fragment og ViewModel
+            mapboxMap = map
+            mapViewModel.map = map
 
-            // Initializing map style
-            val customStyle = Style.Builder().fromUri(getString(R.string.mapStyleUri))
-            map.setStyle(customStyle) { style ->
+            // Setter kameraposisjon til over Norge initielt
+            map.cameraPosition = mapViewModel.getCamNorwayPos()
+
+            // Mapbox setter stil via ressurs på Mapbox-server
+            map.setStyle(getString(mapViewModel.getDefaultStyleResource())) { style ->
 
                 // Oppretter layers når data er tilgjengelig etter API-kall
                 mapViewModel.updateWeather(style)
 
-                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-
-                        // TODO: Fikse håndtering av spinner startpos = 0 (cloud)
-
-                        /* Spinner position index: noLayer = 0, cloud = 1, umbrella/precipitiation = 2, temp = 3 */
-                        // Dataready = true når API-kall er ferdig
-                        if (mapViewModel.dataReady) {
-
-                            // Position = No filter
-                            if (position == 0) mapViewModel.hideAllLayers()
-
-                            // Position = 1: Clouds | 2: Precipitiation | 3: airTemp
-                            else mapViewModel.chooseLayer(style, position - 1)
-
-                        }
-                    }
-
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                    }
-                }
             }
 
             map.addOnMapLongClickListener { point ->
@@ -118,10 +127,11 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                     bottomSheetBehavior.state =  BottomSheetBehavior.STATE_COLLAPSED
                 true
             }
+
         }
     }
 
-
+    // Oppsett av spinner og håndtering av valgene
     private fun setupSpinner() {
         spinner = rootView.findViewById(R.id.spinner_weather_filter)
         val icons = mutableListOf<Int>()
@@ -132,12 +142,40 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
         spinnerAdapter  = SpinnerAdapter(requireContext(), icons)
         spinner.adapter = spinnerAdapter
+
+        // Listener for filtervalg i spinner
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+            // Håndtering av valg i spinner
+            override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+            ) {
+
+                /* Spinner position index: noLayer = 0, cloud = 1, umbrella/precipitiation = 2, temp = 3 */
+                // Dataready = true når API-kall er ferdig
+                if (mapViewModel.dataReady) {
+
+                    // Position = No filter
+                    if (position == 0) mapViewModel.hideAllLayers()
+
+                    // Position = 1: Clouds | 2: Precipitiation | 3: airTemp
+                    else mapViewModel.chooseLayer(position - 1)
+
+                }
+            }
+
+            // Do nothing
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+        }
     }
 
-
+    // Oppsett av bottomsheet og håndtering av valg
     private fun setupBottomSheet() {
         bottomSheetBehavior = BottomSheetBehavior.from(rootView.findViewById(R.id.bottom_sheet))
-
 
         // On click add to favourites
         val button_fav: ImageButton = rootView.findViewById(R.id.add_favourites)
@@ -153,6 +191,32 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                     button_fav.isSelected = true;
                     Toast.makeText(requireContext(), "Lagret i favoritter!", Toast.LENGTH_LONG).show()
                 }
+            }
+        }
+    }
+
+    // Oppsett av locationknapp og logikk for håndtering av valg
+    private fun setupLocationButton() {
+        locationButton = rootView.findViewById(R.id.locationPicker)
+
+        // Listener for location-knapp
+        locationButton.setOnClickListener {
+
+            // Sjekker om brukerlokasjon er tillatt i settings, true hvis tillatt
+            if ((activity as MainActivity).getLocationButtonStatus()) {
+                (activity as MainActivity).updateLocation()
+
+                // Sjekker om lokasjonen er gyldig
+                if (setUserLocation() != null)
+                    mapboxMap.cameraPosition = setUserLocation()!!
+                else Toast.makeText(requireContext(),
+                        "Brukerlokasjon ikke tilgjengelig",
+                        Toast.LENGTH_SHORT).show()
+
+            } else {
+                Toast.makeText(requireContext(),
+                        "Brukerlokasjon må tillates i innstillinger",
+                        Toast.LENGTH_LONG).show()
             }
         }
     }
