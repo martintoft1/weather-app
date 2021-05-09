@@ -115,34 +115,6 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 // Oppretter layers når data er tilgjengelig etter API-kall
                 mapViewModel.updateWeather(style)
 
-                // Listener for filtervalg i spinner
-                spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
-                    // Håndtering av valg i spinner
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-
-                        /* Spinner position index: noLayer = 0, cloud = 1, umbrella/precipitiation = 2, temp = 3 */
-                        // Dataready = true når API-kall er ferdig
-                        if (mapViewModel.dataReady) {
-
-                            // Position = No filter
-                            if (position == 0) mapViewModel.hideAllLayers()
-
-                            // Position = 1: Clouds | 2: Precipitiation | 3: airTemp
-                            else mapViewModel.chooseLayer(position - 1)
-
-                        }
-                    }
-
-                    // Do nothing
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                    }
-                }
             }
 
             map.addOnMapLongClickListener { point ->
@@ -156,29 +128,10 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 true
             }
 
-            // Listener for location-knapp
-            locationButton.setOnClickListener {
-
-                // Sjekker om brukerlokasjon er tillatt i settings, true hvis tillatt
-                if ((activity as MainActivity).getLocationButtonStatus()) {
-                    (activity as MainActivity).updateLocation()
-
-                    // Sjekker om lokasjonen er gyldig
-                    if (setUserLocation() != null)
-                        mapboxMap.cameraPosition = setUserLocation()!!
-                    else Toast.makeText(requireContext(),
-                            "Brukerlokasjon ikke tilgjengelig",
-                            Toast.LENGTH_SHORT).show()
-
-                } else {
-                    Toast.makeText(requireContext(),
-                            "Brukerlokasjon må tillates i innstillinger",
-                            Toast.LENGTH_LONG).show()
-                }
-            }
         }
     }
 
+    // Oppsett av spinner og håndtering av valgene
     private fun setupSpinner() {
         spinner = rootView.findViewById(R.id.spinner_weather_filter)
         val icons = mutableListOf<Int>()
@@ -189,12 +142,40 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
         spinnerAdapter  = SpinnerAdapter(requireContext(), icons)
         spinner.adapter = spinnerAdapter
+
+        // Listener for filtervalg i spinner
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+            // Håndtering av valg i spinner
+            override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+            ) {
+
+                /* Spinner position index: noLayer = 0, cloud = 1, umbrella/precipitiation = 2, temp = 3 */
+                // Dataready = true når API-kall er ferdig
+                if (mapViewModel.dataReady) {
+
+                    // Position = No filter
+                    if (position == 0) mapViewModel.hideAllLayers()
+
+                    // Position = 1: Clouds | 2: Precipitiation | 3: airTemp
+                    else mapViewModel.chooseLayer(position - 1)
+
+                }
+            }
+
+            // Do nothing
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+        }
     }
 
-
+    // Oppsett av bottomsheet og håndtering av valg
     private fun setupBottomSheet() {
         bottomSheetBehavior = BottomSheetBehavior.from(rootView.findViewById(R.id.bottom_sheet))
-
 
         // On click add to favourites
         val button_fav: ImageButton = rootView.findViewById(R.id.add_favourites)
@@ -214,8 +195,30 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         }
     }
 
+    // Oppsett av locationknapp og logikk for håndtering av valg
     private fun setupLocationButton() {
         locationButton = rootView.findViewById(R.id.locationPicker)
+
+        // Listener for location-knapp
+        locationButton.setOnClickListener {
+
+            // Sjekker om brukerlokasjon er tillatt i settings, true hvis tillatt
+            if ((activity as MainActivity).getLocationButtonStatus()) {
+                (activity as MainActivity).updateLocation()
+
+                // Sjekker om lokasjonen er gyldig
+                if (setUserLocation() != null)
+                    mapboxMap.cameraPosition = setUserLocation()!!
+                else Toast.makeText(requireContext(),
+                        "Brukerlokasjon ikke tilgjengelig",
+                        Toast.LENGTH_SHORT).show()
+
+            } else {
+                Toast.makeText(requireContext(),
+                        "Brukerlokasjon må tillates i innstillinger",
+                        Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     override fun onStart() {

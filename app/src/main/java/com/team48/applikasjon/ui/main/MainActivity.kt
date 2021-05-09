@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationManager: LocationManager
     private val PERMISSION_ID = 44
-    private var result : String = "" // TODO: Fjern når debug er ferdig
 
     private val repository = Repository()
     private val viewModelFactory = ViewModelFactory(repository)
@@ -75,10 +74,6 @@ class MainActivity : AppCompatActivity() {
                     if (location == null) {
                         requestNewLocationData()
                     } else {
-                        result = "" + location.latitude + ":" + location.longitude
-                        Log.d("location.latitude", location.latitude.toString())
-                        Log.d("location.longitude", location.longitude.toString())
-                        Log.d("LOCATION 1:", result)
 
                         // Leverer brukerposisjon til MapFragment
                         mapFragment.updateUserLocation(location)
@@ -88,6 +83,7 @@ class MainActivity : AppCompatActivity() {
            } else { // isLocationEnabled == false
                // Do nothing
                Log.d("isLocationEnabled()", "== false")
+               // TODO: Denne kan fjernes når vi har testet mer, usikker når alternativet forekommer
            }
 
         } else { // checkPermission == false
@@ -111,8 +107,7 @@ class MainActivity : AppCompatActivity() {
     private val mLocationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             val lastLocation: Location = locationResult.lastLocation
-            result = "" + lastLocation.longitude + ":" + lastLocation.latitude
-            Log.d("LOCATION 2:", result)
+            mapFragment.updateUserLocation(lastLocation)
         }
     }
 
