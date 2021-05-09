@@ -61,8 +61,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Støttefunksjon for kommunikasjon mellom Settings- og MapFragment
-    fun changeMapStyle(styleResource: Int) {
-        mapFragment.changeStyle(styleResource)
+    fun changeMapStyle(styleResource: Int, visualMode: Int) {
+        mapFragment.changeStyle(styleResource, visualMode)
     }
 
     @SuppressLint("MissingPermission")

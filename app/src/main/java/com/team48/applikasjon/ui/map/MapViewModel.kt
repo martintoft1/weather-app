@@ -1,10 +1,8 @@
 package com.team48.applikasjon.ui.map
 
 import android.graphics.Color
-import android.location.Location
 import android.util.Log
 import androidx.lifecycle.*
-import com.google.android.material.internal.ContextUtils.getActivity
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
@@ -18,7 +16,6 @@ import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.VectorDataset
 import com.team48.applikasjon.data.repository.Repository
-import com.team48.applikasjon.ui.main.MainActivity
 import kotlinx.coroutines.*
 import java.util.Collections.emptyList
 import java.util.stream.IntStream.range
@@ -50,7 +47,9 @@ class MapViewModel(val repository: Repository) : ViewModel() {
                 liveWeather = repository.getWeather()
             }
             withContext(Dispatchers.Main) {
-                addAllLayers(style)
+
+                // Layers legges til med default presentasjon (light mode)
+                addAllLayers(style, 0)
                 dataReady = true
             }
         }
@@ -61,61 +60,6 @@ class MapViewModel(val repository: Repository) : ViewModel() {
         return url.substringAfterLast("/")
     }
 
-    // Justering av hvordan layers presenteres på skjerm
-    fun setLayerProperties(fillLayer: Layer, weatherType: Int) {
-
-        /*
-        WeatherType:
-        0: Clouds
-        1: Precipitiation
-        2: AirTemp
-        */
-        // Opacity settes til 0 initielt
-
-        // TODO: Create better presentation based on weather type
-        when (weatherType) {
-            0 -> {
-                fillLayer.setProperties( // clouds
-                    fillOpacity(0.0F),
-                    fillColor(
-                        interpolate(
-                            exponential(1F), get("value"),
-                            stop(0, color(Color.TRANSPARENT)),
-                            stop(33, color(Color.LTGRAY)),
-                            stop(100, color(Color.DKGRAY)),
-                        )
-                    )
-                )
-            }
-            1 -> {
-                fillLayer.setProperties( // percipation
-                    fillOpacity(0.0F),
-                    fillColor(
-                        interpolate(
-                            linear(), get("value"),
-                            stop(0, color(Color.TRANSPARENT)),
-                            stop(1, color(Color.BLUE))
-                        )
-                    )
-                )
-
-            }
-            2 -> {
-                fillLayer.setProperties( // airTemp
-                    fillOpacity(0.0F),
-                    fillColor(
-                        interpolate(
-                            exponential(2F), get("value"),
-                            stop(-10, color(Color.BLUE)),
-                            stop(0, color(Color.WHITE)),
-                            stop(10, color(Color.YELLOW)),
-                            stop(20, color(Color.RED))
-                        )
-                    )
-                )
-            }
-        }
-    }
 
     fun getWeatherFrom(map: MapboxMap, point: LatLng) {
         // Convert LatLng coordinates to screen pixel and only query the rendered features.
@@ -172,13 +116,13 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     }
 
     // Funksjon som legger til alle filtere basert på en ID
-    fun addAllLayers(style: Style) {
+    fun addAllLayers(style: Style, visualMode: Int) {
         for (i in range(0, 3))
-            addNewLayer(style, i)
+            addNewLayer(style, i, visualMode)
     }
 
     // Legger til data i style for å generere et nytt layer
-    fun addNewLayer(style: Style, position: Int) {
+    fun addNewLayer(style: Style, position: Int, visualMode: Int) {
 
         val sourceId = "vectorsource$position"
         val layerId = "layer$position"
@@ -190,7 +134,7 @@ class MapViewModel(val repository: Repository) : ViewModel() {
 
         // Oppretter layer og setter egenskaper
         val fillLayer = FillLayer(layerId, sourceId)
-        setLayerProperties(fillLayer, position)
+        setLayerProperties(fillLayer, position, visualMode)
 
         // Adding sourcelayer ID
         fillLayer.sourceLayer = getIDfromURL(layerURL)
@@ -204,12 +148,69 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     }
 
     // Setter startposisjon til over Norge
-    // TODO: Begynne ved brukers posisjon i stedet?
     fun getCamNorwayPos(): CameraPosition {
         return CameraPosition.Builder()
             .target(LatLng(62.0, 16.0, 1.0))
             .zoom(3.0)
             .tilt(0.0)
             .build()
+    }
+
+    // Justering av hvordan layers presenteres på skjerm
+    fun setLayerProperties(fillLayer: Layer, weatherType: Int, visualMode: Int) {
+
+        /*
+        WeatherType:
+        0: Clouds
+        1: Precipitiation
+        2: AirTemp
+        */
+        // Opacity settes til 0 initielt
+
+        // TODO: visualMode = 0: Default (light), = 1: Darkmode
+
+        // TODO: Create better presentation based on weather type
+        when (weatherType) {
+            0 -> {
+                fillLayer.setProperties( // clouds
+                        fillOpacity(0.0F),
+                        fillColor(
+                                interpolate(
+                                        exponential(1F), get("value"),
+                                        stop(0, color(Color.TRANSPARENT)),
+                                        stop(33, color(Color.LTGRAY)),
+                                        stop(100, color(Color.DKGRAY)),
+                                )
+                        )
+                )
+            }
+            1 -> {
+                fillLayer.setProperties( // percipation
+                        fillOpacity(0.0F),
+                        fillColor(
+                                interpolate(
+                                        linear(), get("value"),
+                                        stop(0, color(Color.TRANSPARENT)),
+                                        stop(1, color(Color.BLUE))
+                                )
+                        )
+                )
+
+            }
+            2 -> {
+                fillLayer.setProperties( // airTemp
+                        fillOpacity(0.0F),
+                        fillColor(
+                                interpolate(
+                                        exponential(2F), get("value"),
+                                        stop(-10, color(Color.BLUE)),
+                                        stop(0, color(Color.WHITE)),
+                                        stop(10, color(Color.YELLOW)),
+                                        stop(20, color(Color.RED))
+                                )
+                        )
+                )
+            }
+        }
     }
 }
