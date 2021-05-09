@@ -7,6 +7,7 @@ import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.expressions.Expression.*
 import com.mapbox.mapboxsdk.style.layers.FillLayer
 import com.mapbox.mapboxsdk.style.layers.Layer
@@ -83,6 +84,8 @@ class MapViewModel(val repository: Repository) : ViewModel() {
         // TODO: opprett xml eller boks til å displaye data
         Log.d("features", dataArr.contentToString())
     }
+
+
 
     // Henter metadataURL fra weatherList basert på spinnerposisjon
     fun getLayerURL(position: Int): String {
@@ -187,26 +190,31 @@ class MapViewModel(val repository: Repository) : ViewModel() {
             1 -> {
                 fillLayer.setProperties( // percipation
                         fillOpacity(0.0F),
-                        fillColor(
-                                interpolate(
-                                        linear(), get("value"),
-                                        stop(0, color(Color.TRANSPARENT)),
-                                        stop(1, color(Color.BLUE))
-                                )
-                        )
+                        fillColor(interpolate(
+                            linear(),
+                            get("value"),
+                            stop(0, color(Color.TRANSPARENT)),
+                            stop(1, rgb(0, 255, 255)),
+                            stop(2, rgb(0, 255, 0)),
+                            stop(3, rgb(255, 255, 0)),
+                            stop(4, rgb(255, 127, 0)),
+                            stop(5, rgb(255, 0, 0)),
+                        ))
                 )
-
             }
             2 -> {
                 fillLayer.setProperties( // airTemp
                         fillOpacity(0.0F),
                         fillColor(
                                 interpolate(
-                                        exponential(2F), get("value"),
-                                        stop(-10, color(Color.BLUE)),
-                                        stop(0, color(Color.WHITE)),
-                                        stop(10, color(Color.YELLOW)),
-                                        stop(20, color(Color.RED))
+                                        linear(), get("value"),
+                                        stop(-10, rgb(255, 0, 255)),
+                                        stop(-5, rgb(0, 0, 255)),
+                                        stop(0, rgb(0, 255, 255)),
+                                        stop(5, rgb(0, 255, 0)),
+                                        stop(10, rgb(255, 255, 0)),
+                                        stop(15, rgb(255, 127, 0)),
+                                        stop(20, rgb(255, 0, 0)),
                                 )
                         )
                 )

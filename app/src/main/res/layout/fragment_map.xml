@@ -35,11 +35,11 @@
         android:id="@+id/locationPicker"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/mapView"
+        android:layout_marginBottom="10dp"
+        android:contentDescription="@string/locationbtn"
         android:src="@android:drawable/ic_menu_mylocation"
-        android:contentDescription="@string/locationbtn" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
