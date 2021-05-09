@@ -1,11 +1,14 @@
 package com.team48.applikasjon.ui.map
 
+import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ImageView
 import android.widget.Spinner
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.mapbox.mapboxsdk.camera.CameraPosition
@@ -15,6 +18,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.repository.Repository
+import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
 
@@ -25,10 +29,10 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     private lateinit var mapViewModel: MapViewModel
     private lateinit var spinnerAdapter: SpinnerAdapter
     private lateinit var spinner: Spinner
-    private lateinit var customMapStyle: String
+    private lateinit var locationButton: ImageView
     private lateinit var mapboxMap: MapboxMap
+    private var userLocation: Location? = null
     var mapView: MapView? = null
-    lateinit var cameraStringList: List<Double>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,6 +48,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         setupViewModel()
         setupMap(savedInstanceState)
         setupSpinner()
+        setupLocationButton()
     }
 
     // Oppsett av ViewModel
@@ -56,13 +61,20 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         repository = mapViewModel.repository
     }
 
-    // Henter brukerlokasjon, gitt det er tillatt
-    private fun getPosition(): CameraPosition {
+    // Settes brukerlokasjon i kart basert på variabelen userLocation
+    private fun setUserLocation(): CameraPosition? {
+
+        if (userLocation == null) return null
         return CameraPosition.Builder()
-                .target(LatLng(cameraStringList[0], cameraStringList[1], 1.0))
+                .target(LatLng(userLocation!!.latitude, userLocation!!.longitude, 1.0))
                 .zoom(10.0)
                 .tilt(0.0)
                 .build()
+    }
+
+    // Kalles på av MainActivity, oppdaterer lokal variabel userLocation
+    fun updateUserLocation(location: Location?) {
+        userLocation = location
     }
 
     // Endrer stil ved valg i innstillinger
@@ -88,20 +100,19 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
             mapboxMap = map
             mapViewModel.map = map
 
-            // Setter kameraposisjon til over Norge
+            // Setter kameraposisjon til over Norge initielt
             map.cameraPosition = mapViewModel.getCamNorwayPos()
 
-            // Forsøker å oppdatere kameraposisjon til brukers lokasjon
-            if (this@MapFragment::cameraStringList.isInitialized)
-                map.cameraPosition = getPosition()
-
+            // Mapbox setter stil via ressurs på Mapbox-server
             map.setStyle(getString(mapViewModel.getDefaultStyleResource())) { style ->
 
                 // Oppretter layers når data er tilgjengelig etter API-kall
                 mapViewModel.updateWeather(style)
 
+                // Listener for filtervalg i spinner
                 spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
 
+                    // Håndtering av valg i spinner
                     override fun onItemSelected(
                             parent: AdapterView<*>?,
                             view: View?,
@@ -122,14 +133,37 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                         }
                     }
 
+                    // Do nothing
                     override fun onNothingSelected(parent: AdapterView<*>?) {
                     }
                 }
             }
 
+            // Listener for trykking i kart
             map.addOnMapClickListener { point ->
                 mapViewModel.getWeatherFrom(map, point)
                 true
+            }
+
+            // Listener for location-knapp
+            locationButton.setOnClickListener {
+
+                // Sjekker om brukerlokasjon er tillatt i settings, true hvis tillatt
+                if ((activity as MainActivity).getLocationButtonStatus()) {
+                    (activity as MainActivity).updateLocation()
+
+                    // Sjekker om lokasjonen er gyldig
+                    if (setUserLocation() != null)
+                        mapboxMap.cameraPosition = setUserLocation()!!
+                    else Toast.makeText(requireContext(),
+                            "Brukerlokasjon ikke tilgjengelig",
+                            Toast.LENGTH_SHORT).show()
+
+                } else {
+                    Toast.makeText(requireContext(),
+                            "Brukerlokasjon må tillates i innstillinger",
+                            Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
@@ -144,6 +178,10 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
         spinnerAdapter  = SpinnerAdapter(requireContext(), icons)
         spinner.adapter = spinnerAdapter
+    }
+
+    private fun setupLocationButton() {
+        locationButton = rootView.findViewById(R.id.locationPicker)
     }
 
     override fun onStart() {

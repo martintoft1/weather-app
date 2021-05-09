@@ -68,4 +68,9 @@ class SettingsFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
             }
         }
     }
+
+    // Kalles av MapFragment via MainActivity for å vite om henting av brukerlokasjon tillates
+    fun getLocationButtonStatus(): Boolean {
+        return switchLocation.isChecked
+    }
 }

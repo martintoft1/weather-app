@@ -9,7 +9,6 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper.myLooper
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.viewpager2.widget.ViewPager2
@@ -49,15 +48,12 @@ class MainActivity : AppCompatActivity() {
         fragmentContainer = findViewById(R.id.fragment_container)
         bottomNavigationView = findViewById(R.id.bottom_navigation)
 
+        // Oppsett av navigation bar med fragmenter
         setupFragmentContainer()
         setupBottomNavigation()
 
         // Location Manager
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        getLastPosition()
-
-        // TODO: Endre til knapp i Map for å gå til brukerlokasjon
-
     }
 
     // Støttefunksjon for kommunikasjon mellom Settings- og MapFragment
@@ -65,8 +61,13 @@ class MainActivity : AppCompatActivity() {
         mapFragment.changeStyle(styleResource, visualMode)
     }
 
+    // Grensesnitt mellom MapFragment og SettingsFragment, relatert til location-knapp
+    fun getLocationButtonStatus(): Boolean{
+        return settingsFragment.getLocationButtonStatus()
+    }
+
     @SuppressLint("MissingPermission")
-    fun getLastPosition()  {
+    fun updateLocation()  {
 
         if (checkPermission()) {
            if (isLocationEnabled()) {
@@ -80,20 +81,18 @@ class MainActivity : AppCompatActivity() {
                         Log.d("location.longitude", location.longitude.toString())
                         Log.d("LOCATION 1:", result)
 
-                        mapFragment.cameraStringList = listOf(
-                                location.latitude,
-                                location.longitude)
+                        // Leverer brukerposisjon til MapFragment
+                        mapFragment.updateUserLocation(location)
                     }
                }
 
            } else { // isLocationEnabled == false
-               Log.d("Location not enabled in settings", "enable it")
-               Toast.makeText(this, "Brukerlokasjon må tillates i innstillinger", Toast.LENGTH_LONG).show()
+               // Do nothing
+               Log.d("isLocationEnabled()", "== false")
            }
 
         } else { // checkPermission == false
             requestPermission()
-            getLastPosition()
         }
     }
 
@@ -142,10 +141,13 @@ class MainActivity : AppCompatActivity() {
 
     // Kalles på via switch i settings
     fun enableLocation() {
+        updateLocation()
     }
 
     // Kalles på via switch i settings
     fun disableLocation() {
+        val nullLocation: Location? = null
+        mapFragment.updateUserLocation(nullLocation)
     }
 
     private fun setupFragmentContainer() {
@@ -169,6 +171,11 @@ class MainActivity : AppCompatActivity() {
 
         // Skru av swipe-animasjon mellom fragments
         fragmentContainer.isUserInputEnabled = false
+
+        // Initialiserer fragmentene som appen ikke starter i
+        fragmentContainer.setCurrentItem(0, false)
+        fragmentContainer.setCurrentItem(2, false)
+
         // Setter fragment som åpnes først
         fragmentContainer.post { fragmentContainer.setCurrentItem(1, false) }
     }
@@ -177,9 +184,9 @@ class MainActivity : AppCompatActivity() {
         // Bytter fragment ved bottomnav navigering
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.weatherView -> fragmentContainer.setCurrentItem(0, false)
-                R.id.mapView -> fragmentContainer.setCurrentItem(1, false)
-                R.id.settingsView -> fragmentContainer.setCurrentItem(2, false)
+                R.id.weatherView -> fragmentContainer.setCurrentItem(0, true)
+                R.id.mapView -> fragmentContainer.setCurrentItem(1, true)
+                R.id.settingsView -> fragmentContainer.setCurrentItem(2, true)
             }
             false
         }
