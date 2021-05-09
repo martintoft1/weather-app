@@ -6,10 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ImageButton
 import android.widget.Spinner
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
@@ -28,6 +31,8 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     private lateinit var spinner: Spinner
     var mapView: MapView? = null
 
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -42,6 +47,9 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         setupViewModel()
         setupMap(savedInstanceState)
         setupSpinner()
+        setupBottomSheet()
+
+
     }
 
     private fun setupViewModel() {
@@ -100,12 +108,19 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 }
             }
 
-            map.addOnMapClickListener { point ->
-                mapViewModel.getWeatherFrom(map, point)
+            map.addOnMapLongClickListener { point ->
+                mapViewModel.getWeatherFrom(map, point, bottomSheetBehavior, rootView)
+                true
+            }
+
+            map.addOnMapClickListener {
+                if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
+                    bottomSheetBehavior.state =  BottomSheetBehavior.STATE_COLLAPSED
                 true
             }
         }
     }
+
 
     private fun setupSpinner() {
         spinner = rootView.findViewById(R.id.spinner_weather_filter)
@@ -117,6 +132,29 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
         spinnerAdapter  = SpinnerAdapter(requireContext(), icons)
         spinner.adapter = spinnerAdapter
+    }
+
+
+    private fun setupBottomSheet() {
+        bottomSheetBehavior = BottomSheetBehavior.from(rootView.findViewById(R.id.bottom_sheet))
+
+
+        // On click add to favourites
+        val button_fav: ImageButton = rootView.findViewById(R.id.add_favourites)
+        button_fav.setOnClickListener {
+            when {
+                button_fav.isSelected -> {
+                    // Remove from favourites
+                    button_fav.isSelected = false
+                    Toast.makeText(requireContext(), "Fjernet fra favoritter", Toast.LENGTH_LONG).show()
+                }
+                else -> {
+                    // Add to favourites
+                    button_fav.isSelected = true;
+                    Toast.makeText(requireContext(), "Lagret i favoritter!", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 
     override fun onStart() {

@@ -68,9 +68,9 @@ class MainActivity : AppCompatActivity() {
         // Bytter fragment ved bottomnav navigering
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.weatherView  -> fragmentContainer.setCurrentItem(0, false)
-                R.id.mapView      -> fragmentContainer.setCurrentItem(1, false)
-                R.id.settingsView -> fragmentContainer.setCurrentItem(2, false)
+                R.id.weatherView  -> fragmentContainer.setCurrentItem(0, false) // 0
+                R.id.mapView      -> fragmentContainer.setCurrentItem(1, false) // 1
+                R.id.settingsView -> fragmentContainer.setCurrentItem(2, false) // 2
             }
             false
         }
