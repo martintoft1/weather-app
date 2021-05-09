@@ -18,6 +18,7 @@
 
     <string name="dark_mode">Dark mode</string>
     <string name="tillatt_brukerlokasjon">Tillatt brukerlokasjon</string>
+    <string name="locationbtn">locationBtn</string>
 
     // MapFragment Spinner elementer
     <string-array name="map_overlays">

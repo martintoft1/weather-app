@@ -13,19 +13,33 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" >
+
+
+    </com.mapbox.mapboxsdk.maps.MapView>
 
     <Spinner
         android:id="@+id/spinner_weather_filter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
         android:background="@android:color/transparent"
-        android:popupBackground="@android:color/transparent"
         android:dropDownVerticalOffset="10dp"
         android:overlapAnchor="false"
-        android:layout_margin="10dp"
+        android:popupBackground="@android:color/transparent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/locationPicker"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/mapView"
+        android:src="@android:drawable/ic_menu_mylocation"
+        android:contentDescription="@string/locationbtn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
