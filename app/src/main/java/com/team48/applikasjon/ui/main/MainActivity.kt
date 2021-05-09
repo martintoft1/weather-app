@@ -56,9 +56,11 @@ class MainActivity : AppCompatActivity() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         getLastPosition()
 
+        // TODO: Endre til knapp i Map for å gå til brukerlokasjon
+
     }
 
-
+    // Støttefunksjon for kommunikasjon mellom Settings- og MapFragment
     fun changeMapStyle(styleResource: Int) {
         mapFragment.changeStyle(styleResource)
     }
@@ -86,32 +88,24 @@ class MainActivity : AppCompatActivity() {
 
            } else { // isLocationEnabled == false
                Log.d("Location not enabled in settings", "enable it")
-               Toast.makeText(this, "Tilgang til brukerlokasjon må settes i innstillinger", Toast.LENGTH_LONG).show()
+               Toast.makeText(this, "Brukerlokasjon må tillates i innstillinger", Toast.LENGTH_LONG).show()
            }
 
         } else { // checkPermission == false
             requestPermission()
+            getLastPosition()
         }
     }
 
     @SuppressLint("MissingPermission")
     private fun requestNewLocationData() {
 
-        // Initializing LocationRequest
-        // object with appropriate methods
-        // Initializing LocationRequest
-        // object with appropriate methods
         val locationRequest: LocationRequest = LocationRequest.create()
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         locationRequest.interval = 5
         locationRequest.fastestInterval = 0
         locationRequest.numUpdates = 1
 
-        // setting LocationRequest
-        // on FusedLocationClient
-
-        // setting LocationRequest
-        // on FusedLocationClient
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         fusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, myLooper())
     }
