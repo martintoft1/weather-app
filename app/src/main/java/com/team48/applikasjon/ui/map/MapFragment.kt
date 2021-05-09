@@ -66,8 +66,13 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     }
 
     // Endrer stil ved valg i innstillinger
-    fun changeStyle(styleResource: Int) {
-        mapboxMap.setStyle(Style.Builder().fromUri(getString(styleResource)))
+    fun changeStyle(styleResource: Int, visualMode: Int) {
+        mapboxMap.setStyle(Style.Builder().fromUri(getString(styleResource))) { style ->
+
+            // Layers må legges til på nytt.
+            // visualMode = 0: Default/Light, = 1: Dark
+            mapViewModel.addAllLayers(style, 1)
+        }
     }
 
     // Kan bli tvinget gjennom av repo, ved endringer i settings
@@ -79,8 +84,9 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         // Initialiserer Mapbox-kartet fra Mapbox-server
         mapView?.getMapAsync { map ->
 
-            // Lagre peker til map
+            // Lagre peker til map for Fragment og ViewModel
             mapboxMap = map
+            mapViewModel.map = map
 
             // Setter kameraposisjon til over Norge
             map.cameraPosition = mapViewModel.getCamNorwayPos()

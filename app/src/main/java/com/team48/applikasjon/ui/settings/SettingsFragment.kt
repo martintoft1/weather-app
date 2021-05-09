@@ -54,9 +54,9 @@ class SettingsFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
             // TODO: Sette flere darkmodes?
             if (isChecked) {
-                (activity as MainActivity).changeMapStyle(settingsViewModel.enableDarkMode())
+                (activity as MainActivity).changeMapStyle(settingsViewModel.enableDarkMode(), 1)
             } else {
-                (activity as MainActivity).changeMapStyle(settingsViewModel.disableDarkMode())
+                (activity as MainActivity).changeMapStyle(settingsViewModel.disableDarkMode(), 0)
             }
         }
 
