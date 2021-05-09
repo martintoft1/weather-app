@@ -23,4 +23,15 @@
         <item>Tom</item>
     </string-array>
 
+
+    // Tabell for skydekke
+    <string name="lett">Ingen Skyer</string>
+    <string name="delvis">Delvis skyet</string>
+    <string name="fullt">Overskyet</string>
+
+    // Tabell for nedbør
+
+
+    // Tabell for temperatur
+
 </resources>

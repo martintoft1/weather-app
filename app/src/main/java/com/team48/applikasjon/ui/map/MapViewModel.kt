@@ -20,11 +20,15 @@ import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.VectorDataset
 import com.team48.applikasjon.data.repository.Repository
+import com.team48.applikasjon.utils.WeatherConverter
 import kotlinx.coroutines.*
 import java.util.Collections.emptyList
 import java.util.stream.IntStream.range
 
 class MapViewModel(val repository: Repository) : ViewModel() {
+
+    // Utils klasse som gir string-representasjon av verdier
+    var converter = WeatherConverter()
 
     // Felles liste for alle værtyper, 0 = precipitation, 1 = clouds, 2 = airTemp
     var liveWeather: List<VectorDataset> = emptyList()
@@ -34,6 +38,7 @@ class MapViewModel(val repository: Repository) : ViewModel() {
 
     // Hashmap som holder på opprettede layers
     private var layerHashMap: HashMap<Int, Layer> = hashMapOf()
+
 
     // Opprettelse av layers basert på API-data
     fun updateWeather(style: Style) {
@@ -132,9 +137,9 @@ class MapViewModel(val repository: Repository) : ViewModel() {
         // Skyer, regn, temp
 
         if (btb.state == BottomSheetBehavior.STATE_COLLAPSED) {
-            view.findViewById<TextView>(R.id.text_cloud).text = dataArr[0].toString()
-            view.findViewById<TextView>(R.id.text_rain).text  = dataArr[1].toString()
-            view.findViewById<TextView>(R.id.text_temp).text  = dataArr[2].toString()
+            view.findViewById<TextView>(R.id.text_cloud).text = converter.getCloudDesc(dataArr[0])
+            view.findViewById<TextView>(R.id.text_rain).text  = converter.getRainDesc(dataArr[1])
+            view.findViewById<TextView>(R.id.text_temp).text  = converter.getTempDesc(dataArr[2])
             btb.state =  BottomSheetBehavior.STATE_EXPANDED
         }
 
