@@ -13,10 +13,10 @@ import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.ViewModelFactory
 
 
-class SettingsFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
+class SettingsFragment() : Fragment() {
 
     private lateinit var rootView: View
-    private lateinit var repository: Repository
+    private lateinit var viewModelFactory: ViewModelFactory
     private lateinit var settingsViewModel: SettingsViewModel
     private lateinit var switchDarkMode: SwitchCompat
     private lateinit var switchLocation: SwitchCompat
@@ -32,8 +32,13 @@ class SettingsFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        getViewModelFactory()
         setupViewModel()
         setupButtons()
+    }
+
+    private fun getViewModelFactory() {
+        viewModelFactory = (activity as MainActivity).getViewModelFactory()
     }
 
     private fun setupViewModel() {
@@ -41,8 +46,6 @@ class SettingsFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 this,
                 viewModelFactory
         ).get(SettingsViewModel::class.java)
-
-        repository = settingsViewModel.repository
     }
 
     private fun setupButtons() {
