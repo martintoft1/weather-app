@@ -106,7 +106,6 @@ class MapFragment() : Fragment() {
 
     // Endrer stil ved valg i innstillinger
     fun changeStyle(styleResource: Int, visualMode: Int) {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         mapboxMap.setStyle(Style.Builder().fromUri(getString(styleResource))) { style ->
 
             // Layers må legges til på nytt.

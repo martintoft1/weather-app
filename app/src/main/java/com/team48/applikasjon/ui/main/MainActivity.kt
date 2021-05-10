@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
         fragmentContainer = findViewById(R.id.fragment_container)
         bottomNavigationView = findViewById(R.id.bottom_navigation)

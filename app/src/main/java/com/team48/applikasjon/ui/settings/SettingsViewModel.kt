@@ -1,5 +1,6 @@
 package com.team48.applikasjon.ui.settings
 
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.res.TypedArrayUtils.getString
 import androidx.lifecycle.ViewModel
 import com.team48.applikasjon.R
