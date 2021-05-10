@@ -31,12 +31,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var locationManager: LocationManager
     private val PERMISSION_ID = 44
 
-    private val repository = Repository()
-    private val viewModelFactory = ViewModelFactory(repository)
+    private val weatherFragment  = WeatherFragment()
+    private val mapFragment      = MapFragment()
+    private val settingsFragment = SettingsFragment()
 
-    private val weatherFragment  = WeatherFragment(viewModelFactory)
-    private val mapFragment      = MapFragment(viewModelFactory)
-    private val settingsFragment = SettingsFragment(viewModelFactory)
+    // Felles repository for alle ViewModels
+    private val repository = Repository()
+
+    private val viewModelFactory = ViewModelFactory(repository)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
@@ -52,6 +54,12 @@ class MainActivity : AppCompatActivity() {
 
         // Location Manager
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+    }
+
+
+    fun getViewModelFactory(): ViewModelFactory {
+        return viewModelFactory
     }
 
     // Støttefunksjon for kommunikasjon mellom Settings- og MapFragment

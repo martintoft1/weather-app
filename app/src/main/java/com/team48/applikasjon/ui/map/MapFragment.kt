@@ -12,6 +12,7 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.mapbox.mapboxsdk.camera.CameraPosition
@@ -25,10 +26,11 @@ import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
 
-class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
+class MapFragment() : Fragment() {
 
     private lateinit var rootView: View
     private lateinit var repository: Repository
+    private lateinit var viewModelFactory: ViewModelFactory
     private lateinit var mapViewModel: MapViewModel
     private lateinit var spinnerAdapter: SpinnerAdapter
     private lateinit var spinner: Spinner
@@ -38,6 +40,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     var mapView: MapView? = null
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,11 +53,16 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        getViewModelFactory()
         setupViewModel()
         setupMap(savedInstanceState)
         setupSpinner()
         setupBottomSheet()
         setupLocationButton()
+    }
+
+    private fun getViewModelFactory() {
+        viewModelFactory = (activity as MainActivity).getViewModelFactory()
     }
 
     // Oppsett av ViewModel

@@ -14,8 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Applikasjon">
         <activity android:name=".ui.main.MainActivity"
-            android:screenOrientation="portrait">
-
+            android:screenOrientation="fullSensor">
         </activity>
         <activity android:name=".ui.main.SplashActivity">
             <intent-filter>
