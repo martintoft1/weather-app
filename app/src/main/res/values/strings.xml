@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">Applikasjon</string>
+    <string name="app_name">Vær</string>
 
     // Menu items
-    <string name="weather">Weather</string>
-    <string name="map">Map</string>
-    <string name="settings">Settings</string>
+    <string name="weather">Vær</string>
+    <string name="map">Kart</string>
+    <string name="settings">Innstillinger</string>
 
     // Public MapBox access token
     <string name="mapbox_access_token">pk.eyJ1Ijoic2ltb2FuOTIiLCJhIjoiY2tta3ZuNnJrMTBsZTJvbWsyczY1dnF2cyJ9.XdVLefOEBBMH4nJnBT4zQg</string>
@@ -19,6 +19,7 @@
     <string name="dark_mode">Dark mode</string>
     <string name="tillatt_brukerlokasjon">Tillatt brukerlokasjon</string>
     <string name="locationbtn">locationBtn</string>
+    <string name="location">Lokasjon</string>
 
     // MapFragment Spinner elementer
     <string-array name="map_overlays">

@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Looper.myLooper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.location.*
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
         fragmentContainer = findViewById(R.id.fragment_container)
         bottomNavigationView = findViewById(R.id.bottom_navigation)
@@ -56,11 +58,12 @@ class MainActivity : AppCompatActivity() {
 
     // Støttefunksjon for kommunikasjon mellom Settings- og MapFragment
     fun changeMapStyle(styleResource: Int, visualMode: Int) {
+
         mapFragment.changeStyle(styleResource, visualMode)
     }
 
     // Grensesnitt mellom MapFragment og SettingsFragment, relatert til location-knapp
-    fun getLocationButtonStatus(): Boolean{
+    fun getLocationButtonStatus(): Boolean {
         return settingsFragment.getLocationButtonStatus()
     }
 
@@ -74,7 +77,6 @@ class MainActivity : AppCompatActivity() {
                     if (location == null) {
                         requestNewLocationData()
                     } else {
-
                         // Leverer brukerposisjon til MapFragment
                         mapFragment.updateUserLocation(location)
                     }

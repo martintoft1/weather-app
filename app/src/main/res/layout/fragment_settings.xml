@@ -5,34 +5,27 @@
     android:layout_height="match_parent"
     tools:context=".ui.settings.SettingsFragment">
 
-    <LinearLayout
-        android:layout_height="match_parent"
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings"
+        android:layout_gravity="center"
+        />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switchDarkMode"
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_margin="20dp">
+        android:layout_height="wrap_content"
+        android:text="@string/dark_mode"
+        />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/settings"
-            android:textSize="30sp"
-            android:layout_gravity="center"
-            />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switchDarkMode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/dark_mode"
-            />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/switchLocation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/tillatt_brukerlokasjon"
-            />
-
-    </LinearLayout>
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switchLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tillatt_brukerlokasjon"
+        />
 
 </FrameLayout>

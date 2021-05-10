@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -97,6 +98,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
     // Endrer stil ved valg i innstillinger
     fun changeStyle(styleResource: Int, visualMode: Int) {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         mapboxMap.setStyle(Style.Builder().fromUri(getString(styleResource))) { style ->
 
             // Layers må legges til på nytt.
@@ -200,7 +202,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 }
                 else -> {
                     // Add to favourites
-                    button_fav.isSelected = true;
+                    button_fav.isSelected = true
                     Toast.makeText(requireContext(), "Lagret i favoritter!", Toast.LENGTH_LONG).show()
                 }
             }
@@ -247,7 +249,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                     mapboxMap.cameraPosition = setUserLocation()!!
                 else Toast.makeText(requireContext(),
                         "Brukerlokasjon ikke tilgjengelig",
-                        Toast.LENGTH_SHORT).show()
+                        LENGTH_SHORT).show()
 
             } else {
                 Toast.makeText(requireContext(),
