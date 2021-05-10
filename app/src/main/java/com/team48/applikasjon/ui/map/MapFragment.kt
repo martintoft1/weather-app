@@ -40,9 +40,9 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
         rootView = inflater.inflate(R.layout.fragment_map, container, false)
         return rootView
@@ -60,8 +60,8 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     // Oppsett av ViewModel
     private fun setupViewModel() {
         mapViewModel = ViewModelProviders.of(
-            this,
-            viewModelFactory
+                this,
+                viewModelFactory
         ).get(MapViewModel::class.java)
 
         repository = mapViewModel.repository
@@ -183,11 +183,13 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
             when {
                 button_fav.isSelected -> {
                     // Remove from favourites
+                    mapViewModel.removeFromFavourites()
                     button_fav.isSelected = false
                     Toast.makeText(requireContext(), "Fjernet fra favoritter", Toast.LENGTH_LONG).show()
                 }
                 else -> {
                     // Add to favourites
+                    mapViewModel.addToFavourites()
                     button_fav.isSelected = true;
                     Toast.makeText(requireContext(), "Lagret i favoritter!", Toast.LENGTH_LONG).show()
                 }
