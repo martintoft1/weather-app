@@ -1,19 +1,18 @@
 package com.team48.applikasjon.ui.map
 
+import android.content.Intent
 import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
@@ -25,6 +24,7 @@ import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
 
+
 class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
     private lateinit var rootView: View
@@ -32,6 +32,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     private lateinit var mapViewModel: MapViewModel
     private lateinit var spinnerAdapter: SpinnerAdapter
     private lateinit var spinner: Spinner
+    private lateinit var searchButton: FloatingActionButton
     private lateinit var locationButton: ImageView
     private lateinit var mapboxMap: MapboxMap
     private var userLocation: Location? = null
@@ -148,10 +149,10 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
             // Håndtering av valg i spinner
             override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
             ) {
 
                 /* Spinner position index: noLayer = 0, cloud = 1, umbrella/precipitiation = 2, temp = 3 */
@@ -188,7 +189,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 }
                 else -> {
                     // Add to favourites
-                    button_fav.isSelected = true;
+                    button_fav.isSelected = true
                     Toast.makeText(requireContext(), "Lagret i favoritter!", Toast.LENGTH_LONG).show()
                 }
             }
@@ -209,14 +210,18 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 // Sjekker om lokasjonen er gyldig
                 if (setUserLocation() != null)
                     mapboxMap.cameraPosition = setUserLocation()!!
-                else Toast.makeText(requireContext(),
-                        "Brukerlokasjon ikke tilgjengelig",
-                        Toast.LENGTH_SHORT).show()
+                else Toast.makeText(
+                    requireContext(),
+                    "Brukerlokasjon ikke tilgjengelig",
+                    Toast.LENGTH_SHORT
+                ).show()
 
             } else {
-                Toast.makeText(requireContext(),
-                        "Brukerlokasjon må tillates i innstillinger",
-                        Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Brukerlokasjon må tillates i innstillinger",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
