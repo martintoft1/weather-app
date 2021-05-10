@@ -21,7 +21,6 @@ class Repository (val context: Context){
 
     fun getWeather() = apiHelper.getWeather()
 
-
     /*
     fun setCustomMapStyle(style: String) {
         customMapStyle = style

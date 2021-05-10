@@ -7,21 +7,25 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.mapbox.api.geocoding.v5.GeocodingCriteria
+import com.mapbox.api.geocoding.v5.MapboxGeocoding
+import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.expressions.Expression.*
 import com.mapbox.mapboxsdk.style.layers.FillLayer
 import com.mapbox.mapboxsdk.style.layers.Layer
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillColor
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.fillOpacity
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.Location
 import com.team48.applikasjon.data.models.VectorDataset
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.utils.WeatherConverter
+import com.team48.applikasjon.ui.main.MainActivity
 import kotlinx.coroutines.*
 import java.util.Collections.emptyList
 import java.util.stream.IntStream.range
@@ -72,8 +76,7 @@ class MapViewModel(val repository: Repository) : ViewModel() {
         return url.substringAfterLast("/")
     }
 
-
-    fun getWeatherFrom(map: MapboxMap, point: LatLng, btb: BottomSheetBehavior<ConstraintLayout>, view: View) {
+    fun getWeatherFrom(map: MapboxMap, point: LatLng, btb: BottomSheetBehavior<ConstraintLayout>, view: View, location: String) {
         // Convert LatLng coordinates to screen pixel and only query the rendered features.
         val pixel = map.projection.toScreenLocation(point)
         val dataArr = arrayOfNulls<Float>(3)
@@ -92,7 +95,9 @@ class MapViewModel(val repository: Repository) : ViewModel() {
             return
         }
 
+        // TODO: opprett xml eller boks til å displaye data
         Log.d("features", dataArr.contentToString())
+        Log.d("location", location)
         // Skyer, regn, temp
 
         if (btb.state == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -104,7 +109,6 @@ class MapViewModel(val repository: Repository) : ViewModel() {
             selectedLocation = Location(0, "Location", dataArr[0], dataArr[1], dataArr[2])
             println(selectedLocation.toString())
         }
-    }
 
 
     fun addToFavourites() {
@@ -187,10 +191,10 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     // Setter startposisjon til over Norge
     fun getCamNorwayPos(): CameraPosition {
         return CameraPosition.Builder()
-                .target(LatLng(62.0, 16.0, 1.0))
-                .zoom(3.0)
-                .tilt(0.0)
-                .build()
+            .target(LatLng(62.0, 16.0, 1.0))
+            .zoom(3.0)
+            .tilt(0.0)
+            .build()
     }
 
     // Justering av hvordan layers presenteres på skjerm
@@ -225,14 +229,14 @@ class MapViewModel(val repository: Repository) : ViewModel() {
                 fillLayer.setProperties( // percipation
                         fillOpacity(0.0F),
                         fillColor(interpolate(
-                                linear(),
-                                get("value"),
-                                stop(0, color(Color.TRANSPARENT)),
-                                stop(1, rgb(0, 255, 255)),
-                                stop(2, rgb(0, 255, 0)),
-                                stop(3, rgb(255, 255, 0)),
-                                stop(4, rgb(255, 127, 0)),
-                                stop(5, rgb(255, 0, 0)),
+                            linear(),
+                            get("value"),
+                            stop(0, color(Color.TRANSPARENT)),
+                            stop(1, rgb(0, 255, 255)),
+                            stop(2, rgb(0, 255, 0)),
+                            stop(3, rgb(255, 255, 0)),
+                            stop(4, rgb(255, 127, 0)),
+                            stop(5, rgb(255, 0, 0)),
                         ))
                 )
             }
