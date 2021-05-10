@@ -2,6 +2,7 @@ package com.team48.applikasjon.ui.map
 
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,20 +11,31 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.mapbox.api.geocoding.v5.GeocodingCriteria
+import com.mapbox.api.geocoding.v5.MapboxGeocoding
+import com.mapbox.api.geocoding.v5.models.GeocodingResponse
+import com.mapbox.geojson.Point
+import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.plugins.places.autocomplete.ui.PlaceAutocompleteFragment.TAG
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
 
@@ -118,7 +130,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
             }
 
             map.addOnMapLongClickListener { point ->
-                mapViewModel.getWeatherFrom(map, point, bottomSheetBehavior, rootView)
+                getLocationFrom(map, point)
                 true
             }
 
@@ -193,6 +205,30 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 }
             }
         }
+    }
+
+    private fun getLocationFrom(map: MapboxMap, point: LatLng) {
+        val reverseGeocode = MapboxGeocoding.builder()
+            .accessToken(getString(R.string.mapbox_access_token))
+            .query(Point.fromLngLat(point.longitude, point.latitude))
+            .geocodingTypes(GeocodingCriteria.TYPE_PLACE)
+            .build()
+
+        lateinit var placeName: String
+        reverseGeocode.enqueueCall(object : Callback<GeocodingResponse> {
+            override fun onResponse(call: Call<GeocodingResponse>, response: Response<GeocodingResponse>) {
+                val results = response.body()!!.features()
+                if (results.size > 0) {
+                    placeName = results[0].placeName()!!.toString()
+                    mapViewModel.getWeatherFrom(map, point, bottomSheetBehavior, rootView, placeName)
+                } else {
+                    Toast.makeText(requireContext(), "Ingen lokasjon funnet", LENGTH_SHORT).show()
+                }
+            }
+            override fun onFailure(call: Call<GeocodingResponse>, throwable: Throwable) {
+                throwable.printStackTrace()
+            }
+        })
     }
 
     // Oppsett av locationknapp og logikk for håndtering av valg
