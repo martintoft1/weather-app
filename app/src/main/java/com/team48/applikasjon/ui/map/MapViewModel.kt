@@ -96,7 +96,6 @@ class MapViewModel(val repository: Repository) : ViewModel() {
             return
         }
 
-        // TODO: opprett xml eller boks til å displaye data
         Log.d("features", dataArr.contentToString())
         Log.d("location", location)
 

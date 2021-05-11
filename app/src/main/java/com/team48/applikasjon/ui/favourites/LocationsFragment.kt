@@ -1,6 +1,8 @@
 package com.team48.applikasjon.ui.favourites
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -18,6 +21,7 @@ import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.Location
 import com.team48.applikasjon.ui.favourites.adapters.LocationsAdapter
 import com.team48.applikasjon.ui.main.ViewModelFactory
+import com.team48.applikasjon.utils.LocationSwipeHandler
 
 
 class LocationsFragment(val viewModelFactory: ViewModelFactory)
@@ -27,9 +31,8 @@ class LocationsFragment(val viewModelFactory: ViewModelFactory)
     private lateinit var recyclerView: RecyclerView
     private lateinit var locationsViewModel: LocationsViewModel
     private lateinit var locationsAdapter: LocationsAdapter
-
-
     private lateinit var locations: MutableList<Location>
+
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -58,46 +61,53 @@ class LocationsFragment(val viewModelFactory: ViewModelFactory)
 
 
     private fun setupRecyclerview() {
+        /* Initialize */
         recyclerView = rootView.findViewById(R.id.recyclerView)
         recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
         }
 
+        /* Get favourite locations from database */
         locationsViewModel.getAllLocations().observe(viewLifecycleOwner, Observer {
-            recyclerView.adapter = LocationsAdapter(it, this)
-            locations = it as MutableList<Location>
+            locationsAdapter = LocationsAdapter(it as MutableList<Location>, this)
+            recyclerView.adapter = locationsAdapter
+            locationsViewModel.locations = it as MutableList<Location>
+
+            /* Attach swipehandler to recyclerview */
+            val locationSwipeHandler = LocationSwipeHandler(requireContext(), locationsViewModel)
+            ItemTouchHelper(locationSwipeHandler).attachToRecyclerView(recyclerView)
         })
     }
+
+
 
     /* Recyclerview item onClick */
     override fun onLocationClick(position: Int, view: View) {
         println("Location clicked: pos $position")
 
-
-        val isExpanded = locations[position].expanded
+        val isExpanded = locationsViewModel.locations[position].expanded
         val expandedView = view.findViewById<LinearLayout>(R.id.location_expanded)
         TransitionManager.beginDelayedTransition(view.findViewById(R.id.cv_location), AutoTransition());
 
         if (isExpanded) {
             expandedView.visibility = View.GONE
-            locations[position].expanded = false
+            locationsViewModel.locations[position].expanded = false
         }
         else {
 
             expandedView.visibility = View.VISIBLE
-            locations[position].expanded = true
+            locationsViewModel.locations[position].expanded = true
         }
     }
 
     /* Delete location onClick */
     override fun onLocationDeleteClick(position: Int) {
-        locationsViewModel.deleteLocation(locations[position])
-        locations.removeAt(position)
+        locationsViewModel.deleteLocation(position)
     }
 
     /* Show location on map onClick */
     override fun onLocationMapClick(position: Int) {
-        TODO("Not yet implemented")
+        // TODO: Navigere til valgt lokasjon i mapfragment
     }
 }

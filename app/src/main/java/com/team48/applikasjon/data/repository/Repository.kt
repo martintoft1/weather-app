@@ -40,4 +40,8 @@ class Repository (val context: Context){
     fun getAllLocations() : LiveData<List<Location>> {
         return database.locationDao().getLocations()
     }
+
+    fun getCount() : LiveData<Int> {
+        return database.locationDao().getCount()
+    }
 }

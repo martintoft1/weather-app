@@ -11,12 +11,19 @@ import kotlin.math.exp
 
 class LocationsViewModel(private val repository: Repository) : ViewModel() {
 
+    var locations = mutableListOf<Location>() /* Store locations for easy access during runtime */
+
     fun getAllLocations() : LiveData<List<Location>> {
         return repository.getAllLocations()
     }
 
-    fun deleteLocation(location: Location) {
-        viewModelScope.launch { repository.deleteLocation(location) }
+    fun deleteLocation(position: Int) {
+        viewModelScope.launch { repository.deleteLocation(locations[position]) }
+        locations.removeAt(position)
+    }
+
+    fun getCount() : LiveData<Int> {
+        return repository.getCount()
     }
 }
 

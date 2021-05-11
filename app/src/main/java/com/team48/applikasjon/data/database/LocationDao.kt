@@ -19,6 +19,7 @@ interface LocationDao {
     @Delete
     suspend fun deleteLocation(location: Location)
 
-
+    @Query("SELECT COUNT(*) FROM location")
+    fun getCount() : LiveData<Int>
 
 }
