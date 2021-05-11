@@ -2,6 +2,7 @@ package com.team48.applikasjon.ui.favourites.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -40,23 +41,34 @@ class LocationsAdapter(
     class ViewHolder(val view: View, val listener: OnLocationClickListener)
         : RecyclerView.ViewHolder(view), View.OnClickListener {
 
-        val name:     TextView  = view.findViewById(R.id.tv_location)
-        val iv_cloud: ImageView = view.findViewById(R.id.iv_cloud)
-        val iv_rain:  ImageView = view.findViewById(R.id.iv_rain)
-        val iv_temp:  ImageView = view.findViewById(R.id.iv_temp)
+        val name:     TextView  = view.findViewById(R.id.tv_location)   // Location name
+        val iv_cloud: ImageView = view.findViewById(R.id.iv_cloud)      // Cloud icon
+        val iv_rain:  ImageView = view.findViewById(R.id.iv_rain)       // Rain icon
+        val iv_temp:  ImageView = view.findViewById(R.id.iv_temp)       // Temperature icon
 
-        var expanded: Boolean = false
+        val ib_map:   ImageButton = view.findViewById(R.id.go_to_map)   // Navigate to map button
+        val ib_del:   ImageButton = view.findViewById(R.id.delete)      // Delete location button
 
-        init { view.setOnClickListener(this) }
+        init {
+            view.setOnClickListener(this)
+            ib_map.setOnClickListener(this)
+            ib_del.setOnClickListener(this)
+        }
 
 
         override fun onClick(v: View?) {
-            listener.onLocationClick(bindingAdapterPosition, view)
+            when (v?.id) {
+                view.id   -> listener.onLocationClick(bindingAdapterPosition, view)
+                ib_map.id -> listener.onLocationMapClick(bindingAdapterPosition)
+                ib_del.id -> listener.onLocationDeleteClick(bindingAdapterPosition)
+            }
         }
     }
 
 
     interface OnLocationClickListener {
         fun onLocationClick(position: Int, view: View)
+        fun onLocationDeleteClick(position: Int)
+        fun onLocationMapClick(position: Int)
     }
 }

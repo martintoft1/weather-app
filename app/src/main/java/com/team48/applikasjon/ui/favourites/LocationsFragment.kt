@@ -70,13 +70,10 @@ class LocationsFragment(val viewModelFactory: ViewModelFactory)
         })
     }
 
-
-    fun deleteLocation(location: Location) {
-        locationsViewModel.deleteLocation(location)
-    }
-
+    /* Recyclerview item onClick */
     override fun onLocationClick(position: Int, view: View) {
         println("Location clicked: pos $position")
+
 
         val isExpanded = locations[position].expanded
         val expandedView = view.findViewById<LinearLayout>(R.id.location_expanded)
@@ -91,5 +88,16 @@ class LocationsFragment(val viewModelFactory: ViewModelFactory)
             expandedView.visibility = View.VISIBLE
             locations[position].expanded = true
         }
+    }
+
+    /* Delete location onClick */
+    override fun onLocationDeleteClick(position: Int) {
+        locationsViewModel.deleteLocation(locations[position])
+        locations.removeAt(position)
+    }
+
+    /* Show location on map onClick */
+    override fun onLocationMapClick(position: Int) {
+        TODO("Not yet implemented")
     }
 }
