@@ -3,6 +3,7 @@ package com.team48.applikasjon.ui.map
 import android.graphics.Color
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.*
@@ -98,17 +99,19 @@ class MapViewModel(val repository: Repository) : ViewModel() {
         // TODO: opprett xml eller boks til å displaye data
         Log.d("features", dataArr.contentToString())
         Log.d("location", location)
-        // Skyer, regn, temp
 
-        if (btb.state == BottomSheetBehavior.STATE_COLLAPSED) {
-            view.findViewById<TextView>(R.id.text_cloud).text = converter.getCloudDesc(dataArr[0])
-            view.findViewById<TextView>(R.id.text_rain).text  = converter.getRainDesc(dataArr[1])
-            view.findViewById<TextView>(R.id.text_temp).text  = converter.getTempDesc(dataArr[2])
-            btb.state =  BottomSheetBehavior.STATE_EXPANDED
+        view.findViewById<TextView>(R.id.text_location).text = location
+        dataArr[0]?.let { view.findViewById<ImageView>(R.id.image_cloud).setImageLevel(it.toInt()) }
+        dataArr[1]?.let { view.findViewById<ImageView>(R.id.image_rain).setImageLevel(it.toInt()) }
+        dataArr[2]?.let { view.findViewById<ImageView>(R.id.image_temp).setImageLevel(it.toInt()) }
 
-            selectedLocation = Location(0, "Location", dataArr[0], dataArr[1], dataArr[2])
-            println(selectedLocation.toString())
-        }
+        view.findViewById<TextView>(R.id.text_cloud).text = converter.getCloudDesc(dataArr[0])
+        view.findViewById<TextView>(R.id.text_rain).text = converter.getRainDesc(dataArr[1])
+        view.findViewById<TextView>(R.id.text_temp).text = converter.getTempDesc(dataArr[2])
+        btb.state = BottomSheetBehavior.STATE_EXPANDED
+
+        selectedLocation = Location(0, location, dataArr[0], dataArr[1], dataArr[2])
+    }
 
 
     fun addToFavourites() {

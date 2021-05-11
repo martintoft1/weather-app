@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cv_location"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:elevation="3dp"
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="5dp">
+
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp"
+        android:layout_marginTop="10dp">
+
+        <LinearLayout
+            android:id="@+id/location_default"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+
+            <TextView
+                android:id="@+id/tv_location"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Location"
+                android:ellipsize="end"
+                android:textSize="20sp"
+                android:gravity="center|start"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"/>
+
+
+
+            <ImageView
+                android:id="@+id/iv_rain"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/level_list_rain"
+                android:layout_marginEnd="10dp"
+                android:padding="5dp" />
+
+
+            <ImageView
+                android:id="@+id/iv_temp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/level_list_temp"
+                android:layout_marginEnd="10dp"
+                android:padding="5dp" />
+
+
+            <ImageView
+                android:id="@+id/iv_cloud"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/level_list_cloud"
+                android:layout_marginEnd="10dp"
+                android:padding="5dp" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/location_expanded"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_below="@id/location_default"
+            tools:visibility="visible">
+
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_pin"
+                android:layout_marginEnd="10dp"/>
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/ic_remove" />
+
+
+
+            <TextView
+                android:id="@+id/tv_clouds"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:textAlignment="center"
+                android:text="20%"/>
+
+            <TextView
+                android:id="@+id/tv_rain"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:textAlignment="center"
+                android:text="3 mm"/>
+
+            <TextView
+                android:id="@+id/tv_temp"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:textAlignment="center"
+                android:text="0°C"/>
+
+        </LinearLayout>
+
+
+
+
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

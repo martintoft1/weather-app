@@ -1,6 +1,7 @@
 package com.team48.applikasjon.data.database
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.room.*
 import com.team48.applikasjon.data.models.Location
 
@@ -17,5 +18,7 @@ interface LocationDao {
 
     @Delete
     suspend fun deleteLocation(location: Location)
+
+
 
 }

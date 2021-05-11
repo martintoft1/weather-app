@@ -28,7 +28,7 @@ abstract class LocationsDatabase : RoomDatabase() {
                 INSTANCE = Room.databaseBuilder(
                     context.applicationContext,
                     LocationsDatabase::class.java,
-                    "movie_database"
+                    "main_database"
                 ).build()
                 return INSTANCE as LocationsDatabase
             }
