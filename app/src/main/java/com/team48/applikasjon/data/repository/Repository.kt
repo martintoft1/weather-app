@@ -7,7 +7,7 @@ import com.team48.applikasjon.data.api.ApiServiceImpl
 import com.team48.applikasjon.data.database.LocationsDatabase
 import com.team48.applikasjon.data.models.DatabaseLocation
 
-class Repository (val context: Context){
+class Repository (context: Context){
 
     private val apiHelper = ApiHelper(ApiServiceImpl())
 
