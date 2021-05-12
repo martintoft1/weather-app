@@ -22,8 +22,8 @@ class WeatherConverter() {
 
         return when {
             value <= 0.0 -> rainDescs[0] + " ($value mm)"
-            value <= 0.4 -> rainDescs[1] + " ($value mm)"
-            value <= 0.8 -> rainDescs[2] + " ($value mm)"
+            value <= 0.8 -> rainDescs[1] + " ($value mm)"
+            value <= 1 -> rainDescs[2] + " ($value mm)"
             else         -> rainDescs[3] + " ($value mm)"
         }
     }
