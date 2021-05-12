@@ -1,10 +1,14 @@
 package com.team48.applikasjon.ui.settings
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.ViewModelProviders
 import com.team48.applikasjon.R
@@ -20,6 +24,7 @@ class SettingsFragment() : Fragment() {
     private lateinit var settingsViewModel: SettingsViewModel
     private lateinit var switchDarkMode: SwitchCompat
     private lateinit var switchLocation: SwitchCompat
+    private lateinit var sharedPref: SharedPreferences
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,6 +39,7 @@ class SettingsFragment() : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         getViewModelFactory()
         setupViewModel()
+        setupPreferences()
         setupButtons()
     }
 
@@ -52,6 +58,10 @@ class SettingsFragment() : Fragment() {
 
         switchDarkMode = rootView.findViewById(R.id.switchDarkMode)
         switchLocation = rootView.findViewById(R.id.switchLocation)
+
+        // Henter lagret tilstand hvis den eksiterer
+        switchDarkMode.isChecked = loadPreferences("darkMode")
+        switchLocation.isChecked = loadPreferences("locationMode")
 
         switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
 
@@ -72,8 +82,49 @@ class SettingsFragment() : Fragment() {
         }
     }
 
+    private fun setupPreferences() {
+        sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
+    }
+
+    private fun commitPreference(key: String, value: Boolean) {
+        with (sharedPref.edit()) {
+            putBoolean(key, value)
+            apply()
+        }
+    }
+
+    private fun loadPreferences(key: String): Boolean {
+        return sharedPref.getBoolean(key, false)
+    }
+
     // Kalles av MapFragment via MainActivity for å vite om henting av brukerlokasjon tillates
     fun getLocationButtonStatus(): Boolean {
         return switchLocation.isChecked
+    }
+
+    fun getDarkModeButtonStatus(): Boolean {
+        return switchDarkMode.isChecked
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("Lifecycle", "SettingsFragment onStart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("Lifecycle", "SettingsFragment onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("Lifecycle", "SettingsFragment onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        commitPreference("darkMode", switchDarkMode.isChecked)
+        commitPreference("locationMode", switchLocation.isChecked)
+        Log.d("Lifecycle", "SettingsFragment onStop")
     }
 }
