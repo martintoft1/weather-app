@@ -209,26 +209,18 @@ class MapFragment() : Fragment() {
         // On click add to favourites
         val button_fav: ImageButton = rootView.findViewById(R.id.add_favourites)
         button_fav.setOnClickListener {
-            when {
-                button_fav.isSelected -> {
-                    // Remove from favourites
-                    sharedViewModel.deleteSelected()
-                    button_fav.isSelected = false
-                    Toast.makeText(requireContext(), "Fjernet fra favoritter", Toast.LENGTH_LONG).show()
-                }
-                else -> {
-                    // Add to favourites
-                    if (sharedViewModel.addSelected()) {
-                        button_fav.isSelected = true
-                        Toast.makeText(requireContext(),
-                            "${sharedViewModel.selectedDatabaseLocation.name} lagt til i favoritter!",
-                            Toast.LENGTH_LONG).show()
-                    }
-                    button_fav.isSelected = true
-                    Toast.makeText(requireContext(), "Lagret i favoritter!", Toast.LENGTH_LONG).show()
-                }
+            if (!button_fav.isSelected) {
+
+                // Add to favourites
+                sharedViewModel.addSelected()
+                button_fav.isSelected = true
+                Toast.makeText(requireContext(), "Lagret i favoritter!", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    fun unfavouriteCurrent() {
+        rootView.findViewById<ImageButton>(R.id.add_favourites).isSelected = false
     }
 
     private fun getLocationFrom(map: MapboxMap, point: LatLng) {

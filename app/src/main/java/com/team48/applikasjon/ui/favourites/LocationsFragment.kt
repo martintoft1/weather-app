@@ -91,8 +91,6 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
         })
     }
 
-
-
     /* Recyclerview item onClick */
     override fun onLocationClick(position: Int, view: View) {
         println("Location clicked: pos $position")
@@ -110,6 +108,10 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
             expandedView.visibility = View.VISIBLE
             sharedViewModel.databaseLocations[position].expanded = true
         }
+    }
+
+    fun unfavouriteCurrent() {
+        (activity as MainActivity).unfavouriteCurrent()
     }
 
     override fun onStart() {
