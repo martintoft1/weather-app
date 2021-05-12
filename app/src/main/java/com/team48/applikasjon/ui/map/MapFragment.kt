@@ -2,6 +2,7 @@ package com.team48.applikasjon.ui.map
 
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -126,15 +127,19 @@ class MapFragment() : Fragment() {
 
             // Lagre peker til map for Fragment og ViewModel
             mapboxMap = map
-            mapViewModel.map = mapboxMap
 
             sharedViewModel.setMapReference(map)
 
             // Setter kameraposisjon til over Norge initielt
             map.cameraPosition = mapViewModel.getCamNorwayPos()
 
+            // Henter status på darkmode-knapp
+            val status = (activity as MainActivity).getDarkModeActivatedStatus()
+            val styleResource = if (status) mapViewModel.getDarkModeStyleResource()
+                                else        mapViewModel.getDefaultStyleResource()
+
             // Mapbox setter stil via ressurs på Mapbox-server
-            map.setStyle(getString(mapViewModel.getDefaultStyleResource())) { style ->
+            map.setStyle(getString(styleResource)) { style ->
 
                 // Oppretter layers når data er tilgjengelig etter API-kall
                 mapViewModel.updateWeather(style)
@@ -279,21 +284,25 @@ class MapFragment() : Fragment() {
     override fun onStart() {
         super.onStart()
         mapView?.onStart()
+        Log.d("Lifecycle", "MapFragment onStart")
     }
 
     override fun onResume() {
         super.onResume()
         mapView?.onResume()
+        Log.d("Lifecycle", "MapFragment onResume")
     }
 
     override fun onPause() {
         super.onPause()
         mapView?.onPause()
+        Log.d("Lifecycle", "MapFragment onPause")
     }
 
     override fun onStop() {
         super.onStop()
         mapView?.onStop()
+        Log.d("Lifecycle", "MapFragment onStop")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

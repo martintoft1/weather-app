@@ -29,12 +29,12 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     // Hashmap som holder på opprettede layers
     private var layerHashMap: HashMap<Int, Layer> = hashMapOf()
 
-    // Referanse til MapFragments MapboxMap, settes av fragmentet
-    lateinit var map: MapboxMap
-
-
     fun getDefaultStyleResource(): Int {
         return R.string.mapStyleLight
+    }
+
+    fun getDarkModeStyleResource(): Int {
+       return R.string.mapStyleDark
     }
 
     // Opprettelse av layers basert på API-data

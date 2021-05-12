@@ -2,6 +2,7 @@ package com.team48.applikasjon.ui.favourites
 
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -109,5 +110,25 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
             expandedView.visibility = View.VISIBLE
             sharedViewModel.databaseLocations[position].expanded = true
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("Lifecycle", "LocationsFragment onStart")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("Lifecycle", "LocationsFragment onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("Lifecycle", "LocationsFragment onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d("Lifecycle", "LocationsFragment onStop")
     }
 }
