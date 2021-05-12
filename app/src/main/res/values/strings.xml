@@ -2,7 +2,7 @@
     <string name="app_name">Vær</string>
 
     // Menu items
-    <string name="weather">Vær</string>
+    <string name="favourites">Favoritter</string>
     <string name="map">Kart</string>
     <string name="settings">Innstillinger</string>
 
@@ -28,5 +28,16 @@
         <item>Temperatur</item>
         <item>Tom</item>
     </string-array>
+
+
+    // Tabell for skydekke
+    <string name="lett">Ingen Skyer</string>
+    <string name="delvis">Delvis skyet</string>
+    <string name="fullt">Overskyet</string>
+
+    // Tabell for nedbør
+
+
+    // Tabell for temperatur
 
 </resources>

@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.os.Looper.myLooper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.location.*
@@ -18,7 +17,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mapbox.mapboxsdk.Mapbox
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.repository.Repository
-import com.team48.applikasjon.ui.dailyweather.WeatherFragment
+import com.team48.applikasjon.ui.favourites.LocationsFragment
 import com.team48.applikasjon.ui.main.adapters.FragmentContainerAdapter
 import com.team48.applikasjon.ui.map.MapFragment
 import com.team48.applikasjon.ui.settings.SettingsFragment
@@ -32,20 +31,21 @@ class MainActivity : AppCompatActivity() {
     private lateinit var locationManager: LocationManager
     private val PERMISSION_ID = 44
 
-    private val weatherFragment  = WeatherFragment()
-    private val mapFragment      = MapFragment()
-    private val settingsFragment = SettingsFragment()
+    private val locationsFragment   = LocationsFragment()
+    private val mapFragment         = MapFragment()
+    private val settingsFragment    = SettingsFragment()
 
-    // Felles repository for alle ViewModels
-    private val repository = Repository()
-
-    private val viewModelFactory = ViewModelFactory(repository)
+    // Felles repository for alle ViewModels, via ViewModelFactory
+    private lateinit var repository: Repository
+    private lateinit var viewModelFactory: ViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        //AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+
+        repository = Repository(this)
+        viewModelFactory = ViewModelFactory(repository)
 
         fragmentContainer = findViewById(R.id.fragment_container)
         bottomNavigationView = findViewById(R.id.bottom_navigation)
@@ -59,14 +59,12 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
     fun getViewModelFactory(): ViewModelFactory {
         return viewModelFactory
     }
 
     // Støttefunksjon for kommunikasjon mellom Settings- og MapFragment
     fun changeMapStyle(styleResource: Int, visualMode: Int) {
-
         mapFragment.changeStyle(styleResource, visualMode)
     }
 
@@ -156,7 +154,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupFragmentContainer() {
         val adapter = FragmentContainerAdapter(supportFragmentManager, lifecycle)
-        adapter.addFragment(weatherFragment)
+        adapter.addFragment(locationsFragment)
         adapter.addFragment(mapFragment)
         adapter.addFragment(settingsFragment)
         fragmentContainer.adapter = adapter
@@ -166,7 +164,7 @@ class MainActivity : AppCompatActivity() {
                 super.onPageSelected(position)
                 when (position) {
                     // Valgt ikon i bottom navigation blir "checked"
-                    0 -> bottomNavigationView.menu.findItem(R.id.weatherView).isChecked = true
+                    0 -> bottomNavigationView.menu.findItem(R.id.locationsView).isChecked = true
                     1 -> bottomNavigationView.menu.findItem(R.id.mapView).isChecked = true
                     2 -> bottomNavigationView.menu.findItem(R.id.settingsView).isChecked = true
                 }
@@ -188,7 +186,9 @@ class MainActivity : AppCompatActivity() {
         // Bytter fragment ved bottomnav navigering
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.weatherView -> fragmentContainer.setCurrentItem(0, true)
+                R.id.locationsView -> {
+                    fragmentContainer.setCurrentItem(0, true)
+                }
                 R.id.mapView -> fragmentContainer.setCurrentItem(1, true)
                 R.id.settingsView -> fragmentContainer.setCurrentItem(2, true)
             }

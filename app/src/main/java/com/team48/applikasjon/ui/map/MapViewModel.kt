@@ -1,9 +1,9 @@
 package com.team48.applikasjon.ui.map
 
-import android.app.Application
 import android.graphics.Color
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -17,14 +17,17 @@ import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.expressions.Expression.*
 import com.mapbox.mapboxsdk.style.layers.FillLayer
 import com.mapbox.mapboxsdk.style.layers.Layer
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import com.mapbox.mapboxsdk.style.sources.VectorSource
 import com.team48.applikasjon.R
+import com.team48.applikasjon.data.models.Location
 import com.team48.applikasjon.data.models.VectorDataset
 import com.team48.applikasjon.data.repository.Repository
+import com.team48.applikasjon.utils.WeatherConverter
 import com.team48.applikasjon.ui.main.MainActivity
 import kotlinx.coroutines.*
 import java.util.Collections.emptyList
@@ -44,6 +47,7 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     // Referanse til MapFragments MapboxMap, settes av fragmentet
     lateinit var map: MapboxMap
 
+
     fun getDefaultStyleResource(): Int {
         return R.string.mapStyleLight
     }
@@ -56,6 +60,7 @@ class MapViewModel(val repository: Repository) : ViewModel() {
                 delay(500)
                 liveWeather = repository.getWeather()
             }
+
             withContext(Dispatchers.Main) {
 
                 // Layers legges til med default presentasjon (light mode)
@@ -69,41 +74,6 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     fun getIDfromURL(url: String): String {
         return url.substringAfterLast("/")
     }
-
-    fun getWeatherFrom(map: MapboxMap, point: LatLng, btb: BottomSheetBehavior<ConstraintLayout>, view: View, location: String) {
-        // Convert LatLng coordinates to screen pixel and only query the rendered features.
-        val pixel = map.projection.toScreenLocation(point)
-        val dataArr = arrayOfNulls<Float>(3)
-
-        if (map.queryRenderedFeatures(pixel, "layer0", "layer1", "layer2").size > 0) {
-            for (i in dataArr.indices) {
-                val jsonData = map.queryRenderedFeatures(pixel, "layer${i}")
-                if (jsonData.size > 0) {
-                    dataArr[i] = jsonData[0].properties()!!["value"].toString().toFloat()
-                } else {
-                    dataArr[i] = 0F
-                }
-            }
-        } else {
-            Log.d("getWeatherFrom()", "Trykk innenfor Norden!")
-            return
-        }
-
-        // TODO: opprett xml eller boks til å displaye data
-        Log.d("features", dataArr.contentToString())
-        Log.d("location", location)
-        // Skyer, regn, temp
-
-        if (btb.state == BottomSheetBehavior.STATE_COLLAPSED) {
-            view.findViewById<TextView>(R.id.text_cloud).text = dataArr[0].toString()
-            view.findViewById<TextView>(R.id.text_rain).text  = dataArr[1].toString()
-            view.findViewById<TextView>(R.id.text_temp).text  = dataArr[2].toString()
-            btb.state =  BottomSheetBehavior.STATE_EXPANDED
-        }
-
-
-    }
-
 
 
     // Henter metadataURL fra weatherList basert på spinnerposisjon
