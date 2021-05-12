@@ -34,6 +34,10 @@
     <string name="lett">Ingen Skyer</string>
     <string name="delvis">Delvis skyet</string>
     <string name="fullt">Overskyet</string>
+    <string name="sky_ikon">sky-ikon</string>
+    <string name="favoritt_ikon">favoritt-ikon</string>
+    <string name="regn_ikon">regn-ikon</string>
+    <string name="temp_ikon">temp-ikon</string>
 
     // Tabell for nedbør
 
