@@ -170,6 +170,7 @@ class MapFragment() : Fragment() {
 
         spinnerAdapter  = SpinnerAdapter(requireContext(), icons)
         spinner.adapter = spinnerAdapter
+        spinner.setSelection(icons.size - 1)
 
         // Listener for filtervalg i spinner
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
