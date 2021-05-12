@@ -31,20 +31,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var locationManager: LocationManager
     private val PERMISSION_ID = 44
 
-    private lateinit var repository: Repository
-    private lateinit var viewModelFactory: ViewModelFactory
+    private val weatherFragment  = WeatherFragment()
+    private val mapFragment      = MapFragment()
+    private val settingsFragment = SettingsFragment()
 
-    private val locationsFragment by lazy { LocationsFragment(viewModelFactory) }
-    private val mapFragment       by lazy { MapFragment(viewModelFactory) }
-    private val settingsFragment  by lazy { SettingsFragment(viewModelFactory) }
+    // Felles repository for alle ViewModels
+    private val repository = Repository()
+
+    private val viewModelFactory = ViewModelFactory(repository)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        repository = Repository(this)
-        viewModelFactory = ViewModelFactory(repository)
 
         fragmentContainer = findViewById(R.id.fragment_container)
         bottomNavigationView = findViewById(R.id.bottom_navigation)
@@ -55,15 +54,21 @@ class MainActivity : AppCompatActivity() {
 
         // Location Manager
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+    }
+
+
+    fun getViewModelFactory(): ViewModelFactory {
+        return viewModelFactory
     }
 
     // Støttefunksjon for kommunikasjon mellom Settings- og MapFragment
     fun changeMapStyle(styleResource: Int, visualMode: Int) {
-        mapFragment.changeStyle(styleResource)
+        mapFragment.changeStyle(styleResource, visualMode)
     }
 
     // Grensesnitt mellom MapFragment og SettingsFragment, relatert til location-knapp
-    fun getLocationButtonStatus(): Boolean{
+    fun getLocationButtonStatus(): Boolean {
         return settingsFragment.getLocationButtonStatus()
     }
 
@@ -77,7 +82,6 @@ class MainActivity : AppCompatActivity() {
                     if (location == null) {
                         requestNewLocationData()
                     } else {
-
                         // Leverer brukerposisjon til MapFragment
                         mapFragment.updateUserLocation(location)
                     }

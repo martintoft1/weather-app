@@ -7,8 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.Toast.LENGTH_SHORT
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.mapbox.api.geocoding.v5.GeocodingCriteria
@@ -29,9 +32,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MapFragment(private val viewModelFactory: ViewModelFactory) : Fragment() {
+class MapFragment() : Fragment() {
 
     private lateinit var rootView: View
+    private lateinit var repository: Repository
+    private lateinit var viewModelFactory: ViewModelFactory
     private lateinit var mapViewModel: MapViewModel
     private lateinit var sharedViewModel: SharedViewModel
     private lateinit var spinnerAdapter: SpinnerAdapter
@@ -44,9 +49,9 @@ class MapFragment(private val viewModelFactory: ViewModelFactory) : Fragment() {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         rootView = inflater.inflate(R.layout.fragment_map, container, false)
         return rootView
@@ -54,6 +59,7 @@ class MapFragment(private val viewModelFactory: ViewModelFactory) : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        getViewModelFactory()
         setupViewModel()
         setupMap(savedInstanceState)
         setupSpinner()
@@ -61,12 +67,15 @@ class MapFragment(private val viewModelFactory: ViewModelFactory) : Fragment() {
         setupLocationButton()
     }
 
+    private fun getViewModelFactory() {
+        viewModelFactory = (activity as MainActivity).getViewModelFactory()
+    }
 
-    // Oppsett av ViewModels
+    // Oppsett av ViewModel
     private fun setupViewModel() {
         mapViewModel = ViewModelProviders.of(
-                this,
-                viewModelFactory
+            this,
+            viewModelFactory
         ).get(MapViewModel::class.java)
 
         sharedViewModel = ViewModelProviders.of(
@@ -97,7 +106,7 @@ class MapFragment(private val viewModelFactory: ViewModelFactory) : Fragment() {
     }
 
     // Endrer stil ved valg i innstillinger
-    fun changeStyle(styleResource: Int) {
+    fun changeStyle(styleResource: Int, visualMode: Int) {
         mapboxMap.setStyle(Style.Builder().fromUri(getString(styleResource))) { style ->
 
             // Layers må legges til på nytt.
@@ -208,6 +217,8 @@ class MapFragment(private val viewModelFactory: ViewModelFactory) : Fragment() {
                             "${sharedViewModel.selectedLocation.name} lagt til i favoritter!",
                             Toast.LENGTH_LONG).show()
                     }
+                    button_fav.isSelected = true
+                    Toast.makeText(requireContext(), "Lagret i favoritter!", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -254,7 +265,7 @@ class MapFragment(private val viewModelFactory: ViewModelFactory) : Fragment() {
                     mapboxMap.cameraPosition = setUserLocation()!!
                 else Toast.makeText(requireContext(),
                         "Brukerlokasjon ikke tilgjengelig",
-                        LENGTH_SHORT).show()
+                        Toast.LENGTH_SHORT).show()
 
             } else {
                 Toast.makeText(requireContext(),

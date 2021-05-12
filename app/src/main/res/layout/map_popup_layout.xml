@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,7 +9,8 @@
     android:paddingEnd="20dp"
     android:paddingBottom="10dp"
     android:outlineProvider="bounds"
-    android:background="@drawable/map_popup_background">
+    android:background="@drawable/map_popup_background"
+    >
 
     <FrameLayout
         android:id="@+id/capsule"
@@ -24,16 +24,14 @@
 
     <TextView
         android:id="@+id/text_location"
-        android:textColor="@color/black"
+        android:text="@string/location"
         android:gravity="center_vertical"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="22sp"
+        android:layout_height="40dp"
         android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toStartOf="@id/add_favourites"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/capsule" />
-
 
     <ImageButton
         android:id="@+id/add_favourites"
@@ -57,7 +55,6 @@
 
     <TextView
         android:id="@+id/text_cloud"
-        android:textSize="20sp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -80,7 +77,6 @@
 
     <TextView
         android:id="@+id/text_rain"
-        android:textSize="20sp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -100,7 +96,6 @@
 
     <TextView
         android:id="@+id/text_temp"
-        android:textSize="20sp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -108,6 +103,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/image_temp"
         app:layout_constraintTop_toTopOf="@+id/image_temp" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

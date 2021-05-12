@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Applikasjon</string>
+    <string name="app_name">Vær</string>
 
     // Menu items
     <string name="favourites">Favoritter</string>
@@ -19,6 +19,7 @@
     <string name="dark_mode">Dark mode</string>
     <string name="tillatt_brukerlokasjon">Tillatt brukerlokasjon</string>
     <string name="locationbtn">locationBtn</string>
+    <string name="location">Lokasjon</string>
 
     // MapFragment Spinner elementer
     <string-array name="map_overlays">
