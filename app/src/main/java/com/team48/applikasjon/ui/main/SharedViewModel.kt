@@ -67,7 +67,7 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
         } catch (e: Exception){
             return -1
         }
-        return position;
+        return position
     }
 
     fun getCameraPositionFromLocation(position: Int): CameraPosition {
@@ -128,6 +128,7 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
         view.findViewById<TextView>(R.id.text_cloud).text = converter.getCloudDesc(dataArr[0])
         view.findViewById<TextView>(R.id.text_rain).text = converter.getRainDesc(dataArr[1])
         view.findViewById<TextView>(R.id.text_temp).text = converter.getTempDesc(dataArr[2])
+        view.findViewById<TextView>(R.id.text_recommendation).text = converter.getWeatherDesc(dataArr[0], dataArr[1], dataArr[2])
         btb.state = BottomSheetBehavior.STATE_EXPANDED
     }
 }
