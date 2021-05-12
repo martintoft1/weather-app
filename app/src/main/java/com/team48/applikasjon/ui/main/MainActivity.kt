@@ -41,6 +41,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModelFactory: ViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        Log.d("Lifecycle", "MainActivity onCreate")
+
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -54,6 +57,7 @@ class MainActivity : AppCompatActivity() {
         // Oppsett av navigation bar med fragmenter
         setupFragmentContainer()
         setupBottomNavigation()
+
 
         // Location Manager
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -140,6 +144,7 @@ class MainActivity : AppCompatActivity() {
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(
                 LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+                && settingsFragment.getLocationButtonStatus()
     }
 
     // Kalles på via switch i settings
@@ -151,6 +156,10 @@ class MainActivity : AppCompatActivity() {
     fun disableLocation() {
         val nullLocation: Location? = null
         mapFragment.updateUserLocation(nullLocation)
+    }
+
+    fun getDarkModeActivatedStatus(): Boolean {
+        return settingsFragment.getDarkModeButtonStatus()
     }
 
     private fun setupFragmentContainer() {
@@ -177,6 +186,7 @@ class MainActivity : AppCompatActivity() {
 
         // Initialiserer fragmentene som appen ikke starter i
         fragmentContainer.setCurrentItem(0, false)
+        fragmentContainer.setCurrentItem(1, false)
         fragmentContainer.setCurrentItem(2, false)
 
         // Setter fragment som åpnes først
@@ -200,5 +210,31 @@ class MainActivity : AppCompatActivity() {
     fun moveCamera(cameraPosition: CameraPosition) {
         mapFragment.setLocation(cameraPosition)
         fragmentContainer.post { fragmentContainer.setCurrentItem(1, true) }
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Log.d("Lifecycle", "MainActivity onRestart")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d("Lifecycle", "MainActivity onStart")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        //mapFragment.onPause()
+        //settingsFragment.onPause()
+        //locationsFragment.onPause()
+        Log.d("Lifecycle", "MainActivity onPause")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapFragment.onResume()
+        settingsFragment.onResume()
+        locationsFragment.onResume()
+        Log.d("Lifecycle", "MainActivity onResume")
     }
 }
