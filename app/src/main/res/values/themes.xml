@@ -4,8 +4,8 @@
     <style name="Theme.Applikasjon" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">#95BBDF</item>
+        <item name="colorPrimaryVariant">#7BA8D2</item>
         <item name="colorOnPrimary">@color/white</item>
 
         <!-- Secondary brand color. -->
