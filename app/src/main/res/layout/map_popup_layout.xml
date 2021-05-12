@@ -49,7 +49,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:padding="5dp"
-        android:src="@drawable/ic_cloud"
+        android:src="@drawable/level_list_cloud"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_location" />
 
@@ -70,7 +70,7 @@
         android:padding="5dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:src="@drawable/ic_umbrella"
+        android:src="@drawable/level_list_rain"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/image_temp"
         app:layout_constraintTop_toBottomOf="@+id/image_cloud" />
@@ -90,7 +90,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:padding="5dp"
-        android:src="@drawable/ic_temperature"
+        android:src="@drawable/level_list_temp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
