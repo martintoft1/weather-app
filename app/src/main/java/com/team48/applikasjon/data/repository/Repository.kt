@@ -2,8 +2,6 @@ package com.team48.applikasjon.data.repository
 
 import android.content.Context
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.team48.applikasjon.R
 import com.team48.applikasjon.data.api.ApiHelper
 import com.team48.applikasjon.data.api.ApiServiceImpl
 import com.team48.applikasjon.data.database.LocationsDatabase
@@ -12,20 +10,10 @@ import com.team48.applikasjon.data.models.Location
 class Repository (val context: Context){
 
     private val apiHelper = ApiHelper(ApiServiceImpl())
-    private val defaultStyle: String = R.string.mapStyleLight.toString()
-    val modeStyle: MutableLiveData<String> by lazy { MutableLiveData<String>() }
 
     private val database = LocationsDatabase.getDatabase(context)
 
     fun getWeather() = apiHelper.getWeather()
-
-    /*
-    fun setCustomMapStyle(style: String) {
-        customMapStyle = style
-    }
-    fun getCustomMapStyle() = customMapStyle
-
-     */
 
     suspend fun addLocation(location: Location) {
         database.locationDao().addLocation(location)
@@ -37,10 +25,6 @@ class Repository (val context: Context){
 
     fun getAllLocations() : LiveData<MutableList<Location>> {
         return database.locationDao().getLocations()
-    }
-
-    fun checkLocation(name: String) : LiveData<Boolean> {
-        return database.locationDao().checkLocation(name)
     }
 
     fun getCount() : LiveData<Int> {

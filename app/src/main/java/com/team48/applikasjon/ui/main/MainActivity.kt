@@ -31,19 +31,21 @@ class MainActivity : AppCompatActivity() {
     private lateinit var locationManager: LocationManager
     private val PERMISSION_ID = 44
 
-    private val weatherFragment  = WeatherFragment()
-    private val mapFragment      = MapFragment()
-    private val settingsFragment = SettingsFragment()
+    private val locationsFragment   = LocationsFragment()
+    private val mapFragment         = MapFragment()
+    private val settingsFragment    = SettingsFragment()
 
-    // Felles repository for alle ViewModels
-    private val repository = Repository()
-
-    private val viewModelFactory = ViewModelFactory(repository)
+    // Felles repository for alle ViewModels, via ViewModelFactory
+    private lateinit var repository: Repository
+    private lateinit var viewModelFactory: ViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        repository = Repository(this)
+        viewModelFactory = ViewModelFactory(repository)
 
         fragmentContainer = findViewById(R.id.fragment_container)
         bottomNavigationView = findViewById(R.id.bottom_navigation)
@@ -56,7 +58,6 @@ class MainActivity : AppCompatActivity() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
     }
-
 
     fun getViewModelFactory(): ViewModelFactory {
         return viewModelFactory

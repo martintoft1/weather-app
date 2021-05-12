@@ -7,11 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import android.widget.Toast.LENGTH_SHORT
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.mapbox.api.geocoding.v5.GeocodingCriteria
@@ -24,6 +21,7 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.team48.applikasjon.R
+import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.SharedViewModel
 import com.team48.applikasjon.ui.main.ViewModelFactory
@@ -35,7 +33,6 @@ import retrofit2.Response
 class MapFragment() : Fragment() {
 
     private lateinit var rootView: View
-    private lateinit var repository: Repository
     private lateinit var viewModelFactory: ViewModelFactory
     private lateinit var mapViewModel: MapViewModel
     private lateinit var sharedViewModel: SharedViewModel
