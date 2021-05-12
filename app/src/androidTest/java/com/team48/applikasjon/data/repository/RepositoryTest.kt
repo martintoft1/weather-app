@@ -60,7 +60,14 @@ class RepositoryTest : TestCase() {
     }
 
     fun testAddLocation() {
+<<<<<<< HEAD
         fail("Test not yet implemented")
+=======
+
+
+
+        //fail("Test not yet implemented")
+>>>>>>> 45e1964 (unit testing)
     }
 
     fun testDeleteLocation() {
