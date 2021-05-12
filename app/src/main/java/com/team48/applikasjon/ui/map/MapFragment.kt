@@ -158,10 +158,10 @@ class MapFragment() : Fragment() {
     private fun setupSpinner() {
         spinner = rootView.findViewById(R.id.spinner_weather_filter)
         val icons = mutableListOf<Int>()
-        icons.add(R.drawable.ic_empty_filter)
-        icons.add(R.drawable.ic_cloud)
-        icons.add(R.drawable.ic_umbrella)
-        icons.add(R.drawable.ic_temperature)
+        icons.add(R.drawable.c_cloud_medium)
+        icons.add(R.drawable.c_rain_medim)
+        icons.add(R.drawable.c_sun)
+        icons.add(R.drawable.c_x)
 
         spinnerAdapter  = SpinnerAdapter(requireContext(), icons)
         spinner.adapter = spinnerAdapter
@@ -182,10 +182,10 @@ class MapFragment() : Fragment() {
                 if (mapViewModel.dataReady) {
 
                     // Position = No filter
-                    if (position == 0) mapViewModel.hideAllLayers()
+                    if (position == 3) mapViewModel.hideAllLayers()
 
                     // Position = 1: Clouds | 2: Precipitiation | 3: airTemp
-                    else mapViewModel.chooseLayer(position - 1)
+                    else mapViewModel.chooseLayer(position)
 
                 }
             }
