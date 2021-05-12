@@ -10,8 +10,11 @@ import com.team48.applikasjon.data.models.Location
 @Dao
 interface LocationDao {
 
-    @Query("SELECT * FROM location")
-    fun getLocations() : LiveData<List<Location>>
+    @Query("SELECT * FROM table_location")
+    fun getLocations() : LiveData<MutableList<Location>>
+
+    @Query("SELECT EXISTS (SELECT * from table_location WHERE name = :name)")
+    fun checkLocation(name: String) : LiveData<Boolean>
 
     @Insert
     suspend fun addLocation(location: Location)
@@ -19,7 +22,7 @@ interface LocationDao {
     @Delete
     suspend fun deleteLocation(location: Location)
 
-    @Query("SELECT COUNT(*) FROM location")
+    @Query("SELECT COUNT(*) FROM table_location")
     fun getCount() : LiveData<Int>
 
 }

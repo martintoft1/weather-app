@@ -3,7 +3,7 @@ package com.team48.applikasjon.data.models
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "location")
+@Entity(tableName = "table_location")
 data class Location (
        @PrimaryKey(autoGenerate = true)
        val id: Int,
@@ -13,4 +13,5 @@ data class Location (
        var temp_celsius: Float?
 ) {
        var expanded: Boolean = false
+       var favourite: Boolean = false
 }

@@ -1,13 +1,8 @@
 package com.team48.applikasjon.ui.favourites.adapters
-import android.content.ClipData
-import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.recyclerview.widget.ItemTouchHelper
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.Location
@@ -19,19 +14,18 @@ class LocationsAdapter(
 
     ) : RecyclerView.Adapter<LocationsAdapter.ViewHolder>() {
 
+
     override fun getItemCount(): Int = locations.size
+
+
+    fun setLocations(locations: MutableList<Location>) {
+        this.locations = locations
+        notifyDataSetChanged()
+    }
 
     fun removeLocation(position: Int) {
         locations.removeAt(position)
         notifyItemRemoved(position)
-    }
-
-    fun getLocation(position: Int) : Location { return locations[position] }
-
-
-    fun setLocations(locations: List<Location>) {
-        this.locations = locations as MutableList<Location>
-        notifyDataSetChanged()
     }
 
 
@@ -51,6 +45,10 @@ class LocationsAdapter(
         location.rain_mm?.let          { holder.iv_rain.setImageLevel(it.toInt()) }
         location.temp_celsius?.let     { holder.iv_temp.setImageLevel(it.toInt()) }
 
+        // Setter værdata
+        holder.tv_cloud.text = location.cloud_percentage.toString()
+        holder.tv_rain.text  = location.rain_mm.toString()
+        holder.tv_temp.text  = location.temp_celsius.toString()
     }
 
 
@@ -59,36 +57,27 @@ class LocationsAdapter(
             val clickListener: OnLocationClickListener
         ) : RecyclerView.ViewHolder(view), View.OnClickListener {
 
+        val swipeableContent = view.findViewById<LinearLayout>(R.id.swipe_container)
 
         val name:     TextView  = view.findViewById(R.id.tv_location)   // Location name
         val iv_cloud: ImageView = view.findViewById(R.id.iv_cloud)      // Cloud icon
         val iv_rain:  ImageView = view.findViewById(R.id.iv_rain)       // Rain icon
         val iv_temp:  ImageView = view.findViewById(R.id.iv_temp)       // Temperature icon
 
-        val ib_map:   ImageButton = view.findViewById(R.id.go_to_map)   // Navigate to map button
-        val ib_del:   ImageButton = view.findViewById(R.id.delete)      // Delete location button
+        val tv_cloud: TextView  = view.findViewById(R.id.tv_clouds)     // Clouds (%)
+        val tv_rain:  TextView  = view.findViewById(R.id.tv_rain)       // Rain   (mm)
+        val tv_temp:  TextView  = view.findViewById(R.id.tv_temp)       // Temp   (°C)
 
-        init {
-            view.setOnClickListener(this)
-            ib_map.setOnClickListener(this)
-            ib_del.setOnClickListener(this)
+        init { view.setOnClickListener(this) }
 
-        }
-
-
-        override fun onClick(v: View?) {
-            when (v?.id) {
+        override fun onClick(v: View) {
+            when (v.id) {
                 view.id   -> clickListener.onLocationClick(bindingAdapterPosition, view)
-                ib_map.id -> clickListener.onLocationMapClick(bindingAdapterPosition)
-                ib_del.id -> clickListener.onLocationDeleteClick(bindingAdapterPosition)
             }
         }
     }
 
-
     interface OnLocationClickListener {
         fun onLocationClick(position: Int, view: View)
-        fun onLocationDeleteClick(position: Int)
-        fun onLocationMapClick(position: Int)
     }
 }

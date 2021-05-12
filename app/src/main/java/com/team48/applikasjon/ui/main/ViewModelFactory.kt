@@ -20,6 +20,9 @@ class ViewModelFactory(private val repository: Repository) : ViewModelProvider.F
             modelClass.isAssignableFrom(SettingsViewModel::class.java) -> {
                 SettingsViewModel(repository) as T
             }
+            modelClass.isAssignableFrom(SharedViewModel::class.java) -> {
+                SharedViewModel(repository) as T
+            }
             else -> throw IllegalArgumentException("Unknown class name")
         }
     }

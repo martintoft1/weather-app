@@ -16,8 +16,6 @@ class Repository (val context: Context){
     val modeStyle: MutableLiveData<String> by lazy { MutableLiveData<String>() }
 
     private val database = LocationsDatabase.getDatabase(context)
-    val locations = database.locationDao().getLocations()
-
 
     fun getWeather() = apiHelper.getWeather()
 
@@ -37,8 +35,12 @@ class Repository (val context: Context){
         database.locationDao().deleteLocation(location)
     }
 
-    fun getAllLocations() : LiveData<List<Location>> {
+    fun getAllLocations() : LiveData<MutableList<Location>> {
         return database.locationDao().getLocations()
+    }
+
+    fun checkLocation(name: String) : LiveData<Boolean> {
+        return database.locationDao().checkLocation(name)
     }
 
     fun getCount() : LiveData<Int> {

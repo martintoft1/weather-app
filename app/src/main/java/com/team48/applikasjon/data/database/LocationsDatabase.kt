@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.team48.applikasjon.data.models.Location
 
 
-@Database(entities = [Location::class], version = 1)
+@Database(entities = [Location::class], version = 3)
 abstract class LocationsDatabase : RoomDatabase() {
 
     abstract fun locationDao() : LocationDao

@@ -13,7 +13,7 @@ class LocationsViewModel(private val repository: Repository) : ViewModel() {
 
     var locations = mutableListOf<Location>() /* Store locations for easy access during runtime */
 
-    fun getAllLocations() : LiveData<List<Location>> {
+    fun getAllLocations() : LiveData<MutableList<Location>> {
         return repository.getAllLocations()
     }
 

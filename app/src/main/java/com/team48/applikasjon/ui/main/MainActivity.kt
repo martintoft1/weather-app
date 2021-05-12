@@ -34,9 +34,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var repository: Repository
     private lateinit var viewModelFactory: ViewModelFactory
 
-    private val weatherFragment  by lazy { LocationsFragment(viewModelFactory) }
-    private val mapFragment      by lazy { MapFragment(viewModelFactory) }
-    private val settingsFragment by lazy { SettingsFragment(viewModelFactory) }
+    private val locationsFragment by lazy { LocationsFragment(viewModelFactory) }
+    private val mapFragment       by lazy { MapFragment(viewModelFactory) }
+    private val settingsFragment  by lazy { SettingsFragment(viewModelFactory) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 
     // Støttefunksjon for kommunikasjon mellom Settings- og MapFragment
     fun changeMapStyle(styleResource: Int, visualMode: Int) {
-        mapFragment.changeStyle(styleResource, visualMode)
+        mapFragment.changeStyle(styleResource)
     }
 
     // Grensesnitt mellom MapFragment og SettingsFragment, relatert til location-knapp
@@ -149,7 +149,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupFragmentContainer() {
         val adapter = FragmentContainerAdapter(supportFragmentManager, lifecycle)
-        adapter.addFragment(weatherFragment)
+        adapter.addFragment(locationsFragment)
         adapter.addFragment(mapFragment)
         adapter.addFragment(settingsFragment)
         fragmentContainer.adapter = adapter
@@ -181,7 +181,9 @@ class MainActivity : AppCompatActivity() {
         // Bytter fragment ved bottomnav navigering
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.locationsView -> fragmentContainer.setCurrentItem(0, true)
+                R.id.locationsView -> {
+                    fragmentContainer.setCurrentItem(0, true)
+                }
                 R.id.mapView -> fragmentContainer.setCurrentItem(1, true)
                 R.id.settingsView -> fragmentContainer.setCurrentItem(2, true)
             }

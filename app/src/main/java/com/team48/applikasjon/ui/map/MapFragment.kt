@@ -2,46 +2,38 @@ package com.team48.applikasjon.ui.map
 
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.*
 import android.widget.Toast.LENGTH_SHORT
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.mapbox.api.geocoding.v5.GeocodingCriteria
 import com.mapbox.api.geocoding.v5.MapboxGeocoding
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse
 import com.mapbox.geojson.Point
-import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.plugins.places.autocomplete.ui.PlaceAutocompleteFragment.TAG
 import com.team48.applikasjon.R
-import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.main.MainActivity
+import com.team48.applikasjon.ui.main.SharedViewModel
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
+class MapFragment(private val viewModelFactory: ViewModelFactory) : Fragment() {
 
     private lateinit var rootView: View
-    private lateinit var repository: Repository
     private lateinit var mapViewModel: MapViewModel
+    private lateinit var sharedViewModel: SharedViewModel
     private lateinit var spinnerAdapter: SpinnerAdapter
     private lateinit var spinner: Spinner
     private lateinit var locationButton: ImageView
@@ -69,15 +61,24 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
         setupLocationButton()
     }
 
-    // Oppsett av ViewModel
+
+    // Oppsett av ViewModels
     private fun setupViewModel() {
         mapViewModel = ViewModelProviders.of(
                 this,
                 viewModelFactory
         ).get(MapViewModel::class.java)
 
-        repository = mapViewModel.repository
+        sharedViewModel = ViewModelProviders.of(
+                this,
+                viewModelFactory
+        ).get(SharedViewModel::class.java)
+
+        sharedViewModel.getAllLocations().observe(viewLifecycleOwner, {
+            sharedViewModel.locations = it
+        })
     }
+
 
     // Settes brukerlokasjon i kart basert på variabelen userLocation
     private fun setUserLocation(): CameraPosition? {
@@ -96,7 +97,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
     }
 
     // Endrer stil ved valg i innstillinger
-    fun changeStyle(styleResource: Int, visualMode: Int) {
+    fun changeStyle(styleResource: Int) {
         mapboxMap.setStyle(Style.Builder().fromUri(getString(styleResource))) { style ->
 
             // Layers må legges til på nytt.
@@ -195,15 +196,18 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
             when {
                 button_fav.isSelected -> {
                     // Remove from favourites
-                    mapViewModel.removeFromFavourites()
+                    sharedViewModel.deleteSelected()
                     button_fav.isSelected = false
                     Toast.makeText(requireContext(), "Fjernet fra favoritter", Toast.LENGTH_LONG).show()
                 }
                 else -> {
                     // Add to favourites
-                    mapViewModel.addToFavourites()
-                    button_fav.isSelected = true;
-                    Toast.makeText(requireContext(), "Lagret i favoritter!", Toast.LENGTH_LONG).show()
+                    if (sharedViewModel.addSelected()) {
+                        button_fav.isSelected = true
+                        Toast.makeText(requireContext(),
+                            "${sharedViewModel.selectedLocation.name} lagt til i favoritter!",
+                            Toast.LENGTH_LONG).show()
+                    }
                 }
             }
         }
@@ -222,7 +226,8 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                 val results = response.body()!!.features()
                 if (results.size > 0) {
                     placeName = results[0].placeName()!!.toString()
-                    mapViewModel.getWeatherFrom(map, point, bottomSheetBehavior, rootView, placeName)
+
+                    sharedViewModel.getWeatherFrom(map, point, bottomSheetBehavior, rootView, placeName)
                 } else {
                     Toast.makeText(requireContext(), "Ingen lokasjon funnet", LENGTH_SHORT).show()
                 }
@@ -249,7 +254,7 @@ class MapFragment(val viewModelFactory: ViewModelFactory) : Fragment() {
                     mapboxMap.cameraPosition = setUserLocation()!!
                 else Toast.makeText(requireContext(),
                         "Brukerlokasjon ikke tilgjengelig",
-                        Toast.LENGTH_SHORT).show()
+                        LENGTH_SHORT).show()
 
             } else {
                 Toast.makeText(requireContext(),

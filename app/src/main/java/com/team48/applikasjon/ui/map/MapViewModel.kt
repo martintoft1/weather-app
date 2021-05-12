@@ -33,9 +33,6 @@ import java.util.stream.IntStream.range
 
 class MapViewModel(val repository: Repository) : ViewModel() {
 
-    // Utility class to convert weather data into string representation
-    var converter = WeatherConverter()
-
     // Felles liste for alle værtyper, 0 = precipitation, 1 = clouds, 2 = airTemp
     var liveWeather: List<VectorDataset> = emptyList()
 
@@ -48,7 +45,6 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     // Referanse til MapFragments MapboxMap, settes av fragmentet
     lateinit var map: MapboxMap
 
-    var selectedLocation: Location? = null
 
     fun getDefaultStyleResource(): Int {
         return R.string.mapStyleLight
@@ -75,55 +71,6 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     // Parser ut layerID fra metadataURL
     fun getIDfromURL(url: String): String {
         return url.substringAfterLast("/")
-    }
-
-    fun getWeatherFrom(map: MapboxMap, point: LatLng, btb: BottomSheetBehavior<ConstraintLayout>, view: View, location: String) {
-        // Convert LatLng coordinates to screen pixel and only query the rendered features.
-        val pixel = map.projection.toScreenLocation(point)
-        val dataArr = arrayOfNulls<Float>(3)
-
-        if (map.queryRenderedFeatures(pixel, "layer0", "layer1", "layer2").size > 0) {
-            for (i in dataArr.indices) {
-                val jsonData = map.queryRenderedFeatures(pixel, "layer${i}")
-                if (jsonData.size > 0) {
-                    dataArr[i] = jsonData[0].properties()!!["value"].toString().toFloat()
-                } else {
-                    dataArr[i] = 0F
-                }
-            }
-        } else {
-            Log.d("getWeatherFrom()", "Trykk innenfor Norden!")
-            return
-        }
-
-        Log.d("features", dataArr.contentToString())
-        Log.d("location", location)
-
-        view.findViewById<TextView>(R.id.text_location).text = location
-        dataArr[0]?.let { view.findViewById<ImageView>(R.id.image_cloud).setImageLevel(it.toInt()) }
-        dataArr[1]?.let { view.findViewById<ImageView>(R.id.image_rain).setImageLevel(it.toInt()) }
-        dataArr[2]?.let { view.findViewById<ImageView>(R.id.image_temp).setImageLevel(it.toInt()) }
-
-        view.findViewById<TextView>(R.id.text_cloud).text = converter.getCloudDesc(dataArr[0])
-        view.findViewById<TextView>(R.id.text_rain).text = converter.getRainDesc(dataArr[1])
-        view.findViewById<TextView>(R.id.text_temp).text = converter.getTempDesc(dataArr[2])
-        btb.state = BottomSheetBehavior.STATE_EXPANDED
-
-        selectedLocation = Location(0, location, dataArr[0], dataArr[1], dataArr[2])
-    }
-
-
-    fun addToFavourites() {
-        viewModelScope.launch {
-            selectedLocation?.let { repository.addLocation(it) }
-        }
-    }
-
-
-    fun removeFromFavourites() {
-        viewModelScope.launch {
-            selectedLocation?.let { repository.deleteLocation(it) }
-        }
     }
 
 
