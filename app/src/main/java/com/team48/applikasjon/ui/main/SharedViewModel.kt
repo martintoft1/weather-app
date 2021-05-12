@@ -41,19 +41,14 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
     }
 
     fun deleteSelected() {
-        selectedDatabaseLocation.favourite = false
         viewModelScope.launch { repository.deleteLocation(selectedDatabaseLocation) }
         databaseLocations.removeAt(selectedPosition)
     }
 
-    fun addSelected() : Boolean {
-        if(!selectedDatabaseLocation.favourite) {
-            viewModelScope.launch { repository.addLocation(selectedDatabaseLocation) }
-            databaseLocations.add(selectedDatabaseLocation)
-            selectedDatabaseLocation.favourite = true
-            return true
-        }
-        return false
+    fun addSelected() {
+        viewModelScope.launch { repository.addLocation(selectedDatabaseLocation) }
+        databaseLocations.add(selectedDatabaseLocation)
+        selectedDatabaseLocation.favourite = true
     }
 
     fun setMapReference(mapboxMap: MapboxMap) {
@@ -67,7 +62,7 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
         } catch (e: Exception){
             return -1
         }
-        return position;
+        return position
     }
 
     fun getCameraPositionFromLocation(position: Int): CameraPosition {
@@ -103,14 +98,13 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
             return
         }
 
-        val l = databaseLocations.filter { l -> l.name == location }
+        val l: List<DatabaseLocation> = databaseLocations.filter { l -> l.name == location }
 
         if (l.isNotEmpty()) {
             selectedDatabaseLocation = l[0]
             view.findViewById<ImageButton>(R.id.add_favourites).isSelected = true
         } else {
             val latLong = "${point.latitude} ${point.longitude}"
-            selectedDatabaseLocation = DatabaseLocation(0, location, dataArr[0], dataArr[1], dataArr[2], latLong)
             selectedDatabaseLocation = DatabaseLocation(0,
                 location,
                 dataArr[0],
@@ -128,6 +122,7 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
         view.findViewById<TextView>(R.id.text_cloud).text = converter.getCloudDesc(dataArr[0])
         view.findViewById<TextView>(R.id.text_rain).text = converter.getRainDesc(dataArr[1])
         view.findViewById<TextView>(R.id.text_temp).text = converter.getTempDesc(dataArr[2])
+        view.findViewById<TextView>(R.id.text_recommendation).text = converter.getWeatherDesc(dataArr[0], dataArr[1], dataArr[2])
         btb.state = BottomSheetBehavior.STATE_EXPANDED
     }
 }

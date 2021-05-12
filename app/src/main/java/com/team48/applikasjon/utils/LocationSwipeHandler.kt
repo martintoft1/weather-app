@@ -45,6 +45,7 @@ class LocationSwipeHandler(
         // Swipe left: delete
         else if (direction == ItemTouchHelper.LEFT) {
             viewModel.deleteLocation(viewHolder.bindingAdapterPosition)
+            locationsFragment.unfavouriteCurrent()
         }
     }
 
