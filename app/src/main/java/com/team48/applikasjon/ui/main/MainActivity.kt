@@ -78,6 +78,10 @@ class MainActivity : AppCompatActivity() {
         return settingsFragment.getLocationButtonStatus()
     }
 
+    fun unfavouriteCurrent() {
+        mapFragment.unfavouriteCurrent()
+    }
+
     @SuppressLint("MissingPermission")
     fun updateLocation()  {
 
