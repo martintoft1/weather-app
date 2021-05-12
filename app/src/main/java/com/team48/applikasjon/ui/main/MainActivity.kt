@@ -15,6 +15,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.location.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.favourites.LocationsFragment
@@ -194,5 +195,10 @@ class MainActivity : AppCompatActivity() {
             }
             false
         }
+    }
+
+    fun moveCamera(cameraPosition: CameraPosition) {
+        mapFragment.setLocation(cameraPosition)
+        fragmentContainer.post { fragmentContainer.setCurrentItem(1, true) }
     }
 }

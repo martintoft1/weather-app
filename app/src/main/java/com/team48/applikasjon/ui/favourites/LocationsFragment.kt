@@ -1,5 +1,6 @@
 package com.team48.applikasjon.ui.favourites
 
+import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
+import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.DatabaseLocation
 import com.team48.applikasjon.ui.favourites.adapters.LocationsAdapter
@@ -24,7 +26,7 @@ import com.team48.applikasjon.utils.LocationSwipeHandler
 class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener {
 
     private lateinit var rootView: View
-    private lateinit var recyclerView: RecyclerView
+    lateinit var recyclerView: RecyclerView
     private lateinit var locationsViewModel: LocationsViewModel
     private lateinit var sharedViewModel: SharedViewModel
     private lateinit var locationsAdapter: LocationsAdapter
@@ -64,6 +66,9 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
         ).get(SharedViewModel::class.java)
     }
 
+    fun moveCamera(cameraPosition: CameraPosition) {
+        (activity as MainActivity).moveCamera(cameraPosition)
+    }
 
     private fun setupRecyclerview() {
         /* Initialize */
@@ -80,7 +85,7 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
             sharedViewModel.databaseLocations = it as MutableList<DatabaseLocation>
 
             /* Attach swipehandler to recyclerview */
-            val locationSwipeHandler = LocationSwipeHandler(requireContext(), sharedViewModel)
+            val locationSwipeHandler = LocationSwipeHandler(requireContext(), sharedViewModel, this)
             ItemTouchHelper(locationSwipeHandler).attachToRecyclerView(recyclerView)
         })
     }

@@ -96,6 +96,10 @@ class MapFragment() : Fragment() {
                 .build()
     }
 
+    fun setLocation(cameraPosition: CameraPosition) {
+        mapboxMap.cameraPosition = cameraPosition
+    }
+
     // Kalles på av MainActivity, oppdaterer lokal variabel userLocation
     fun updateUserLocation(location: Location?) {
         userLocation = location
@@ -122,8 +126,9 @@ class MapFragment() : Fragment() {
 
             // Lagre peker til map for Fragment og ViewModel
             mapboxMap = map
-            mapViewModel.map = map
-            sharedViewModel.map = map
+            mapViewModel.map = mapboxMap
+
+            sharedViewModel.setMapReference(map)
 
             // Setter kameraposisjon til over Norge initielt
             map.cameraPosition = mapViewModel.getCamNorwayPos()
@@ -146,7 +151,6 @@ class MapFragment() : Fragment() {
                     bottomSheetBehavior.state =  BottomSheetBehavior.STATE_COLLAPSED
                 true
             }
-
         }
     }
 

@@ -56,19 +56,8 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
         return false
     }
 
-    fun moveToPosition(position: Int) {
-
-        // Gjør ingenting om indeksen ikke er gyldig
-        if (verifyIndex(position) == -1) {
-            return
-        }
-
-        val location: DatabaseLocation = databaseLocations[position]
-        map.cameraPosition = CameraPosition.Builder()
-            .target(LatLng(location.lat, location.long, 1.0))
-            .zoom(10.0)
-            .tilt(0.0)
-            .build()
+    fun setMapReference(mapboxMap: MapboxMap) {
+        map = mapboxMap
     }
 
     // Sjekker om indeks er gyldig
@@ -79,6 +68,20 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
             return -1
         }
         return position;
+    }
+
+    fun getCameraPositionFromLocation(position: Int): CameraPosition {
+
+        val location: DatabaseLocation = databaseLocations[position]
+
+        val lat = location.latLong.substringBefore(" ").toDouble()
+        val long = location.latLong.substringAfter(" ").toDouble()
+
+        return CameraPosition.Builder()
+            .target(LatLng(lat, long, 1.0))
+            .zoom(10.0)
+            .tilt(0.0)
+            .build()
     }
 
     fun getWeatherFrom(map: MapboxMap, point: LatLng, btb: BottomSheetBehavior<ConstraintLayout>, view: View, location: String) {
@@ -106,15 +109,14 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
             selectedDatabaseLocation = l[0]
             view.findViewById<ImageButton>(R.id.add_favourites).isSelected = true
         } else {
-            val latLong: String = "${point.latitude} ${point.longitude}"
-            selectedLocation = Location(0, location, dataArr[0], dataArr[1], dataArr[2], latLong)
+            val latLong = "${point.latitude} ${point.longitude}"
+            selectedDatabaseLocation = DatabaseLocation(0, location, dataArr[0], dataArr[1], dataArr[2], latLong)
             selectedDatabaseLocation = DatabaseLocation(0,
                 location,
                 dataArr[0],
                 dataArr[1],
                 dataArr[2],
-                point.latitude,
-                point.longitude)
+                latLong)
             view.findViewById<ImageButton>(R.id.add_favourites).isSelected = false
         }
 
