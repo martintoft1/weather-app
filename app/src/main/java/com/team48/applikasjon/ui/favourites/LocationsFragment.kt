@@ -1,5 +1,6 @@
 package com.team48.applikasjon.ui.favourites
 
+import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,8 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
+import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.team48.applikasjon.R
-import com.team48.applikasjon.data.models.Location
+import com.team48.applikasjon.data.models.DatabaseLocation
 import com.team48.applikasjon.ui.favourites.adapters.LocationsAdapter
 import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.SharedViewModel
@@ -24,7 +26,7 @@ import com.team48.applikasjon.utils.LocationSwipeHandler
 class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener {
 
     private lateinit var rootView: View
-    private lateinit var recyclerView: RecyclerView
+    lateinit var recyclerView: RecyclerView
     private lateinit var locationsViewModel: LocationsViewModel
     private lateinit var sharedViewModel: SharedViewModel
     private lateinit var locationsAdapter: LocationsAdapter
@@ -64,6 +66,9 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
         ).get(SharedViewModel::class.java)
     }
 
+    fun moveCamera(cameraPosition: CameraPosition) {
+        (activity as MainActivity).moveCamera(cameraPosition)
+    }
 
     private fun setupRecyclerview() {
         /* Initialize */
@@ -75,12 +80,12 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
 
         /* Get favourite locations from database */
         sharedViewModel.getAllLocations().observe(viewLifecycleOwner, {
-            locationsAdapter = LocationsAdapter(it as MutableList<Location>, this)
+            locationsAdapter = LocationsAdapter(it as MutableList<DatabaseLocation>, this)
             recyclerView.adapter = locationsAdapter
-            sharedViewModel.locations = it as MutableList<Location>
+            sharedViewModel.databaseLocations = it as MutableList<DatabaseLocation>
 
             /* Attach swipehandler to recyclerview */
-            val locationSwipeHandler = LocationSwipeHandler(requireContext(), sharedViewModel)
+            val locationSwipeHandler = LocationSwipeHandler(requireContext(), sharedViewModel, this)
             ItemTouchHelper(locationSwipeHandler).attachToRecyclerView(recyclerView)
         })
     }
@@ -91,18 +96,18 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
     override fun onLocationClick(position: Int, view: View) {
         println("Location clicked: pos $position")
 
-        val isExpanded = sharedViewModel.locations[position].expanded
+        val isExpanded = sharedViewModel.databaseLocations[position].expanded
         val expandedView = view.findViewById<LinearLayout>(R.id.location_expanded)
         TransitionManager.beginDelayedTransition(view.findViewById(R.id.cv_location), AutoTransition())
 
         if (isExpanded) {
             expandedView.visibility = View.GONE
-            sharedViewModel.locations[position].expanded = false
+            sharedViewModel.databaseLocations[position].expanded = false
         }
         else {
 
             expandedView.visibility = View.VISIBLE
-            sharedViewModel.locations[position].expanded = true
+            sharedViewModel.databaseLocations[position].expanded = true
         }
     }
 }

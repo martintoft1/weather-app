@@ -21,7 +21,6 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.team48.applikasjon.R
-import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.SharedViewModel
 import com.team48.applikasjon.ui.main.ViewModelFactory
@@ -81,7 +80,7 @@ class MapFragment() : Fragment() {
         ).get(SharedViewModel::class.java)
 
         sharedViewModel.getAllLocations().observe(viewLifecycleOwner, {
-            sharedViewModel.locations = it
+            sharedViewModel.databaseLocations = it
         })
     }
 
@@ -95,6 +94,10 @@ class MapFragment() : Fragment() {
                 .zoom(10.0)
                 .tilt(0.0)
                 .build()
+    }
+
+    fun setLocation(cameraPosition: CameraPosition) {
+        mapboxMap.cameraPosition = cameraPosition
     }
 
     // Kalles på av MainActivity, oppdaterer lokal variabel userLocation
@@ -123,7 +126,9 @@ class MapFragment() : Fragment() {
 
             // Lagre peker til map for Fragment og ViewModel
             mapboxMap = map
-            mapViewModel.map = map
+            mapViewModel.map = mapboxMap
+
+            sharedViewModel.setMapReference(map)
 
             // Setter kameraposisjon til over Norge initielt
             map.cameraPosition = mapViewModel.getCamNorwayPos()
@@ -146,7 +151,6 @@ class MapFragment() : Fragment() {
                     bottomSheetBehavior.state =  BottomSheetBehavior.STATE_COLLAPSED
                 true
             }
-
         }
     }
 
@@ -211,7 +215,7 @@ class MapFragment() : Fragment() {
                     if (sharedViewModel.addSelected()) {
                         button_fav.isSelected = true
                         Toast.makeText(requireContext(),
-                            "${sharedViewModel.selectedLocation.name} lagt til i favoritter!",
+                            "${sharedViewModel.selectedDatabaseLocation.name} lagt til i favoritter!",
                             Toast.LENGTH_LONG).show()
                     }
                     button_fav.isSelected = true

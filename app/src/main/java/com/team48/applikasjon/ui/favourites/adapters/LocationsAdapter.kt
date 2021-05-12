@@ -5,26 +5,25 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.team48.applikasjon.R
-import com.team48.applikasjon.data.models.Location
-import com.team48.applikasjon.utils.LocationSwipeHandler
+import com.team48.applikasjon.data.models.DatabaseLocation
 
 class LocationsAdapter(
-    private var locations: MutableList<Location>,
+    private var databaseLocations: MutableList<DatabaseLocation>,
     private var clickListener: OnLocationClickListener
 
     ) : RecyclerView.Adapter<LocationsAdapter.ViewHolder>() {
 
 
-    override fun getItemCount(): Int = locations.size
+    override fun getItemCount(): Int = databaseLocations.size
 
 
-    fun setLocations(locations: MutableList<Location>) {
-        this.locations = locations
+    fun setLocations(databaseLocations: MutableList<DatabaseLocation>) {
+        this.databaseLocations = databaseLocations
         notifyDataSetChanged()
     }
 
     fun removeLocation(position: Int) {
-        locations.removeAt(position)
+        databaseLocations.removeAt(position)
         notifyItemRemoved(position)
     }
 
@@ -37,18 +36,18 @@ class LocationsAdapter(
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val location: Location = locations[position]
-        holder.name.text = location.name
+        val databaseLocation: DatabaseLocation = databaseLocations[position]
+        holder.name.text = databaseLocation.name
 
         // Setter ikoner basert på værdata
-        location.cloud_percentage?.let { holder.iv_cloud.setImageLevel(it.toInt()) }
-        location.rain_mm?.let          { holder.iv_rain.setImageLevel(it.toInt()) }
-        location.temp_celsius?.let     { holder.iv_temp.setImageLevel(it.toInt()) }
+        databaseLocation.cloud_percentage?.let { holder.iv_cloud.setImageLevel(it.toInt()) }
+        databaseLocation.rain_mm?.let          { holder.iv_rain.setImageLevel(it.toInt()) }
+        databaseLocation.temp_celsius?.let     { holder.iv_temp.setImageLevel(it.toInt()) }
 
         // Setter værdata
-        holder.tv_cloud.text = location.cloud_percentage.toString()
-        holder.tv_rain.text  = location.rain_mm.toString()
-        holder.tv_temp.text  = location.temp_celsius.toString()
+        holder.tv_cloud.text = databaseLocation.cloud_percentage.toString()
+        holder.tv_rain.text  = databaseLocation.rain_mm.toString()
+        holder.tv_temp.text  = databaseLocation.temp_celsius.toString()
     }
 
 

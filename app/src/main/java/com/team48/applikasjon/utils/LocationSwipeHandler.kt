@@ -8,14 +8,17 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.team48.applikasjon.R
+import com.team48.applikasjon.ui.favourites.LocationsFragment
 import com.team48.applikasjon.ui.favourites.LocationsViewModel
 import com.team48.applikasjon.ui.favourites.adapters.LocationsAdapter
 import com.team48.applikasjon.ui.main.SharedViewModel
 
 class LocationSwipeHandler(
         private val context: Context,
-        private val viewModel: SharedViewModel)
+        private val viewModel: SharedViewModel,
+        private val locationsFragment: LocationsFragment)
 
     : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
 
@@ -33,7 +36,10 @@ class LocationSwipeHandler(
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         // Swipe right: navigate to map
         if (direction == ItemTouchHelper.RIGHT) {
-            // TODO: Navigate to location in mapfragment
+            val cameraPosition: CameraPosition = viewModel.getCameraPositionFromLocation(viewHolder.bindingAdapterPosition)
+            locationsFragment.moveCamera(cameraPosition)
+
+            // TODO: Fikse swipe reset
         }
 
         // Swipe left: delete
@@ -41,6 +47,7 @@ class LocationSwipeHandler(
             viewModel.deleteLocation(viewHolder.bindingAdapterPosition)
         }
     }
+
 
     /* Override function to move layout on swipe */
     override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,

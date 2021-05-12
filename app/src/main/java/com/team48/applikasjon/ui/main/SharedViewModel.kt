@@ -5,56 +5,84 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.team48.applikasjon.R
-import com.team48.applikasjon.data.models.Location
+import com.team48.applikasjon.data.models.DatabaseLocation
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.utils.WeatherConverter
 import kotlinx.coroutines.launch
+import java.lang.Exception
 
 class SharedViewModel(private val repository: Repository) : ViewModel() {
 
-    lateinit var locations: MutableList<Location>
-    lateinit var selectedLocation: Location
+    lateinit var databaseLocations: MutableList<DatabaseLocation>
+    lateinit var selectedDatabaseLocation: DatabaseLocation
+    lateinit var map: MapboxMap
     var selectedPosition: Int = 0
 
 
     // Utility class to convert weather data into string representation
     var converter = WeatherConverter()
 
-    fun getAllLocations() : LiveData<MutableList<Location>> {
+    fun getAllLocations() : LiveData<MutableList<DatabaseLocation>> {
         return repository.getAllLocations()
     }
 
     fun deleteLocation(position: Int) {
-        viewModelScope.launch { repository.deleteLocation(locations[position]) }
-        locations.removeAt(position)
+        viewModelScope.launch { repository.deleteLocation(databaseLocations[position]) }
+        databaseLocations.removeAt(position)
     }
 
     fun deleteSelected() {
-        selectedLocation.favourite = false
-        viewModelScope.launch { repository.deleteLocation(selectedLocation) }
-        locations.removeAt(selectedPosition)
+        selectedDatabaseLocation.favourite = false
+        viewModelScope.launch { repository.deleteLocation(selectedDatabaseLocation) }
+        databaseLocations.removeAt(selectedPosition)
     }
 
     fun addSelected() : Boolean {
-        if(!selectedLocation.favourite) {
-            viewModelScope.launch { repository.addLocation(selectedLocation) }
-            locations.add(selectedLocation)
-            selectedLocation.favourite = true
+        if(!selectedDatabaseLocation.favourite) {
+            viewModelScope.launch { repository.addLocation(selectedDatabaseLocation) }
+            databaseLocations.add(selectedDatabaseLocation)
+            selectedDatabaseLocation.favourite = true
             return true
         }
         return false
     }
 
+    fun setMapReference(mapboxMap: MapboxMap) {
+        map = mapboxMap
+    }
+
+    // Sjekker om indeks er gyldig
+    private fun verifyIndex(position: Int): Int {
+        try {
+            val location = databaseLocations[position]
+        } catch (e: Exception){
+            return -1
+        }
+        return position;
+    }
+
+    fun getCameraPositionFromLocation(position: Int): CameraPosition {
+
+        val location: DatabaseLocation = databaseLocations[position]
+
+        val lat = location.latLong.substringBefore(" ").toDouble()
+        val long = location.latLong.substringAfter(" ").toDouble()
+
+        return CameraPosition.Builder()
+            .target(LatLng(lat, long, 1.0))
+            .zoom(10.0)
+            .tilt(0.0)
+            .build()
+    }
 
     fun getWeatherFrom(map: MapboxMap, point: LatLng, btb: BottomSheetBehavior<ConstraintLayout>, view: View, location: String) {
         // Convert LatLng coordinates to screen pixel and only query the rendered features.
@@ -75,14 +103,20 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
             return
         }
 
-        val l = locations.filter { l -> l.name == location }
+        val l = databaseLocations.filter { l -> l.name == location }
 
         if (l.isNotEmpty()) {
-            selectedLocation = l[0]
+            selectedDatabaseLocation = l[0]
             view.findViewById<ImageButton>(R.id.add_favourites).isSelected = true
         } else {
-            val latLong: String = "${point.latitude} ${point.longitude}"
-            selectedLocation = Location(0, location, dataArr[0], dataArr[1], dataArr[2], latLong)
+            val latLong = "${point.latitude} ${point.longitude}"
+            selectedDatabaseLocation = DatabaseLocation(0, location, dataArr[0], dataArr[1], dataArr[2], latLong)
+            selectedDatabaseLocation = DatabaseLocation(0,
+                location,
+                dataArr[0],
+                dataArr[1],
+                dataArr[2],
+                latLong)
             view.findViewById<ImageButton>(R.id.add_favourites).isSelected = false
         }
 
