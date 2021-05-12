@@ -33,7 +33,7 @@ class LocationSwipeHandler(
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         // Swipe right: navigate to map
         if (direction == ItemTouchHelper.RIGHT) {
-            // TODO: Navigate to location in mapfragment
+            viewModel.moveToPosition(viewHolder.bindingAdapterPosition)
         }
 
         // Swipe left: delete

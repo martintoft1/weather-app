@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.team48.applikasjon.R
-import com.team48.applikasjon.data.models.Location
+import com.team48.applikasjon.data.models.DatabaseLocation
 import com.team48.applikasjon.ui.favourites.adapters.LocationsAdapter
 import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.SharedViewModel
@@ -75,9 +75,9 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
 
         /* Get favourite locations from database */
         sharedViewModel.getAllLocations().observe(viewLifecycleOwner, {
-            locationsAdapter = LocationsAdapter(it as MutableList<Location>, this)
+            locationsAdapter = LocationsAdapter(it as MutableList<DatabaseLocation>, this)
             recyclerView.adapter = locationsAdapter
-            sharedViewModel.locations = it as MutableList<Location>
+            sharedViewModel.databaseLocations = it as MutableList<DatabaseLocation>
 
             /* Attach swipehandler to recyclerview */
             val locationSwipeHandler = LocationSwipeHandler(requireContext(), sharedViewModel)
@@ -91,18 +91,18 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
     override fun onLocationClick(position: Int, view: View) {
         println("Location clicked: pos $position")
 
-        val isExpanded = sharedViewModel.locations[position].expanded
+        val isExpanded = sharedViewModel.databaseLocations[position].expanded
         val expandedView = view.findViewById<LinearLayout>(R.id.location_expanded)
         TransitionManager.beginDelayedTransition(view.findViewById(R.id.cv_location), AutoTransition())
 
         if (isExpanded) {
             expandedView.visibility = View.GONE
-            sharedViewModel.locations[position].expanded = false
+            sharedViewModel.databaseLocations[position].expanded = false
         }
         else {
 
             expandedView.visibility = View.VISIBLE
-            sharedViewModel.locations[position].expanded = true
+            sharedViewModel.databaseLocations[position].expanded = true
         }
     }
 }
