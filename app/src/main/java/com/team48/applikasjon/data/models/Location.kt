@@ -10,7 +10,8 @@ data class Location (
        var name: String,
        var cloud_percentage: Float?,
        var rain_mm: Float?,
-       var temp_celsius: Float?
+       var temp_celsius: Float?,
+       var latLong: String
 ) {
        var expanded: Boolean = false
        var favourite: Boolean = false

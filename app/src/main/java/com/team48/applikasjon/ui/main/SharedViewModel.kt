@@ -81,7 +81,8 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
             selectedLocation = l[0]
             view.findViewById<ImageButton>(R.id.add_favourites).isSelected = true
         } else {
-            selectedLocation = Location(0, location, dataArr[0], dataArr[1], dataArr[2])
+            val latLong: String = "${point.latitude} ${point.longitude}"
+            selectedLocation = Location(0, location, dataArr[0], dataArr[1], dataArr[2], latLong)
             view.findViewById<ImageButton>(R.id.add_favourites).isSelected = false
         }
 
