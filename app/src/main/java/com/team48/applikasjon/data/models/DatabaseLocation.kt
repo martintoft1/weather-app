@@ -11,8 +11,7 @@ data class DatabaseLocation (
        var cloud_percentage: Float?,
        var rain_mm: Float?,
        var temp_celsius: Float?,
-       var lat: Double,
-       var long: Double
+       var latLong: String
 ) {
        var expanded: Boolean = false
        var favourite: Boolean = false
