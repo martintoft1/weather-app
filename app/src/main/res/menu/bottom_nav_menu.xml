@@ -3,16 +3,16 @@
     <item
         android:id="@+id/locationsView"
         android:title="@string/favourites"
-        android:icon="@drawable/ic_favourite_default"/>
+        android:icon="@drawable/ic_heart"/>
 
     <item
         android:id="@+id/mapView"
         android:title="@string/map"
-        android:icon="@drawable/ic_sun"/>
+        android:icon="@drawable/ic_sun_y"/>
 
     <item
         android:id="@+id/settingsView"
         android:title="@string/settings"
-        android:icon="@drawable/ic_settings"/>
+        android:icon="@drawable/ic_cog"/>
 
 </menu>
