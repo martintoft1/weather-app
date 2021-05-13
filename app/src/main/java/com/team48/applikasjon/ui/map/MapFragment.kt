@@ -214,7 +214,6 @@ class MapFragment() : Fragment() {
                 // Add to favourites
                 sharedViewModel.addSelected()
                 button_fav.isSelected = true
-                button_fav.setImageResource(R.drawable.ic_heartfilled)
                 Toast.makeText(requireContext(), "Lagret i favoritter!", LENGTH_SHORT).show()
             }
         }
@@ -222,7 +221,6 @@ class MapFragment() : Fragment() {
 
     fun unfavouriteCurrent() {
         rootView.findViewById<ImageButton>(R.id.add_favourites).isSelected = false
-        rootView.findViewById<ImageButton>(R.id.add_favourites).setImageResource(R.drawable.ic_heart)
     }
 
     private fun getLocationFrom(map: MapboxMap, point: LatLng) {

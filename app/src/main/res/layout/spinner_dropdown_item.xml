@@ -13,7 +13,6 @@
             android:id="@+id/weather_icon"
             android:layout_width="45dp"
             android:layout_height="45dp"
-            android:src="@drawable/ic_cloud"
             android:layout_margin="5dp"
             android:scaleType="fitCenter" />
 

@@ -104,7 +104,6 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
                 dataArr[2],
                 latLong)
             view.findViewById<ImageButton>(R.id.add_favourites).isSelected = false
-            view.findViewById<ImageButton>(R.id.add_favourites).setImageResource(R.drawable.ic_heart)
         }
 
         view.findViewById<TextView>(R.id.text_location).text = location
