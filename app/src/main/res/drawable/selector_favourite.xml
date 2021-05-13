@@ -2,10 +2,10 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:state_selected="true"
-        android:drawable="@drawable/ic_favourite_selected" />
+        android:drawable="@drawable/ic_heartfilled" />
     <item
         android:state_selected="false"
-        android:drawable="@drawable/ic_favourite_default" />
+        android:drawable="@drawable/ic_heart" />
 </selector>
 
 

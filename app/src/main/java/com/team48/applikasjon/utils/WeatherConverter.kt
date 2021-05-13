@@ -35,8 +35,8 @@ class WeatherConverter() {
         return when {
             value < -5.0 -> tempDescs[0] + " ($value °C)"
             value < 10.0 -> tempDescs[1] + " ($value °C)"
-            value < 20  -> tempDescs[2] + " ($value °C)"
-            value < 30  -> tempDescs[3] + " ($value °C)"
+            value < 20   -> tempDescs[2] + " ($value °C)"
+            value < 30   -> tempDescs[3] + " ($value °C)"
             else         -> tempDescs[4] + " ($value °C)"
         }
     }

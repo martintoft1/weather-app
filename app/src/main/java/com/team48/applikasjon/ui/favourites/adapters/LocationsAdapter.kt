@@ -45,9 +45,13 @@ class LocationsAdapter(
         databaseLocation.temp_celsius?.let     { holder.iv_temp.setImageLevel(it.toInt()) }
 
         // Setter værdata
-        holder.tv_cloud.text = databaseLocation.cloud_percentage.toString()
-        holder.tv_rain.text  = databaseLocation.rain_mm.toString()
-        holder.tv_temp.text  = databaseLocation.temp_celsius.toString()
+        val cloudString = holder.itemView.context.getString(R.string.clouds_desc)
+        val rainString  = holder.itemView.context.getString(R.string.rain_desc)
+        val tempString  = holder.itemView.context.getString(R.string.temp_desc)
+
+        holder.tv_cloud.text = String.format(cloudString, databaseLocation.cloud_percentage)
+        holder.tv_rain.text  = String.format(rainString, databaseLocation.rain_mm)
+        holder.tv_temp.text  = String.format(tempString, databaseLocation.temp_celsius)
     }
 
 

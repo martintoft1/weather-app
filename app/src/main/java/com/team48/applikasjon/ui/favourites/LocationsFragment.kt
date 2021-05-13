@@ -26,9 +26,8 @@ import com.team48.applikasjon.utils.LocationSwipeHandler
 
 class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener {
 
-    private lateinit var rootView: View
     lateinit var recyclerView: RecyclerView
-    private lateinit var locationsViewModel: LocationsViewModel
+    private lateinit var rootView: View
     private lateinit var sharedViewModel: SharedViewModel
     private lateinit var locationsAdapter: LocationsAdapter
     private lateinit var viewModelFactory: ViewModelFactory
@@ -37,7 +36,7 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_favourites, container, false)
         return rootView
@@ -56,10 +55,6 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
     }
 
     private fun setupViewModel() {
-        locationsViewModel = ViewModelProviders.of(
-                this,
-                viewModelFactory
-        ).get(LocationsViewModel::class.java)
 
         sharedViewModel = ViewModelProviders.of(
                 this,
@@ -83,7 +78,7 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
         sharedViewModel.getAllLocations().observe(viewLifecycleOwner, {
             locationsAdapter = LocationsAdapter(it as MutableList<DatabaseLocation>, this)
             recyclerView.adapter = locationsAdapter
-            sharedViewModel.databaseLocations = it as MutableList<DatabaseLocation>
+            sharedViewModel.databaseLocations = it
 
             /* Attach swipehandler to recyclerview */
             val locationSwipeHandler = LocationSwipeHandler(requireContext(), sharedViewModel, this)
@@ -91,25 +86,24 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
         })
     }
 
-
-
     /* Recyclerview item onClick */
     override fun onLocationClick(position: Int, view: View) {
-        println("Location clicked: pos $position")
-
-        val isExpanded = sharedViewModel.databaseLocations[position].expanded
+        val location = sharedViewModel.databaseLocations[position]
         val expandedView = view.findViewById<LinearLayout>(R.id.location_expanded)
         TransitionManager.beginDelayedTransition(view.findViewById(R.id.cv_location), AutoTransition())
 
-        if (isExpanded) {
+        if (location.expanded) {
             expandedView.visibility = View.GONE
-            sharedViewModel.databaseLocations[position].expanded = false
+            location.expanded = false
         }
         else {
-
             expandedView.visibility = View.VISIBLE
-            sharedViewModel.databaseLocations[position].expanded = true
+            location.expanded = true
         }
+    }
+
+    fun unfavouriteCurrent() {
+        (activity as MainActivity).unfavouriteCurrent()
     }
 
     override fun onStart() {

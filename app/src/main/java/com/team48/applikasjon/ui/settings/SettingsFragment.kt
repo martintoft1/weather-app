@@ -8,13 +8,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.ViewModelProviders
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.main.MainActivity
+import com.team48.applikasjon.ui.main.SharedViewModel
 import com.team48.applikasjon.ui.main.ViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class SettingsFragment() : Fragment() {
@@ -22,8 +27,10 @@ class SettingsFragment() : Fragment() {
     private lateinit var rootView: View
     private lateinit var viewModelFactory: ViewModelFactory
     private lateinit var settingsViewModel: SettingsViewModel
+    private lateinit var sharedViewModel: SharedViewModel
     private lateinit var switchDarkMode: SwitchCompat
     private lateinit var switchLocation: SwitchCompat
+    private lateinit var deleteButton: Button
     private lateinit var sharedPref: SharedPreferences
 
     override fun onCreateView(
@@ -52,12 +59,18 @@ class SettingsFragment() : Fragment() {
                 this,
                 viewModelFactory
         ).get(SettingsViewModel::class.java)
+
+        sharedViewModel = ViewModelProviders.of(
+                this,
+                viewModelFactory
+        ).get(SharedViewModel::class.java)
     }
 
     private fun setupButtons() {
 
         switchDarkMode = rootView.findViewById(R.id.switchDarkMode)
         switchLocation = rootView.findViewById(R.id.switchLocation)
+        deleteButton   = rootView.findViewById(R.id.delete)
 
         // Henter lagret tilstand hvis den eksiterer
         switchDarkMode.isChecked = loadPreferences("darkMode")
@@ -80,6 +93,13 @@ class SettingsFragment() : Fragment() {
                 (activity as MainActivity).disableLocation()
             }
         }
+
+        deleteButton.setOnClickListener {
+            CoroutineScope(Dispatchers.IO).launch {
+                sharedViewModel.clearDatabase()
+            }
+        }
+
     }
 
     private fun setupPreferences() {

@@ -164,12 +164,13 @@ class MapFragment() : Fragment() {
         spinner = rootView.findViewById(R.id.spinner_weather_filter)
         val icons = mutableListOf<Int>()
         icons.add(R.drawable.c_cloud_medium)
-        icons.add(R.drawable.c_rain_medium)
+        icons.add(R.drawable.c_rain_medim)
         icons.add(R.drawable.c_sun)
         icons.add(R.drawable.c_x)
 
         spinnerAdapter  = SpinnerAdapter(requireContext(), icons)
         spinner.adapter = spinnerAdapter
+        spinner.setSelection(icons.size - 1)
 
         // Listener for filtervalg i spinner
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -208,28 +209,18 @@ class MapFragment() : Fragment() {
         // On click add to favourites
         val button_fav: ImageButton = rootView.findViewById(R.id.add_favourites)
         button_fav.setOnClickListener {
-            when {
-                button_fav.isSelected -> {
-                    // Remove from favourites
-                    sharedViewModel.deleteSelected()
-                    button_fav.isSelected = false
-                    button_fav.setImageResource(R.drawable.ic_heartfilled)
-                    Toast.makeText(requireContext(), "Fjernet fra favoritter", Toast.LENGTH_LONG).show()
-                }
-                else -> {
-                    // Add to favourites
-                    if (sharedViewModel.addSelected()) {
-                        button_fav.isSelected = true
-                        Toast.makeText(requireContext(),
-                            "${sharedViewModel.selectedDatabaseLocation.name} lagt til i favoritter!",
-                            Toast.LENGTH_LONG).show()
-                    }
-                    button_fav.isSelected = true
+            if (!button_fav.isSelected) {
 
-                    Toast.makeText(requireContext(), "Lagret i favoritter!", Toast.LENGTH_LONG).show()
-                }
+                // Add to favourites
+                sharedViewModel.addSelected()
+                button_fav.isSelected = true
+                Toast.makeText(requireContext(), "Lagret i favoritter!", LENGTH_SHORT).show()
             }
         }
+    }
+
+    fun unfavouriteCurrent() {
+        rootView.findViewById<ImageButton>(R.id.add_favourites).isSelected = false
     }
 
     private fun getLocationFrom(map: MapboxMap, point: LatLng) {
@@ -273,12 +264,12 @@ class MapFragment() : Fragment() {
                     mapboxMap.cameraPosition = setUserLocation()!!
                 else Toast.makeText(requireContext(),
                         "Brukerlokasjon ikke tilgjengelig",
-                        Toast.LENGTH_SHORT).show()
+                        LENGTH_SHORT).show()
 
             } else {
                 Toast.makeText(requireContext(),
                         "Brukerlokasjon må tillates i innstillinger",
-                        Toast.LENGTH_LONG).show()
+                        LENGTH_SHORT).show()
             }
         }
     }
