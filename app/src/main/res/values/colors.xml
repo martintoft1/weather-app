@@ -11,4 +11,7 @@
     <color name="light_gray">#5C222222</color>
     <color name="red">#FF0000</color>
     <color name="transparent">#00000000</color>
+    <color name="cozy_red">#F34A4A</color>
+    <color name="pink">#F59D9D</color>
+    <color name="green">#52964D</color>
 </resources>

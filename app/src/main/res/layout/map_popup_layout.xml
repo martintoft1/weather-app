@@ -7,7 +7,6 @@
     android:layout_height="wrap_content"
     android:paddingStart="20dp"
     android:paddingEnd="20dp"
-    android:paddingBottom="40dp"
     android:outlineProvider="bounds"
     android:background="@drawable/map_popup_background" >
 
@@ -24,20 +23,22 @@
     <TextView
         android:id="@+id/text_location"
         android:text="@string/location"
+        android:textSize="20sp"
         android:gravity="center_vertical"
         android:layout_width="0dp"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
+        android:layout_marginBottom="5dp"
         app:layout_constraintEnd_toStartOf="@id/add_favourites"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/capsule" />
 
     <ImageButton
         android:id="@+id/add_favourites"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:contentDescription="@string/favoritt_ikon"
-        android:background="@drawable/selector_favourite"
+        android:background="@drawable/ic_heart"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="@+id/text_location"
         app:layout_constraintEnd_toEndOf="parent"
@@ -46,10 +47,9 @@
 
     <ImageView
         android:id="@+id/image_cloud"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:contentDescription="@string/sky_ikon"
-        android:padding="5dp"
         android:src="@drawable/level_list_cloud"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_location" />
@@ -66,10 +66,9 @@
 
     <ImageView
         android:id="@+id/image_rain"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:contentDescription="@string/regn_ikon"
-        android:padding="5dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:src="@drawable/level_list_rain"
@@ -89,10 +88,9 @@
 
     <ImageView
         android:id="@+id/image_temp"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:contentDescription="@string/temp_ikon"
-        android:padding="5dp"
         android:src="@drawable/level_list_temp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -112,7 +110,7 @@
         android:id="@+id/text_recommendation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

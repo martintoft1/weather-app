@@ -1,5 +1,6 @@
 package com.team48.applikasjon.ui.main
 
+import android.provider.ContactsContract
 import android.util.Log
 import android.view.View
 import android.widget.ImageButton
@@ -25,8 +26,6 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
     lateinit var databaseLocations: MutableList<DatabaseLocation>
     lateinit var selectedDatabaseLocation: DatabaseLocation
     lateinit var map: MapboxMap
-    var selectedPosition: Int = 0
-
 
     // Utility class to convert weather data into string representation
     var converter = WeatherConverter()
@@ -40,10 +39,12 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
         databaseLocations.removeAt(position)
     }
 
-    fun deleteSelected() {
-        viewModelScope.launch { repository.deleteLocation(selectedDatabaseLocation) }
-        databaseLocations.removeAt(selectedPosition)
+
+    suspend fun clearDatabase() {
+        viewModelScope.launch { repository.clearDatabase() }
+        if (this::databaseLocations.isInitialized) { databaseLocations.clear() }
     }
+
 
     fun addSelected() {
         viewModelScope.launch { repository.addLocation(selectedDatabaseLocation) }
@@ -55,15 +56,6 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
         map = mapboxMap
     }
 
-    // Sjekker om indeks er gyldig
-    private fun verifyIndex(position: Int): Int {
-        try {
-            val location = databaseLocations[position]
-        } catch (e: Exception){
-            return -1
-        }
-        return position
-    }
 
     fun getCameraPositionFromLocation(position: Int): CameraPosition {
 
@@ -112,11 +104,12 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
                 dataArr[2],
                 latLong)
             view.findViewById<ImageButton>(R.id.add_favourites).isSelected = false
+            view.findViewById<ImageButton>(R.id.add_favourites).setImageResource(R.drawable.ic_heart)
         }
 
         view.findViewById<TextView>(R.id.text_location).text = location
         dataArr[0]?.let { view.findViewById<ImageView>(R.id.image_cloud).setImageLevel(it.toInt()) }
-        dataArr[1]?.let { view.findViewById<ImageView>(R.id.image_rain).setImageLevel(it.toInt()) }
+        dataArr[1]?.let { view.findViewById<ImageView>(R.id.image_rain).setImageLevel(0.coerceAtLeast(it.toInt())) } // round negative to 0
         dataArr[2]?.let { view.findViewById<ImageView>(R.id.image_temp).setImageLevel(it.toInt()) }
 
         view.findViewById<TextView>(R.id.text_cloud).text = converter.getCloudDesc(dataArr[0])

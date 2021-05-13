@@ -30,4 +30,8 @@ class Repository (context: Context){
     fun getCount() : LiveData<Int> {
         return database.locationDao().getCount()
     }
+
+    suspend fun clearDatabase() {
+        database.locationDao().clearDatabase()
+    }
 }

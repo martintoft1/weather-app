@@ -5,6 +5,6 @@
     <gradient
         android:angle="0"
         android:startColor="@color/transparent"
-        android:endColor="@color/black" />
+        android:endColor="?colorPrimary" />
 
 </shape>

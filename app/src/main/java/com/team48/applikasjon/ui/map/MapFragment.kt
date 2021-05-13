@@ -214,13 +214,15 @@ class MapFragment() : Fragment() {
                 // Add to favourites
                 sharedViewModel.addSelected()
                 button_fav.isSelected = true
-                Toast.makeText(requireContext(), "Lagret i favoritter!", Toast.LENGTH_SHORT).show()
+                button_fav.setImageResource(R.drawable.ic_heartfilled)
+                Toast.makeText(requireContext(), "Lagret i favoritter!", LENGTH_SHORT).show()
             }
         }
     }
 
     fun unfavouriteCurrent() {
         rootView.findViewById<ImageButton>(R.id.add_favourites).isSelected = false
+        rootView.findViewById<ImageButton>(R.id.add_favourites).setImageResource(R.drawable.ic_heart)
     }
 
     private fun getLocationFrom(map: MapboxMap, point: LatLng) {
@@ -264,12 +266,12 @@ class MapFragment() : Fragment() {
                     mapboxMap.cameraPosition = setUserLocation()!!
                 else Toast.makeText(requireContext(),
                         "Brukerlokasjon ikke tilgjengelig",
-                        Toast.LENGTH_SHORT).show()
+                        LENGTH_SHORT).show()
 
             } else {
                 Toast.makeText(requireContext(),
                         "Brukerlokasjon må tillates i innstillinger",
-                        Toast.LENGTH_LONG).show()
+                        LENGTH_SHORT).show()
             }
         }
     }

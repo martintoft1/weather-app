@@ -16,7 +16,7 @@
     <string name="mapStyleLight">mapbox://styles/wipi-48/cknipuh1m0pws17s5bfc7zzpj</string>
     <string name="mapStyleDark">mapbox://styles/wipi-48/ckoa1jzmp6me718pglxq5i10t</string>
 
-    <string name="dark_mode">Dark mode</string>
+    <string name="dark_mode">Mørkt modus</string>
     <string name="tillatt_brukerlokasjon">Tillatt brukerlokasjon</string>
     <string name="locationbtn">locationBtn</string>
     <string name="location">Lokasjon</string>
@@ -39,9 +39,12 @@
     <string name="regn_ikon">regn-ikon</string>
     <string name="temp_ikon">temp-ikon</string>
 
-    // Tabell for nedbør
+    // Reset database knapp
+    <string name="delete">Fjern favoritter</string>
 
-
-    // Tabell for temperatur
+    // String format til recyclerview beholdere
+    <string name="clouds_desc">%1$.0f %%</string>
+    <string name="rain_desc">%1$.2f mm</string>
+    <string name="temp_desc">%1$.2f °C</string>
 
 </resources>

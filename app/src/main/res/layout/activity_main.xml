@@ -18,7 +18,7 @@
     <View
         android:id="@+id/shadow"
         android:layout_width="match_parent"
-        android:layout_height="5dp"
+        android:layout_height="3dp"
         android:background="@drawable/shadow"
         app:layout_anchor="@id/bottom_navigation"
         app:layout_constraintBottom_toBottomOf="@+id/fragment_container"
