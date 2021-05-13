@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent"
 
         app:lottie_autoPlay="true"
-        app:lottie_rawRes="@raw/splash_real_big">
+        app:lottie_rawRes="@raw/splash_final">
 
     </com.airbnb.lottie.LottieAnimationView>
 
