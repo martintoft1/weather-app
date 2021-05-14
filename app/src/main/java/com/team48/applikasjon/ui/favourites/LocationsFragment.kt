@@ -1,12 +1,12 @@
 package com.team48.applikasjon.ui.favourites
 
-import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -62,8 +62,8 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
         ).get(SharedViewModel::class.java)
     }
 
-    fun moveCamera(cameraPosition: CameraPosition) {
-        (activity as MainActivity).moveCamera(cameraPosition)
+    fun moveCamera(cameraPosition: CameraPosition, latLong: String) {
+        (activity as MainActivity).moveCamera(cameraPosition, latLong)
     }
 
     private fun setupRecyclerview() {
@@ -79,6 +79,10 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
             locationsAdapter = LocationsAdapter(it as MutableList<DatabaseLocation>, this)
             recyclerView.adapter = locationsAdapter
             sharedViewModel.databaseLocations = it
+
+            if (it.isEmpty()) {
+                rootView.findViewById<TextView>(R.id.tv_no_favourites).visibility = View.VISIBLE
+            }
 
             /* Attach swipehandler to recyclerview */
             val locationSwipeHandler = LocationSwipeHandler(requireContext(), sharedViewModel, this)

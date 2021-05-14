@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.ViewModelProviders
@@ -72,7 +73,7 @@ class SettingsFragment() : Fragment() {
         switchLocation = rootView.findViewById(R.id.switchLocation)
         deleteButton   = rootView.findViewById(R.id.delete)
 
-        // Henter lagret tilstand hvis den eksiterer
+        // Henter lagret tilstand hvis den eksisterer
         switchDarkMode.isChecked = loadPreferences("darkMode")
         switchLocation.isChecked = loadPreferences("locationMode")
 
@@ -97,9 +98,10 @@ class SettingsFragment() : Fragment() {
         deleteButton.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
                 sharedViewModel.clearDatabase()
+                unFavouriteCurrent()
+                updateNoFavourites(View.VISIBLE)
             }
         }
-
     }
 
     private fun setupPreferences() {
@@ -124,6 +126,14 @@ class SettingsFragment() : Fragment() {
 
     fun getDarkModeButtonStatus(): Boolean {
         return switchDarkMode.isChecked
+    }
+
+    fun unFavouriteCurrent() {
+        (activity as MainActivity).unfavouriteCurrent()
+    }
+
+    fun updateNoFavourites(status: Int) {
+        (activity as MainActivity).updateNoFavourites(status)
     }
 
     override fun onStart() {

@@ -9,6 +9,8 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper.myLooper
 import android.util.Log
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.viewpager2.widget.ViewPager2
@@ -166,6 +168,10 @@ class MainActivity : AppCompatActivity() {
         return settingsFragment.getDarkModeButtonStatus()
     }
 
+    fun updateNoFavourites(status: Int) {
+        locationsFragment.view?.findViewById<TextView>(R.id.tv_no_favourites)?.visibility = status
+    }
+
     private fun setupFragmentContainer() {
         val adapter = FragmentContainerAdapter(supportFragmentManager, lifecycle)
         adapter.addFragment(locationsFragment)
@@ -211,8 +217,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun moveCamera(cameraPosition: CameraPosition) {
-        mapFragment.setLocation(cameraPosition)
+    fun moveCamera(cameraPosition: CameraPosition, latLong: String) {
+        mapFragment.setLocation(cameraPosition, latLong)
         fragmentContainer.post { fragmentContainer.setCurrentItem(1, true) }
     }
 

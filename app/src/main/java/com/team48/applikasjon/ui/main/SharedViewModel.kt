@@ -117,4 +117,6 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
         view.findViewById<TextView>(R.id.text_recommendation).text = converter.getWeatherDesc(dataArr[0], dataArr[1], dataArr[2])
         btb.state = BottomSheetBehavior.STATE_EXPANDED
     }
+
+    fun isLocationsInitialized() = ::databaseLocations.isInitialized
 }

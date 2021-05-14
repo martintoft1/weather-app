@@ -47,4 +47,10 @@
     <string name="rain_desc">%1$.2f mm</string>
     <string name="temp_desc">%1$.2f °C</string>
 
+    // Marker drawable resource id
+    <string name="marker_id">"map_marker"</string>
+
+    // String til tom recyclerview
+    <string name="no_favourites">Legg til dine favorittsteder på kartet!</string>
+
 </resources>

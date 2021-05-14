@@ -2,16 +2,11 @@ package com.team48.applikasjon.utils
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.drawable.Drawable
-import android.util.Log
-import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.mapbox.mapboxsdk.camera.CameraPosition
-import com.team48.applikasjon.R
+import com.team48.applikasjon.data.models.DatabaseLocation
 import com.team48.applikasjon.ui.favourites.LocationsFragment
-import com.team48.applikasjon.ui.favourites.LocationsViewModel
 import com.team48.applikasjon.ui.favourites.adapters.LocationsAdapter
 import com.team48.applikasjon.ui.main.SharedViewModel
 
@@ -36,8 +31,9 @@ class LocationSwipeHandler(
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         // Swipe right: navigate to map
         if (direction == ItemTouchHelper.RIGHT) {
+            val location: DatabaseLocation = viewModel.databaseLocations[viewHolder.bindingAdapterPosition]
             val cameraPosition: CameraPosition = viewModel.getCameraPositionFromLocation(viewHolder.bindingAdapterPosition)
-            locationsFragment.moveCamera(cameraPosition)
+            locationsFragment.moveCamera(cameraPosition, location.latLong)
 
             // TODO: Fikse swipe reset
         }

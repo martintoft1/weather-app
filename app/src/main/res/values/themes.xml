@@ -18,6 +18,10 @@
 
         <!-- Custom spinner style -->
         <item name="android:dropDownListViewStyle">@style/SpinnerStyle</item>
+
+        <!-- Map marker color -->
+        <item name="mapMarkerColor">@color/pink</item>
+        <item name="delButtonColor">@color/cozy_red</item>
     </style>
 
 
