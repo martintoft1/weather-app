@@ -4,7 +4,6 @@ import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,10 +28,12 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM
 import com.team48.applikasjon.R
+import com.team48.applikasjon.data.models.DatabaseLocation
 import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.SharedViewModel
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
+import com.team48.applikasjon.utils.WeatherConverter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -52,6 +53,7 @@ class MapFragment() : Fragment() {
     private var userLocation: Location? = null
     var mapView: MapView? = null
 
+    private val converter = WeatherConverter()
     private val ID_ICON = "ic_marker"
     private var symbol: Symbol? = null
 
@@ -62,6 +64,7 @@ class MapFragment() : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.d("onCreateView", "MapFragment")
         rootView = inflater.inflate(R.layout.fragment_map, container, false)
         return rootView
     }
@@ -109,13 +112,14 @@ class MapFragment() : Fragment() {
                 .build()
     }
 
-    fun setLocation(cameraPosition: CameraPosition, latLong: String) {
+    fun setLocation(cameraPosition: CameraPosition, location: DatabaseLocation) {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         mapboxMap.cameraPosition = cameraPosition
-        val lat: Double = latLong.split(" ")[0].toDouble()
-        val lon: Double = latLong.split(" ")[1].toDouble()
+        val lat: Double = location.latLong.split(" ")[0].toDouble()
+        val lon: Double = location.latLong.split(" ")[1].toDouble()
         val p = LatLng(lat, lon)
         addMarker(p)
+        updateBottomSheet(location)
     }
 
     // Kalles på av MainActivity, oppdaterer lokal variabel userLocation
@@ -147,11 +151,6 @@ class MapFragment() : Fragment() {
             R.drawable.ic_marker,
             null
         )
-
-        // Legger til marker farge fra theme programmatisk
-        val t = TypedValue()
-        requireContext().theme.resolveAttribute(R.attr.mapMarkerColor, t, true)
-        drawable?.setTint(t.data)
         if (drawable != null) { style.addImage(ID_ICON, drawable) }
     }
 
@@ -289,9 +288,28 @@ class MapFragment() : Fragment() {
         }
     }
 
+
+    private fun updateBottomSheet(l: DatabaseLocation) {
+        rootView.findViewById<TextView>(R.id.text_location).text = l.name
+        l.cloud_percentage?.let { rootView.findViewById<ImageView>(R.id.image_cloud).setImageLevel(it.toInt()) }
+        l.rain_mm?.let { rootView.findViewById<ImageView>(R.id.image_rain).setImageLevel(it.toInt()) }
+        l.temp_celsius?.let { rootView.findViewById<ImageView>(R.id.image_temp).setImageLevel(it.toInt()) }
+
+        rootView.findViewById<TextView>(R.id.text_cloud).text = converter.getCloudDesc(l.cloud_percentage)
+        rootView.findViewById<TextView>(R.id.text_rain).text = converter.getRainDesc(l.rain_mm)
+        rootView.findViewById<TextView>(R.id.text_temp).text = converter.getTempDesc(l.temp_celsius)
+        rootView.findViewById<TextView>(R.id.text_recommendation).text = converter.getWeatherDesc(l.cloud_percentage, l.rain_mm, l.temp_celsius)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        rootView.findViewById<ImageButton>(R.id.add_favourites).isSelected = true
+    }
+
     fun unfavouriteCurrent() {
         rootView.findViewById<ImageButton>(R.id.add_favourites).isSelected = false
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        Log.d("unfavourite", sharedViewModel.databaseLocations.size.toString())
+        /* Don't show bottom sheet if no location is selected */
+        if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_HIDDEN) {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
     }
 
     fun updateNoFavourites(status: Int) {

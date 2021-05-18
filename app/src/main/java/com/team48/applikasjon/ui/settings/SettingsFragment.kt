@@ -9,12 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.ViewModelProviders
 import com.team48.applikasjon.R
-import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.SharedViewModel
 import com.team48.applikasjon.ui.main.ViewModelFactory

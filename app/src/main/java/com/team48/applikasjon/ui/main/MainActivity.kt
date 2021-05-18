@@ -9,7 +9,6 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper.myLooper
 import android.util.Log
-import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -19,6 +18,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.team48.applikasjon.R
+import com.team48.applikasjon.data.models.DatabaseLocation
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.favourites.LocationsFragment
 import com.team48.applikasjon.ui.main.adapters.FragmentContainerAdapter
@@ -28,6 +28,7 @@ import com.team48.applikasjon.ui.settings.SettingsFragment
 class MainActivity : AppCompatActivity() {
 
     private lateinit var fragmentContainer: ViewPager2
+    private lateinit var adapter: FragmentContainerAdapter
     private lateinit var bottomNavigationView: BottomNavigationView
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -60,11 +61,11 @@ class MainActivity : AppCompatActivity() {
         setupFragmentContainer()
         setupBottomNavigation()
 
-
         // Location Manager
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
     }
+
 
     fun getViewModelFactory(): ViewModelFactory {
         return viewModelFactory
@@ -131,13 +132,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkPermission(): Boolean {
-        return  ActivityCompat.checkSelfPermission(
-                this,
+        return  ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 &&
-                ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
     private fun requestPermission() {
@@ -173,7 +172,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupFragmentContainer() {
-        val adapter = FragmentContainerAdapter(supportFragmentManager, lifecycle)
+        adapter = FragmentContainerAdapter(supportFragmentManager, lifecycle)
         adapter.addFragment(locationsFragment)
         adapter.addFragment(mapFragment)
         adapter.addFragment(settingsFragment)
@@ -191,7 +190,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // Skru av swipe-animasjon mellom fragments
+        // Skru av swipe-funksjon mellom fragments
         fragmentContainer.isUserInputEnabled = false
 
         // Initialiserer fragmentene som appen ikke starter i
@@ -200,16 +199,14 @@ class MainActivity : AppCompatActivity() {
         fragmentContainer.setCurrentItem(2, false)
 
         // Setter fragment som åpnes først
-        fragmentContainer.post { fragmentContainer.setCurrentItem(1, false) }
+       fragmentContainer.post { fragmentContainer.setCurrentItem(1, false) }
     }
 
     private fun setupBottomNavigation() {
         // Bytter fragment ved bottomnav navigering
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.locationsView -> {
-                    fragmentContainer.setCurrentItem(0, true)
-                }
+                R.id.locationsView -> fragmentContainer.setCurrentItem(0, true)
                 R.id.mapView -> fragmentContainer.setCurrentItem(1, true)
                 R.id.settingsView -> fragmentContainer.setCurrentItem(2, true)
             }
@@ -217,8 +214,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun moveCamera(cameraPosition: CameraPosition, latLong: String) {
-        mapFragment.setLocation(cameraPosition, latLong)
+    fun moveCamera(cameraPosition: CameraPosition, location: DatabaseLocation) {
+        mapFragment.setLocation(cameraPosition, location)
         fragmentContainer.post { fragmentContainer.setCurrentItem(1, true) }
     }
 
