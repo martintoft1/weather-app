@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/map_popup_background"
+    android:outlineProvider="bounds"
     android:paddingStart="20dp"
     android:paddingEnd="20dp"
-    android:paddingBottom="40dp"
-    android:outlineProvider="bounds"
-    android:background="@drawable/map_popup_background" >
+    android:paddingBottom="5dp">
 
     <FrameLayout
         android:id="@+id/capsule"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/shape_capsule"
         android:layout_margin="5dp"
+        android:background="@drawable/shape_capsule"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -38,8 +37,8 @@
         android:id="@+id/add_favourites"
         android:layout_width="35dp"
         android:layout_height="35dp"
-        android:contentDescription="@string/favoritt_ikon"
         android:background="@drawable/ic_heart"
+        android:contentDescription="@string/favoritt_ikon"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="@+id/text_location"
         app:layout_constraintEnd_toEndOf="parent"
@@ -48,10 +47,9 @@
 
     <ImageView
         android:id="@+id/image_cloud"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="80dp"
+        android:layout_height="60dp"
         android:contentDescription="@string/sky_ikon"
-        android:padding="5dp"
         android:src="@drawable/level_list_cloud"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/text_location" />
@@ -68,15 +66,12 @@
 
     <ImageView
         android:id="@+id/image_rain"
-        android:layout_width="70dp"
+        android:layout_width="80dp"
         android:layout_height="70dp"
         android:contentDescription="@string/regn_ikon"
-        android:padding="5dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
         android:src="@drawable/level_list_rain"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/image_temp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image_cloud" />
 
     <TextView
@@ -91,10 +86,9 @@
 
     <ImageView
         android:id="@+id/image_temp"
-        android:layout_width="70dp"
+        android:layout_width="80dp"
         android:layout_height="70dp"
         android:contentDescription="@string/temp_ikon"
-        android:padding="5dp"
         android:src="@drawable/level_list_temp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -114,11 +108,10 @@
         android:id="@+id/text_recommendation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_temp" />
+        app:layout_constraintTop_toBottomOf="@+id/image_temp"
+        app:layout_constraintVertical_bias="0.309" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
