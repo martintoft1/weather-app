@@ -8,6 +8,9 @@ import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import com.airbnb.lottie.LottieAnimationView
 import com.team48.applikasjon.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 /*
@@ -30,6 +33,8 @@ class SplashActivity : AppCompatActivity() {
 
         //Uncertain for the use-case of this (not in use)
         //lottieAnimationView.animate().translationY(1400F).setDuration(1000).setStartDelay(4000)
+
+        CoroutineScope(Dispatchers.IO).launch {  }
 
 
         Handler(Looper.getMainLooper()).postDelayed({
