@@ -229,7 +229,7 @@ class MapFragment() : Fragment() {
         spinner = rootView.findViewById(R.id.spinner_weather_filter)
         val icons = mutableListOf<Int>()
         icons.add(R.drawable.c_cloud_medium)
-        icons.add(R.drawable.c_rain_medim)
+        icons.add(R.drawable.c_rain_medium)
         icons.add(R.drawable.c_sun)
         icons.add(R.drawable.c_x)
 
