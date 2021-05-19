@@ -33,10 +33,9 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <View
-        android:id="@+id/shadow"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:background="@drawable/shadow"
+        android:layout_height="18dp"
+        android:background="@drawable/shadow_square"
         app:layout_anchor="@id/bottom_sheet" />
 
 
@@ -44,7 +43,7 @@
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:behavior_hideable="false"
+        app:behavior_hideable="true"
         app:behavior_peekHeight="50dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 

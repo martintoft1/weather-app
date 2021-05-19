@@ -16,6 +16,10 @@ class FragmentContainerAdapter(fragmentManager: FragmentManager?, b: Lifecycle?)
         fragments.add(fragment)
     }
 
+    fun getFragments() : MutableList<Fragment> {
+        return fragments
+    }
+
     override fun createFragment(position: Int): Fragment {
         return fragments[position]
     }

@@ -52,15 +52,15 @@ class WeatherConverter() {
         tempVar = if (temp == null) 0.toFloat() else temp
 
         return when {
-            rainVar > 0.4 && tempVar < 10 && tempVar >= -2 -> "Klesanbefaling: varmt utetøy som tåler vann, og varme støvler"
-            rainVar > 0.4 && tempVar >= 10 -> "Klesanbefaling: regntøy og støvler"
-            tempVar < -5 -> "Klesanbefaling: skikkelig varmt utetøy"
-            tempVar < 5 -> "Klesanbefaling: varmt utetøy"
-            tempVar < 15 -> "Klesanbefaling: jakke, lue, skjerf og hansker"
-            tempVar < 20 -> "Klesanbefaling: genser og bukse"
-            tempVar < 25 -> "Klesanbefaling: bukse og t-skjorte"
+            rainVar > 0.4 && tempVar < 10 && tempVar >= -2 -> "Varmt utetøy som tåler vann, og varme støvler"
+            rainVar > 0.4 && tempVar >= 10 -> "Regntøy og støvler"
+            tempVar < -5 -> "Skikkelig varmt utetøy"
+            tempVar < 5  -> "Varmt utetøy"
+            tempVar < 15 -> "Jakke, lue, skjerf og hansker"
+            tempVar < 20 -> "Genser og bukse"
+            tempVar < 25 -> "Bukse og t-skjorte"
 
-            else -> "Klesanbefaling: short og t-skjorte"
+            else -> "Shorts og t-skjorte"
         }
     }
 }

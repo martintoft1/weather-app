@@ -4,12 +4,12 @@
     <style name="Theme.Applikasjon" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/green</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">#8ABADD</item>
         <item name="colorOnPrimary">@color/white</item>
 
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/green</item>
+        <item name="colorSecondary">@color/colorPrimary</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
 
@@ -18,6 +18,10 @@
 
         <!-- Custom spinner style -->
         <item name="android:dropDownListViewStyle">@style/SpinnerStyle</item>
+
+        <!-- Tint color for widgets -->
+        <item name="colorAccent">@color/cozy_red</item>
+
     </style>
 
 

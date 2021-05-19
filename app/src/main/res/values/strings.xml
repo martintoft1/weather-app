@@ -10,7 +10,6 @@
     <string name="mapbox_access_token">pk.eyJ1Ijoic2ltb2FuOTIiLCJhIjoiY2tta3ZuNnJrMTBsZTJvbWsyczY1dnF2cyJ9.XdVLefOEBBMH4nJnBT4zQg</string>
 
     // URL til met værdata
-    <string name="metUri">https://test.openmaps.met.no/in2000/map/services</string>
 
     // URL til egen designet mapbox stil
     <string name="mapStyleLight">mapbox://styles/wipi-48/cknipuh1m0pws17s5bfc7zzpj</string>
@@ -22,18 +21,9 @@
     <string name="location">Lokasjon</string>
 
     // MapFragment Spinner elementer
-    <string-array name="map_overlays">
-        <item>Skyer</item>
-        <item>Regn</item>
-        <item>Temperatur</item>
-        <item>Tom</item>
-    </string-array>
 
 
     // Tabell for skydekke
-    <string name="lett">Ingen Skyer</string>
-    <string name="delvis">Delvis skyet</string>
-    <string name="fullt">Overskyet</string>
     <string name="sky_ikon">sky-ikon</string>
     <string name="favoritt_ikon">favoritt-ikon</string>
     <string name="regn_ikon">regn-ikon</string>
@@ -46,5 +36,11 @@
     <string name="clouds_desc">%1$.0f %%</string>
     <string name="rain_desc">%1$.2f mm</string>
     <string name="temp_desc">%1$.2f °C</string>
+
+    // String format til væranbefaling
+    <string name="recommendation">Anbefaling: %1$s</string>
+
+    // String til tom recyclerview
+    <string name="no_favourites">Legg til dine favorittsteder på kartet!</string>
 
 </resources>

@@ -114,7 +114,10 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
         view.findViewById<TextView>(R.id.text_cloud).text = converter.getCloudDesc(dataArr[0])
         view.findViewById<TextView>(R.id.text_rain).text = converter.getRainDesc(dataArr[1])
         view.findViewById<TextView>(R.id.text_temp).text = converter.getTempDesc(dataArr[2])
-        view.findViewById<TextView>(R.id.text_recommendation).text = converter.getWeatherDesc(dataArr[0], dataArr[1], dataArr[2])
+
+        val recString = view.context.getString(R.string.recommendation)
+        view.findViewById<TextView>(R.id.text_recommendation).text = String.format(
+            recString, converter.getWeatherDesc(dataArr[0], dataArr[1], dataArr[2]))
         btb.state = BottomSheetBehavior.STATE_EXPANDED
     }
 }

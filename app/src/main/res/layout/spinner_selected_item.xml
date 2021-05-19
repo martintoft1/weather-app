@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/hide_layout"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:shape="ring"
-    app:cardElevation="0dp"
     app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="28dp"> <!-- Radius må være (bilde+margin) / 2 for å bli rundt  -->
+
 
         <ImageView
             android:id="@+id/weather_icon"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_margin="6dp"
+            android:layout_margin="5dp"
             android:scaleType="fitCenter" />
+
+
 
 </androidx.cardview.widget.CardView>

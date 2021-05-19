@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <level-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:maxLevel="10" android:drawable="@drawable/c_sun_cold" />
+    <item android:maxLevel="10" android:minLevel="-50" android:drawable="@drawable/c_sun_cold" />
     <item android:maxLevel="20" android:drawable="@drawable/c_sun" />
     <item android:maxLevel="100" android:drawable="@drawable/c_sun_warm" />
 </level-list>

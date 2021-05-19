@@ -3,7 +3,7 @@
     <item
         android:id="@+id/locationsView"
         android:title="@string/favourites"
-        android:icon="@drawable/ic_heart"/>
+        android:icon="@drawable/ic_heartfilled"/>
 
     <item
         android:id="@+id/mapView"
