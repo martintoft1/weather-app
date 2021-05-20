@@ -39,7 +39,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class MapFragment() : Fragment() {
+class MapFragment : Fragment() {
 
     private lateinit var rootView: View
     private lateinit var viewModelFactory: ViewModelFactory
@@ -331,7 +331,7 @@ class MapFragment() : Fragment() {
             ) {
                 val results = response.body()!!.features()
                 if (results.size > 0) {
-                    placeName = results[0].placeName()!!.toString()
+                    placeName = results[0].placeName()!!.toString().substringBeforeLast(",")
 
                     sharedViewModel.getWeatherFrom(
                         map,
