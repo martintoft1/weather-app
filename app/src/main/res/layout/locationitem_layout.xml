@@ -68,6 +68,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical">
 
+
                 <TextView
                     android:id="@+id/tv_location"
                     android:layout_width="0dp"
@@ -118,6 +119,8 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"/>
 
+
+
                 <TextView
                     android:id="@+id/tv_clouds"
                     android:layout_width="45dp"
@@ -144,6 +147,12 @@
 
             </LinearLayout>
 
+            <ImageView
+                android:id="@+id/arrow_expand"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_expand"
+                android:layout_below="@id/location_expanded" />
 
         </RelativeLayout>
 
@@ -154,5 +163,7 @@
             android:src="@drawable/gradient_right" />
 
     </LinearLayout>
+
+
 
 </androidx.cardview.widget.CardView>
