@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="20dp"
-    android:paddingEnd="20dp"
+    android:paddingEnd="0dp"
     android:outlineProvider="bounds"
     android:background="@drawable/map_popup_background" >
 
@@ -37,11 +37,12 @@
 
     <ImageButton
         android:id="@+id/add_favourites"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:contentDescription="@string/favoritt_ikon"
         android:background="@drawable/selector_favourite"
         android:scaleType="fitCenter"
+        android:layout_marginEnd="10dp"
         app:layout_constraintBottom_toBottomOf="@+id/text_location"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/text_location" />
@@ -111,6 +112,7 @@
         android:id="@+id/text_recommendation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
