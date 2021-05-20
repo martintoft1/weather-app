@@ -187,17 +187,15 @@ class MapFragment : Fragment() {
                 createMarker(style)
             }
 
-            map.addOnMapLongClickListener { point ->
+            map.addOnMapClickListener { point ->
                 addMarker(point)
                 getLocationFrom(map, point)
                 true
             }
 
-
-            map.addOnMapClickListener {
+            map.addOnCameraMoveListener {
                 if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
-                    bottomSheetBehavior.state =  BottomSheetBehavior.STATE_COLLAPSED
-                true
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             }
         }
     }
