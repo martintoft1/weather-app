@@ -2,7 +2,7 @@ package com.team48.applikasjon.utils
 
 class WeatherConverter() {
     val cloudDescs = listOf("Ingen skyer", "Delvis skyet", "Overskyet")
-    val rainDescs  = listOf("Ingen nedbør", "Oppholdsvær", "Regn", "Pøsregn!")
+    val rainDescs  = listOf("Ingen nedbør", "Oppholdsvær", "Pjuskeregn","Regn", "Pøsregn!")
     val tempDescs  = listOf("Iskaldt!", "Kjølig", "Lunkent", "Godt og varmt", "Kokvarmt!")
 
 
@@ -22,9 +22,10 @@ class WeatherConverter() {
 
         return when {
             value <= 0.0 -> rainDescs[0] + " ($value mm)"
-            value <= 0.8 -> rainDescs[1] + " ($value mm)"
-            value <= 1 -> rainDescs[2] + " ($value mm)"
-            else         -> rainDescs[3] + " ($value mm)"
+            value <= 0.2 -> rainDescs[1] + " ($value mm)"
+            value <= 0.8 -> rainDescs[2] + " ($value mm)"
+            value <= 1.5 -> rainDescs[3] + " ($value mm)"
+            else         -> rainDescs[4] + " ($value mm)"
         }
     }
 
