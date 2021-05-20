@@ -1,12 +1,10 @@
 package com.team48.applikasjon.data.repository
 
 import android.content.Context
-import androidx.constraintlayout.utils.widget.MockView
 import androidx.core.text.isDigitsOnly
 import androidx.test.core.app.ApplicationProvider
 import com.team48.applikasjon.data.api.ApiServiceImpl
 import com.team48.applikasjon.data.models.VectorDataset
-import com.team48.applikasjon.ui.main.MainActivity
 import junit.framework.TestCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
@@ -59,11 +57,9 @@ class RepositoryTest : TestCase() {
         }
     }
 
+    // Tester som er nedprioritert for tidsbruk
     fun testAddLocation() {
-
-
-
-        //fail("Test not yet implemented")
+        fail("Test not yet implemented")
     }
 
     fun testDeleteLocation() {
