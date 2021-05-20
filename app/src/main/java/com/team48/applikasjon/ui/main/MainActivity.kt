@@ -18,7 +18,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.team48.applikasjon.R
-import com.team48.applikasjon.data.models.DatabaseLocation
+import com.team48.applikasjon.data.models.LocationModel
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.ui.favourites.LocationsFragment
 import com.team48.applikasjon.ui.main.adapters.FragmentContainerAdapter
@@ -214,8 +214,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun moveCamera(cameraPosition: CameraPosition, location: DatabaseLocation) {
-        mapFragment.setLocation(cameraPosition, location)
+    fun moveCamera(cameraPosition: CameraPosition, locationModel: LocationModel) {
+        mapFragment.setLocation(cameraPosition, locationModel)
         fragmentContainer.post { fragmentContainer.setCurrentItem(1, true) }
     }
 

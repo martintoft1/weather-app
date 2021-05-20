@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import com.team48.applikasjon.data.api.ApiHelper
 import com.team48.applikasjon.data.api.ApiServiceImpl
 import com.team48.applikasjon.data.database.LocationsDatabase
-import com.team48.applikasjon.data.models.DatabaseLocation
+import com.team48.applikasjon.data.models.LocationModel
 
 class Repository (context: Context){
 
@@ -15,15 +15,15 @@ class Repository (context: Context){
 
     fun getWeather() = apiHelper.getWeather()
 
-    suspend fun addLocation(databaseLocation: DatabaseLocation) {
-        database.locationDao().addLocation(databaseLocation)
+    suspend fun addLocation(locationModel: LocationModel) {
+        database.locationDao().addLocation(locationModel)
     }
 
-    suspend fun deleteLocation(databaseLocation: DatabaseLocation) {
-        database.locationDao().deleteLocation(databaseLocation)
+    suspend fun deleteLocation(locationModel: LocationModel) {
+        database.locationDao().deleteLocation(locationModel)
     }
 
-    fun getAllLocations() : LiveData<MutableList<DatabaseLocation>> {
+    fun getAllLocations() : LiveData<MutableList<LocationModel>> {
         return database.locationDao().getLocations()
     }
 
