@@ -1,6 +1,5 @@
 package com.team48.applikasjon.ui.main
 
-import android.provider.ContactsContract
 import android.util.Log
 import android.view.View
 import android.widget.ImageButton
@@ -15,41 +14,40 @@ import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.team48.applikasjon.R
-import com.team48.applikasjon.data.models.DatabaseLocation
+import com.team48.applikasjon.data.models.LocationModel
 import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.utils.WeatherConverter
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 class SharedViewModel(private val repository: Repository) : ViewModel() {
 
-    lateinit var databaseLocations: MutableList<DatabaseLocation>
-    lateinit var selectedDatabaseLocation: DatabaseLocation
+    lateinit var locationModels: MutableList<LocationModel>
+    lateinit var selectedLocationModel: LocationModel
     lateinit var map: MapboxMap
 
     // Utility class to convert weather data into string representation
     var converter = WeatherConverter()
 
-    fun getAllLocations() : LiveData<MutableList<DatabaseLocation>> {
+    fun getAllLocations() : LiveData<MutableList<LocationModel>> {
         return repository.getAllLocations()
     }
 
     fun deleteLocation(position: Int) {
-        viewModelScope.launch { repository.deleteLocation(databaseLocations[position]) }
-        databaseLocations.removeAt(position)
+        viewModelScope.launch { repository.deleteLocation(locationModels[position]) }
+        locationModels.removeAt(position)
     }
 
 
     suspend fun clearDatabase() {
         viewModelScope.launch { repository.clearDatabase() }
-        if (this::databaseLocations.isInitialized) { databaseLocations.clear() }
+        if (this::locationModels.isInitialized) { locationModels.clear() }
     }
 
 
     fun addSelected() {
-        viewModelScope.launch { repository.addLocation(selectedDatabaseLocation) }
-        databaseLocations.add(selectedDatabaseLocation)
-        selectedDatabaseLocation.favourite = true
+        viewModelScope.launch { repository.addLocation(selectedLocationModel) }
+        locationModels.add(selectedLocationModel)
+        selectedLocationModel.favourite = true
     }
 
     fun setMapReference(mapboxMap: MapboxMap) {
@@ -59,10 +57,10 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
 
     fun getCameraPositionFromLocation(position: Int): CameraPosition {
 
-        val location: DatabaseLocation = databaseLocations[position]
+        val locationModel: LocationModel = locationModels[position]
 
-        val lat = location.latLong.substringBefore(" ").toDouble()
-        val long = location.latLong.substringAfter(" ").toDouble()
+        val lat = locationModel.latLong.substringBefore(" ").toDouble()
+        val long = locationModel.latLong.substringAfter(" ").toDouble()
 
         return CameraPosition.Builder()
             .target(LatLng(lat, long, 1.0))
@@ -90,14 +88,14 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
             return
         }
 
-        val l: List<DatabaseLocation> = databaseLocations.filter { l -> l.name == location }
+        val l: List<LocationModel> = locationModels.filter { l -> l.name == location }
 
         if (l.isNotEmpty()) {
-            selectedDatabaseLocation = l[0]
+            selectedLocationModel = l[0]
             view.findViewById<ImageButton>(R.id.add_favourites).isSelected = true
         } else {
             val latLong = "${point.latitude} ${point.longitude}"
-            selectedDatabaseLocation = DatabaseLocation(0,
+            selectedLocationModel = LocationModel(0,
                 location,
                 dataArr[0],
                 dataArr[1],

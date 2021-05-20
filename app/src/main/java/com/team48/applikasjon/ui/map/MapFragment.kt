@@ -28,18 +28,19 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM
 import com.team48.applikasjon.R
-import com.team48.applikasjon.data.models.DatabaseLocation
+import com.team48.applikasjon.data.models.LocationModel
 import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.SharedViewModel
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
+import com.team48.applikasjon.utils.Animator
 import com.team48.applikasjon.utils.WeatherConverter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
-class MapFragment() : Fragment() {
+class MapFragment : Fragment() {
 
     private lateinit var rootView: View
     private lateinit var viewModelFactory: ViewModelFactory
@@ -56,6 +57,7 @@ class MapFragment() : Fragment() {
     private val converter = WeatherConverter()
     private val ID_ICON = "ic_marker"
     private var symbol: Symbol? = null
+    private val animator = Animator()
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
@@ -96,7 +98,7 @@ class MapFragment() : Fragment() {
         ).get(SharedViewModel::class.java)
 
         sharedViewModel.getAllLocations().observe(viewLifecycleOwner, {
-            sharedViewModel.databaseLocations = it
+            sharedViewModel.locationModels = it
         })
     }
 
@@ -112,14 +114,14 @@ class MapFragment() : Fragment() {
                 .build()
     }
 
-    fun setLocation(cameraPosition: CameraPosition, location: DatabaseLocation) {
+    fun setLocation(cameraPosition: CameraPosition, locationModel: LocationModel) {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         mapboxMap.cameraPosition = cameraPosition
-        val lat: Double = location.latLong.split(" ")[0].toDouble()
-        val lon: Double = location.latLong.split(" ")[1].toDouble()
+        val lat: Double = locationModel.latLong.split(" ")[0].toDouble()
+        val lon: Double = locationModel.latLong.split(" ")[1].toDouble()
         val p = LatLng(lat, lon)
         addMarker(p)
-        updateBottomSheet(location)
+        updateBottomSheet(locationModel)
     }
 
     // Kalles på av MainActivity, oppdaterer lokal variabel userLocation
@@ -281,6 +283,7 @@ class MapFragment() : Fragment() {
                 // Fjern "ingen favoritter" tekst hvis synlig
                 updateNoFavourites(View.GONE)
                 sharedViewModel.addSelected()
+                animator.expandHeart(button_fav)
                 button_fav.isSelected = true
 
                 Toast.makeText(requireContext(), "Lagret i favoritter!", LENGTH_SHORT).show()
@@ -289,7 +292,7 @@ class MapFragment() : Fragment() {
     }
 
 
-    private fun updateBottomSheet(l: DatabaseLocation) {
+    private fun updateBottomSheet(l: LocationModel) {
         rootView.findViewById<TextView>(R.id.text_location).text = l.name
         l.cloud_percentage?.let { rootView.findViewById<ImageView>(R.id.image_cloud).setImageLevel(it.toInt()) }
         l.rain_mm?.let { rootView.findViewById<ImageView>(R.id.image_rain).setImageLevel(it.toInt()) }
@@ -305,7 +308,7 @@ class MapFragment() : Fragment() {
 
     fun unfavouriteCurrent() {
         rootView.findViewById<ImageButton>(R.id.add_favourites).isSelected = false
-        Log.d("unfavourite", sharedViewModel.databaseLocations.size.toString())
+        Log.d("unfavourite", sharedViewModel.locationModels.size.toString())
         /* Don't show bottom sheet if no location is selected */
         if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_HIDDEN) {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -331,7 +334,7 @@ class MapFragment() : Fragment() {
             ) {
                 val results = response.body()!!.features()
                 if (results.size > 0) {
-                    placeName = results[0].placeName()!!.toString()
+                    placeName = results[0].placeName()!!.toString().substringBeforeLast(",")
 
                     sharedViewModel.getWeatherFrom(
                         map,

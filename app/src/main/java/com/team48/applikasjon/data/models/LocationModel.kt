@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "table_location")
-data class DatabaseLocation (
+data class LocationModel (
        @PrimaryKey(autoGenerate = true)
        val id: Int,
        var name: String,
