@@ -1,5 +1,8 @@
 package com.team48.applikasjon.ui.map
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
@@ -14,6 +17,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.snackbar.Snackbar
 import com.mapbox.api.geocoding.v5.GeocodingCriteria
 import com.mapbox.api.geocoding.v5.MapboxGeocoding
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse
@@ -50,6 +54,7 @@ class MapFragment : Fragment() {
     private lateinit var spinner: Spinner
     private lateinit var locationButton: ImageView
     private lateinit var mapboxMap: MapboxMap
+    private lateinit var sharedPref: SharedPreferences
     private var symbolManager: SymbolManager? = null
     private var userLocation: Location? = null
     var mapView: MapView? = null
@@ -79,6 +84,7 @@ class MapFragment : Fragment() {
         setupSpinner()
         setupBottomSheet()
         setupLocationButton()
+        setupTipsToasts()
     }
 
     private fun getViewModelFactory() {
@@ -380,6 +386,34 @@ class MapFragment : Fragment() {
                 ).show()
             }
         }
+    }
+
+    private fun setupTipsToasts() {
+        setupPreferences()
+        if (!loadPreferences("notFirstRun")) {
+            Toast.makeText(
+                requireContext(),
+                "Trykk på knappen i øvre venstre hjørne for å skifte værfilter!",
+                Toast.LENGTH_LONG
+            ).show()
+            commitPreference("notFirstRun", true)
+        }
+    }
+
+
+    private fun setupPreferences() {
+        sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
+    }
+
+    private fun commitPreference(key: String, value: Boolean) {
+        with (sharedPref.edit()) {
+            putBoolean(key, value)
+            apply()
+        }
+    }
+
+    private fun loadPreferences(key: String): Boolean {
+        return sharedPref.getBoolean(key, false)
     }
 
     override fun onStart() {
