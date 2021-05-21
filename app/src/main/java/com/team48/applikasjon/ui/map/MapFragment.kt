@@ -32,7 +32,7 @@ import com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.LocationModel
 import com.team48.applikasjon.ui.main.MainActivity
-import com.team48.applikasjon.ui.main.LocationsViewModel
+import com.team48.applikasjon.ui.favourites.LocationsViewModel
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
 import com.team48.applikasjon.utils.Animator

@@ -3,6 +3,7 @@ package com.team48.applikasjon.ui.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.team48.applikasjon.data.repository.Repository
+import com.team48.applikasjon.ui.favourites.LocationsViewModel
 import com.team48.applikasjon.ui.map.MapViewModel
 import com.team48.applikasjon.ui.settings.SettingsViewModel
 

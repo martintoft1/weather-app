@@ -20,7 +20,6 @@ import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.LocationModel
 import com.team48.applikasjon.ui.favourites.adapters.LocationsAdapter
 import com.team48.applikasjon.ui.main.MainActivity
-import com.team48.applikasjon.ui.main.LocationsViewModel
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.utils.Animator
 
@@ -157,12 +156,12 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
 
         if (location.expanded) {
             animator.collapseItem(expandedView)
-            animator.expandArrow(arrowView)
+            animator.rotateArrow(arrowView, 0F)
             location.expanded = false
         }
         else {
             animator.expandItem(expandedView)
-            animator.collapseArrow(arrowView)
+            animator.rotateArrow(arrowView, 180F)
             location.expanded = true
         }
         locationsAdapter.notifyItemChanged(position)
