@@ -2,7 +2,6 @@ package com.team48.applikasjon.ui.map
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
@@ -17,7 +16,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.snackbar.Snackbar
 import com.mapbox.api.geocoding.v5.GeocodingCriteria
 import com.mapbox.api.geocoding.v5.MapboxGeocoding
 import com.mapbox.api.geocoding.v5.models.GeocodingResponse
@@ -34,7 +32,7 @@ import com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.LocationModel
 import com.team48.applikasjon.ui.main.MainActivity
-import com.team48.applikasjon.ui.main.SharedViewModel
+import com.team48.applikasjon.ui.main.LocationsViewModel
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
 import com.team48.applikasjon.utils.Animator
@@ -49,7 +47,7 @@ class MapFragment : Fragment() {
     private lateinit var rootView: View
     private lateinit var viewModelFactory: ViewModelFactory
     private lateinit var mapViewModel: MapViewModel
-    private lateinit var sharedViewModel: SharedViewModel
+    private lateinit var locationsViewModel: LocationsViewModel
     private lateinit var spinnerAdapter: SpinnerAdapter
     private lateinit var spinner: Spinner
     private lateinit var locationButton: ImageView
@@ -98,13 +96,13 @@ class MapFragment : Fragment() {
             viewModelFactory
         ).get(MapViewModel::class.java)
 
-        sharedViewModel = ViewModelProviders.of(
+        locationsViewModel = ViewModelProviders.of(
             this,
             viewModelFactory
-        ).get(SharedViewModel::class.java)
+        ).get(LocationsViewModel::class.java)
 
-        sharedViewModel.getAllLocations().observe(viewLifecycleOwner, {
-            sharedViewModel.locationModels = it
+        locationsViewModel.getAllLocations().observe(viewLifecycleOwner, {
+            locationsViewModel.locationModels = it
         })
     }
 
@@ -174,7 +172,7 @@ class MapFragment : Fragment() {
             // Lagre peker til map for Fragment og ViewModel
             mapboxMap = map
 
-            sharedViewModel.setMapReference(map)
+            locationsViewModel.setMapReference(map)
 
             // Setter kameraposisjon til over Norge initielt
             map.cameraPosition = mapViewModel.getCamNorwayPos()
@@ -286,7 +284,7 @@ class MapFragment : Fragment() {
             if (!button_fav.isSelected) {
                 // Fjern "ingen favoritter" tekst hvis synlig
                 updateNoFavourites(View.GONE)
-                sharedViewModel.addSelected()
+                locationsViewModel.addSelected()
                 animator.expandHeart(button_fav)
                 button_fav.isSelected = true
 
@@ -312,7 +310,7 @@ class MapFragment : Fragment() {
 
     fun unfavouriteCurrent() {
         rootView.findViewById<ImageButton>(R.id.add_favourites).isSelected = false
-        Log.d("unfavourite", sharedViewModel.locationModels.size.toString())
+        Log.d("unfavourite", locationsViewModel.locationModels.size.toString())
         /* Don't show bottom sheet if no location is selected */
         if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_HIDDEN) {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -340,13 +338,13 @@ class MapFragment : Fragment() {
                 if (results.size > 0) {
                     placeName = results[0].placeName()!!.toString().substringBeforeLast(",")
 
-                    sharedViewModel.getWeatherFrom(
+                    if (!locationsViewModel.getWeatherFrom(
                         map,
                         point,
                         bottomSheetBehavior,
                         rootView,
                         placeName
-                    )
+                    )) { Toast.makeText(requireContext(), "Værdata ikke tilgjengelig utenfor Norden", LENGTH_SHORT).show() }
                 } else {
                     Toast.makeText(requireContext(), "Ingen lokasjon funnet", LENGTH_SHORT).show()
                 }
