@@ -15,7 +15,7 @@
     <string name="mapStyleLight">mapbox://styles/wipi-48/cknipuh1m0pws17s5bfc7zzpj</string>
     <string name="mapStyleDark">mapbox://styles/wipi-48/ckoa1jzmp6me718pglxq5i10t</string>
 
-    <string name="dark_mode">Mørkt modus</string>
+    <string name="dark_mode">Mørk modus</string>
     <string name="tillatt_brukerlokasjon">Tillatt brukerlokasjon</string>
     <string name="locationbtn">locationBtn</string>
     <string name="location">Lokasjon</string>
