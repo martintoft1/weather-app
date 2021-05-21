@@ -43,4 +43,12 @@
     // String til tom recyclerview
     <string name="no_favourites">Legg til dine favorittsteder på kartet!</string>
 
+    // Contentdescriptions til spinner-elementer
+    <string-array name="descriptions_array">
+        <item>"Skydekke"</item>
+        <item>"Nedbør"</item>
+        <item>"Temperatur"</item>
+        <item>"Ingen"</item>
+    </string-array>
+
 </resources>
