@@ -4,7 +4,6 @@ import android.graphics.Color
 import androidx.lifecycle.*
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression.*
 import com.mapbox.mapboxsdk.style.layers.FillLayer
@@ -18,6 +17,7 @@ import kotlinx.coroutines.*
 import java.util.Collections.emptyList
 import java.util.stream.IntStream.range
 
+/* ViewModel relatert til MapFragment */
 class MapViewModel(val repository: Repository) : ViewModel() {
 
     // Felles liste for alle værtyper, 0 = precipitation, 1 = clouds, 2 = airTemp
@@ -29,10 +29,12 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     // Hashmap som holder på opprettede layers
     private var layerHashMap: HashMap<Int, Layer> = hashMapOf()
 
+    // Returnerer default/light stil-referanse
     fun getDefaultStyleResource(): Int {
         return R.string.mapStyleLight
     }
 
+    // Returnerer dark-mode stil-referanse
     fun getDarkModeStyleResource(): Int {
        return R.string.mapStyleDark
     }
@@ -40,12 +42,12 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     // Opprettelse av layers basert på API-data
     fun updateWeather(style: Style) {
 
+        // LiveData er nedprioritert da vi bare har API-data fra 8. mars 2021 for case 4
         CoroutineScope(Dispatchers.IO).launch {
             while (liveWeather.isEmpty()) {
                 delay(500)
                 liveWeather = repository.getWeather()
             }
-
             withContext(Dispatchers.Main) {
 
                 // Layers legges til med default presentasjon (light mode)
@@ -59,7 +61,6 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     fun getIDfromURL(url: String): String {
         return url.substringAfterLast("/")
     }
-
 
     // Henter metadataURL fra weatherList basert på spinnerposisjon
     fun getLayerURL(position: Int): String {
@@ -136,17 +137,12 @@ class MapViewModel(val repository: Repository) : ViewModel() {
     // Justering av hvordan layers presenteres på skjerm
     fun setLayerProperties(fillLayer: Layer, weatherType: Int, visualMode: Int) {
 
-        /*
-        WeatherType:
-        0: Clouds
-        1: Precipitiation
-        2: AirTemp
-        */
-        // Opacity settes til 0 initielt
+        /* WeatherType:
+         * 0: Clouds
+         * 1: Precipitiation
+         * 2: AirTemp
+         * Opacity settes til 0 initielt */
 
-        // TODO: visualMode = 0: Default (light), = 1: Darkmode
-
-        // TODO: Create better presentation based on weather type
         when (weatherType) {
             0 -> {
                 fillLayer.setProperties( // clouds

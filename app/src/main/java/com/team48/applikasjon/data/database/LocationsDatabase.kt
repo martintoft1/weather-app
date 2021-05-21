@@ -6,24 +6,23 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.team48.applikasjon.data.models.LocationModel
 
-
 @Database(entities = [LocationModel::class], version = 1)
 abstract class LocationsDatabase : RoomDatabase() {
 
     abstract fun locationDao() : LocationDao
 
     companion object {
-        @Volatile // Visible to other threads
+        @Volatile // Synlig for andre tråder
         private var INSTANCE: LocationsDatabase? = null
 
         fun getDatabase(context: Context): LocationsDatabase {
 
-            // Database instance exists
+            // Hvis databaseinstansen eksiterer
             if (INSTANCE!= null) {
                 return INSTANCE as LocationsDatabase
             }
 
-            // Create new instance of database
+            // Hvis ikke opprettes en ny instans
             synchronized(this) {
                 INSTANCE = Room.databaseBuilder(
                     context.applicationContext,

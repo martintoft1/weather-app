@@ -1,26 +1,18 @@
 package com.team48.applikasjon.utils
 
-import android.R.animator
-import android.R.style
 import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
-import android.animation.TimeInterpolator
-import android.animation.ValueAnimator
-import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.Transformation
-import com.androidnetworking.AndroidNetworking.cancel
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import io.reactivex.internal.subscriptions.SubscriptionHelper.cancel
 
 /* Inneholder funksjoner for å animere ulike views */
 class Animator {
 
+    /* Konstanter */
     val DELAY_EXTRA: Float = 200F
     val ROTATE_DUR: Long = 400
-
 
     /* Roterer pil gitt antall grader */
     fun rotateArrow(view: View, degrees: Float) {
@@ -34,8 +26,8 @@ class Animator {
                 PropertyValuesHolder.ofFloat("scaleX", 1.2f),
                 PropertyValuesHolder.ofFloat("scaleY", 1.2f))
         scaleDown.duration = 310
-        scaleDown.repeatCount = 1;
-        scaleDown.repeatMode = ObjectAnimator.REVERSE;
+        scaleDown.repeatCount = 1
+        scaleDown.repeatMode = ObjectAnimator.REVERSE
         scaleDown.start()
     }
 
@@ -60,7 +52,7 @@ class Animator {
         }
         animation.duration =
                 ((actualheight / view.context.resources.displayMetrics.density)+DELAY_EXTRA).toLong()
-        view.startAnimation(animation);
+        view.startAnimation(animation)
         return animation
     }
 

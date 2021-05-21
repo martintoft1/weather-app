@@ -1,11 +1,12 @@
 package com.team48.applikasjon.utils
 
-class WeatherConverter() {
-    val cloudDescs = listOf("Ingen skyer", "Delvis skyet", "Overskyet")
-    val rainDescs  = listOf("Ingen nedbør", "Oppholdsvær", "Pjuskeregn","Regn", "Pøsregn!")
-    val tempDescs  = listOf("Iskaldt!", "Kjølig", "Lunkent", "Godt og varmt", "Kokvarmt!")
+/* Konvertering av værdata til forhåndsbestemte beskrivelser */
+class WeatherConverter {
+    private val cloudDescs = listOf("Ingen skyer", "Delvis skyet", "Overskyet")
+    private val rainDescs  = listOf("Ingen nedbør", "Oppholdsvær", "Pjuskeregn","Regn", "Pøsregn!")
+    private val tempDescs  = listOf("Iskaldt!", "Kjølig", "Lunkent", "Godt og varmt", "Kokvarmt!")
 
-
+    // Henter beskrivelse for skydekke
     fun getCloudDesc(value: Float?) : String {
         if (value == null) return cloudDescs[0]
 
@@ -16,7 +17,7 @@ class WeatherConverter() {
         }
     }
 
-
+    // Henter beskrivelse for nedbør
     fun getRainDesc(value: Float?) : String {
         if (value == null) return rainDescs[0] + " ($value mm)"
 
@@ -29,7 +30,7 @@ class WeatherConverter() {
         }
     }
 
-
+    // Henter beskrivelse for temperatur
     fun getTempDesc(value: Float?) : String {
         if (value == null) return tempDescs[0] + " ($value °C)"
 
@@ -42,15 +43,15 @@ class WeatherConverter() {
         }
     }
 
+    // Henter alle beskrivelsene
     fun getWeatherDesc(cloud: Float?, rain: Float?, temp: Float?) : String {
-        // Sørger for å ha verdier å sammenlikne selv om noen av verdiene skulle være 0
-        val cloudVar: Float
-        val rainVar: Float
-        val tempVar: Float
 
-        cloudVar = if (cloud == null) 0.toFloat() else cloud
-        rainVar = if (rain == null) 0.toFloat() else rain
-        tempVar = if (temp == null) 0.toFloat() else temp
+        /* Sørger for å ha verdier å sammenlikne selv om noen av verdiene skulle være 0
+         * Beholder oppsett for skydekke for videre utvikling */
+
+        //val cloudVar = if (cloud == null) 0.toFloat() else cloud
+        val rainVar = if (rain == null) 0.toFloat() else rain
+        val tempVar = if (temp == null) 0.toFloat() else temp
 
         return when {
             rainVar > 0.4 && tempVar < 10 && tempVar >= -2 -> "Varmt utetøy som tåler vann, og varme støvler"

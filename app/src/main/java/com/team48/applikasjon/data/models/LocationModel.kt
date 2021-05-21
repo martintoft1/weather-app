@@ -3,6 +3,8 @@ package com.team48.applikasjon.data.models
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+/* Modellen for databaseobjektene */
+
 @Entity(tableName = "table_location")
 data class LocationModel (
        @PrimaryKey(autoGenerate = true)
@@ -13,6 +15,8 @@ data class LocationModel (
        var temp_celsius: Float?,
        var latLong: String
 ) {
+
+       /* Variabler som knytter instansen til favorittstrukturen */
        var expanded: Boolean = false
        var favourite: Boolean = false
 }

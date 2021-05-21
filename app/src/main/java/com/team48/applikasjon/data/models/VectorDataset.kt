@@ -1,11 +1,13 @@
 package com.team48.applikasjon.data.models
 
+/* Dataklasse basert på JSON-formatet på MET-API */
 data class VectorDataset(
     val imageType: String?,
     val url: String?,
     val name: String?
     )
 
+/* Justert MET-versjon av VectorTile-dataklassen */
 data class VectorTile(
     val bounds: List<Number>?,
     val center: List<Number>?,
@@ -28,6 +30,7 @@ data class VectorTile(
     fun getTileId() = tilestats?.layers?.get(0)?.layer.toString()
 }
 
+/*  Resterende dataklasser er basert på innhold i metadata på API */
 data class Attributes(
     val attribute: String?,
     val count: Number?,

@@ -1,4 +1,5 @@
-package com.team48.applikasjon.ui.favourites.adapters
+package com.team48.applikasjon.ui.locations.adapters
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,34 +8,31 @@ import androidx.recyclerview.widget.RecyclerView
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.LocationModel
 
+/* Adapter for håndtering av lokasjoner opp i mot databasen */
 class LocationsAdapter(
+
+    // Lokal liste over favoritt-lokasjoner og en clickListener for favoritt-knappen
     private var locationModels: MutableList<LocationModel>,
     private var clickListener: OnLocationClickListener
 
     ) : RecyclerView.Adapter<LocationsAdapter.ViewHolder>() {
 
-
     override fun getItemCount(): Int = locationModels.size
 
-
+    // Legger inn en ny lokasjon i den listen
     fun setLocations(locationModels: MutableList<LocationModel>) {
         this.locationModels = locationModels
         notifyDataSetChanged()
     }
 
-    fun removeLocation(position: Int) {
-        locationModels.removeAt(position)
-        notifyItemRemoved(position)
-    }
-
-
+    // Standardfunksjon relatert til RecycleView
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) : ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return ViewHolder(inflater.inflate(R.layout.locationitem_layout,
             parent, false), clickListener)
     }
 
-
+    // Standardfunksjon relatert til RecycleView
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val locationModel: LocationModel = locationModels[position]
         holder.name.text = locationModel.name
@@ -54,7 +52,7 @@ class LocationsAdapter(
         holder.tv_temp.text  = String.format(tempString, locationModel.temp_celsius)
     }
 
-
+    /* Indre klasse for RecyclerView */
     class ViewHolder(
             val view: View,
             val clickListener: OnLocationClickListener
@@ -80,6 +78,7 @@ class LocationsAdapter(
         }
     }
 
+    // Grensesnitt for trykking på favorittknapp
     interface OnLocationClickListener {
         fun onLocationClick(position: Int, view: View)
     }

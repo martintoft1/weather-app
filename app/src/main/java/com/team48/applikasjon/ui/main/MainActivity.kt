@@ -22,25 +22,26 @@ import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.LocationModel
 import com.team48.applikasjon.data.repository.Repository
-import com.team48.applikasjon.ui.favourites.LocationsFragment
+import com.team48.applikasjon.ui.locations.LocationsFragment
 import com.team48.applikasjon.ui.main.adapters.FragmentContainerAdapter
 import com.team48.applikasjon.ui.map.MapFragment
 import com.team48.applikasjon.ui.settings.SettingsFragment
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import kotlin.system.exitProcess
 
-
+/* En MainActivity for hele applikasjonen
+ * Appen baserer seg på Fragmenter for visning til bruker */
 class MainActivity : AppCompatActivity() {
 
+    // Fragmentrelaterte variabler
     private lateinit var fragmentContainer: ViewPager2
     private lateinit var adapter: FragmentContainerAdapter
     private lateinit var bottomNavigationView: BottomNavigationView
 
+    // Lokasjonsrelaterte variabler
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationManager: LocationManager
     private val PERMISSION_ID = 44
 
+    // Initialisering av fragmentene
     private val locationsFragment   = LocationsFragment()
     private val mapFragment         = MapFragment()
     private val settingsFragment    = SettingsFragment()
@@ -50,9 +51,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModelFactory: ViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        Log.d("Lifecycle", "MainActivity onCreate")
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -63,24 +61,26 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(
                 this,
                 "Nettverk er utilgjengelig! Restart appen med nettverk.",
-                Toast.LENGTH_LONG).show();
+                Toast.LENGTH_LONG).show()
             return
         }
 
         // Validerer Mapbox-trafikken
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
 
+        // Initialiserer et felles repository og ViewModelFactory for hele appen
         repository = Repository(this)
         viewModelFactory = ViewModelFactory(repository)
 
+        // Beholder for fragmenter og opprettelse av navigeringsmenyen i appen
         fragmentContainer = findViewById(R.id.fragment_container)
         bottomNavigationView = findViewById(R.id.bottom_navigation)
 
-        // Oppsett av navigation bar med fragmenter
+        // Oppsett av navigasjonsmenyen med fragmenter
         setupFragmentContainer()
         setupBottomNavigation()
 
-        // Location Manager
+        // Standard Google Play-lokasjonstjeneste
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
     }
@@ -96,6 +96,7 @@ class MainActivity : AppCompatActivity() {
         return isAvailable
     }
 
+    // Grenesnitt for ViewModels
     fun getViewModelFactory(): ViewModelFactory {
         return viewModelFactory
     }
@@ -110,17 +111,24 @@ class MainActivity : AppCompatActivity() {
         return settingsFragment.getLocationButtonStatus()
     }
 
+    // Grensesnitt for å fjerne favoritt
     fun unfavouriteCurrent() {
         mapFragment.unfavouriteCurrent()
     }
 
+    // Standard funksjons for å håndtere innhenting av brukerlokasjon
     @SuppressLint("MissingPermission")
     fun updateLocation()  {
 
+        // Sjekker om tillatelse er gitt
         if (checkPermission()) {
-           if (isLocationEnabled()) {
 
-               fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            // Sjekker om brukerlokasjon er aktivert
+            @Suppress("ControlFlowWithEmptyBody")
+            if (isLocationEnabled()) {
+
+                // Innhenter brukerlokasjon om den ikke eksiterer
+                fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                     if (location == null) {
                         requestNewLocationData()
                     } else {
@@ -130,15 +138,17 @@ class MainActivity : AppCompatActivity() {
                }
 
            } else { // isLocationEnabled == false
-               // Do nothing
-               Log.d("isLocationEnabled()", "== false")
+               // Appen skal ikke gjentagende ganger be bruker om å aktivere lokasjon
            }
 
         } else { // checkPermission == false
+
+            // Innhenter tillatelse
             requestPermission()
         }
     }
 
+    // Standardfunksjon for å innhente brukerlokasjon
     @SuppressLint("MissingPermission")
     private fun requestNewLocationData() {
 
@@ -152,6 +162,7 @@ class MainActivity : AppCompatActivity() {
         fusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, myLooper())
     }
 
+    // Callback relatert til innhenting av brukerlokasjon
     private val mLocationCallback: LocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             val lastLocation: Location = locationResult.lastLocation
@@ -159,6 +170,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Sjekker om det er gitt tillatelse for innhenting av brukerlokasjon
     private fun checkPermission(): Boolean {
         return  ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -167,12 +179,14 @@ class MainActivity : AppCompatActivity() {
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
     }
 
+    // Innhenter tilattelse
     private fun requestPermission() {
         ActivityCompat.requestPermissions(this, arrayOf(
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_ID)
     }
 
+    // Sjekker om brukerlokasjon er aktivert i innstillinger
     private fun isLocationEnabled(): Boolean {
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(
@@ -191,14 +205,17 @@ class MainActivity : AppCompatActivity() {
         mapFragment.updateUserLocation(nullLocation)
     }
 
+    // For innhenting av darkmode-status
     fun getDarkModeActivatedStatus(): Boolean {
         return settingsFragment.getDarkModeButtonStatus()
     }
 
+    // Toggler favorittknappen
     fun updateNoFavourites(status: Int) {
         locationsFragment.view?.findViewById<TextView>(R.id.tv_no_favourites)?.visibility = status
     }
 
+    // Oppsett av fragmentcontainer
     private fun setupFragmentContainer() {
         adapter = FragmentContainerAdapter(supportFragmentManager, lifecycle)
         adapter.addFragment(locationsFragment)
@@ -230,6 +247,7 @@ class MainActivity : AppCompatActivity() {
        fragmentContainer.post { fragmentContainer.setCurrentItem(1, false) }
     }
 
+    // Oppsett av navigasjonsmeny i bunn av appen
     private fun setupBottomNavigation() {
         // Bytter fragment ved bottomnav navigering
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
@@ -242,27 +260,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Grensesnitt for flytting av kamera
     fun moveCamera(cameraPosition: CameraPosition, locationModel: LocationModel) {
         mapFragment.setLocation(cameraPosition, locationModel)
         fragmentContainer.post { fragmentContainer.setCurrentItem(1, true) }
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-        Log.d("Lifecycle", "MainActivity onRestart")
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d("Lifecycle", "MainActivity onStart")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        //mapFragment.onPause()
-        //settingsFragment.onPause()
-        //locationsFragment.onPause()
-        Log.d("Lifecycle", "MainActivity onPause")
     }
 
     override fun onResume() {
@@ -270,6 +271,5 @@ class MainActivity : AppCompatActivity() {
         mapFragment.onResume()
         settingsFragment.onResume()
         locationsFragment.onResume()
-        Log.d("Lifecycle", "MainActivity onResume")
     }
 }

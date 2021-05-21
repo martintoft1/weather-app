@@ -1,11 +1,11 @@
 package com.team48.applikasjon.ui.settings
 
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.res.TypedArrayUtils.getString
 import androidx.lifecycle.ViewModel
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.repository.Repository
 
+/* ViewModel for SettingsFragment
+* Holder bare på statiske referanser til Mapbox Studio-stiler */
 class SettingsViewModel(val repository: Repository) : ViewModel() {
 
     fun enableDarkMode(): Int {
@@ -15,5 +15,4 @@ class SettingsViewModel(val repository: Repository) : ViewModel() {
     fun disableDarkMode(): Int {
         return R.string.mapStyleLight
     }
-
 }

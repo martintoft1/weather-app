@@ -13,22 +13,26 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.ViewModelProviders
 import com.team48.applikasjon.R
 import com.team48.applikasjon.ui.main.MainActivity
-import com.team48.applikasjon.ui.favourites.LocationsViewModel
+import com.team48.applikasjon.ui.locations.LocationsViewModel
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-
 class SettingsFragment() : Fragment() {
 
+    // Variabler relatert til views og viewmodels
     private lateinit var rootView: View
     private lateinit var viewModelFactory: ViewModelFactory
     private lateinit var settingsViewModel: SettingsViewModel
     private lateinit var locationsViewModel: LocationsViewModel
+
+    // Knapper for darkmode, brukerlokasjon og sletting
     private lateinit var switchDarkMode: SwitchCompat
     private lateinit var switchLocation: SwitchCompat
     private lateinit var deleteButton: Button
+
+    // Android Studio Shared Preferences-database
     private lateinit var sharedPref: SharedPreferences
 
     override fun onCreateView(
@@ -40,6 +44,7 @@ class SettingsFragment() : Fragment() {
         return rootView
     }
 
+    // Oppsett av sentrale funksjonaliteter
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getViewModelFactory()
@@ -48,10 +53,12 @@ class SettingsFragment() : Fragment() {
         setupButtons()
     }
 
+    // Henter inn ViewModelFactory for oppsett av ViewModel
     private fun getViewModelFactory() {
         viewModelFactory = (activity as MainActivity).getViewModelFactory()
     }
 
+    // Oppsett av ViewModels
     private fun setupViewModel() {
         settingsViewModel = ViewModelProviders.of(
                 this,
@@ -64,6 +71,7 @@ class SettingsFragment() : Fragment() {
         ).get(LocationsViewModel::class.java)
     }
 
+    // Oppsett av knapper og onClickListeners
     private fun setupButtons() {
 
         switchDarkMode = rootView.findViewById(R.id.switchDarkMode)
@@ -74,9 +82,9 @@ class SettingsFragment() : Fragment() {
         switchDarkMode.isChecked = loadPreferences("darkMode")
         switchLocation.isChecked = loadPreferences("locationMode")
 
+        // Darkmode onClickListener
         switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
 
-            // TODO: Sette flere darkmodes?
             if (isChecked) {
                 (activity as MainActivity).changeMapStyle(settingsViewModel.enableDarkMode(), 1)
             } else {
@@ -84,6 +92,7 @@ class SettingsFragment() : Fragment() {
             }
         }
 
+        // Brukerlokasjons onClickListener
         switchLocation.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 (activity as MainActivity).enableLocation()
@@ -92,6 +101,7 @@ class SettingsFragment() : Fragment() {
             }
         }
 
+        // Sletteknapp onClickListener
         deleteButton.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
                 locationsViewModel.clearDatabase()
@@ -101,10 +111,12 @@ class SettingsFragment() : Fragment() {
         }
     }
 
+    // Oppsett av Shared Preferences
     private fun setupPreferences() {
         sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
     }
 
+    // Skriving av variabel til disk
     private fun commitPreference(key: String, value: Boolean) {
         with (sharedPref.edit()) {
             putBoolean(key, value)
@@ -112,6 +124,7 @@ class SettingsFragment() : Fragment() {
         }
     }
 
+    // Lesing av variabel fra disk
     private fun loadPreferences(key: String): Boolean {
         return sharedPref.getBoolean(key, false)
     }
@@ -121,37 +134,24 @@ class SettingsFragment() : Fragment() {
         return switchLocation.isChecked
     }
 
+    // Grensesnitt for å hente status på darkmodeknapp
     fun getDarkModeButtonStatus(): Boolean {
         return switchDarkMode.isChecked
     }
 
+    // Grensesnitt for å toggling av favorittknapp
     fun unFavouriteCurrent() {
         (activity as MainActivity).unfavouriteCurrent()
     }
 
+    // Oppdatering av favoritter
     fun updateNoFavourites(status: Int) {
         (activity as MainActivity).updateNoFavourites(status)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d("Lifecycle", "SettingsFragment onStart")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d("Lifecycle", "SettingsFragment onResume")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("Lifecycle", "SettingsFragment onPause")
     }
 
     override fun onStop() {
         super.onStop()
         commitPreference("darkMode", switchDarkMode.isChecked)
         commitPreference("locationMode", switchLocation.isChecked)
-        Log.d("Lifecycle", "SettingsFragment onStop")
     }
 }

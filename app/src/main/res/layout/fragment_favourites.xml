@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    tools:context=".ui.favourites.LocationsFragment">
+    tools:context=".ui.locations.LocationsFragment">
 
 
     <View
@@ -48,6 +48,7 @@
         android:layout_height="141dp"
         android:layout_margin="10dp"
         android:src="@drawable/ic_favoritter"
+        android:contentDescription="@string/favourites"
         app:layout_constraintBottom_toTopOf="@+id/recyclerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

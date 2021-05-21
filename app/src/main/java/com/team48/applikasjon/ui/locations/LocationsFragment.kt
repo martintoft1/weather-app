@@ -1,4 +1,4 @@
-package com.team48.applikasjon.ui.favourites
+package com.team48.applikasjon.ui.locations
 
 import android.graphics.Canvas
 import android.os.Bundle
@@ -18,12 +18,12 @@ import com.loopeer.itemtouchhelperextension.ItemTouchHelperExtension
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.LocationModel
-import com.team48.applikasjon.ui.favourites.adapters.LocationsAdapter
+import com.team48.applikasjon.ui.locations.adapters.LocationsAdapter
 import com.team48.applikasjon.ui.main.MainActivity
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.utils.Animator
 
-
+/* UI-fragment for Lokasjons/Favoritt-tabben */
 class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener {
 
     lateinit var recyclerView: RecyclerView
@@ -37,12 +37,9 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_favourites, container, false)
-        //binding = DataBindingUtil.inflate(inflater, R.layout.fragment_favourites, container, false)
         return rootView
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -51,10 +48,12 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
         setupRecyclerview()
     }
 
+    // Oppretter felles forbindelse til ViewModelFactory
     private fun getViewModelFactory() {
         viewModelFactory = (activity as MainActivity).getViewModelFactory()
     }
 
+    // Oppretter ViewModel basert på ViewModelFactory
     private fun setupViewModel() {
         locationsViewModel = ViewModelProviders.of(
             this,
@@ -62,22 +61,23 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
         ).get(LocationsViewModel::class.java)
     }
 
+    // Grensesnitt for bevegelse av kamera i kartfragment
     fun moveCamera(cameraPosition: CameraPosition, locationModel: LocationModel) {
         (activity as MainActivity).moveCamera(cameraPosition, locationModel)
     }
 
+    // Oppsett av RecyclerView
     private fun setupRecyclerview() {
-        /* Initialize */
         recyclerView = rootView.findViewById(R.id.recyclerView)
         locationsAdapter = LocationsAdapter(mutableListOf(), this)
         recyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = locationsAdapter
-            setHasFixedSize(true)   // Improves performance
-            itemAnimator = null     // Disable default animations
+            setHasFixedSize(true)   // Forbedrer ytelse
+            itemAnimator = null     // Disabler standardanimasjoner
         }
 
-        /* Get favourite locations from database */
+        // Henter favorittlokasjoner fra database
         locationsViewModel.getAllLocations().observe(viewLifecycleOwner, {
             locationsAdapter.setLocations(it)
             locationsViewModel.locationModels = it
@@ -87,7 +87,7 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
             }
         })
 
-        /* Recyclerview item onSwipe */
+        // Håndtering av swipe-funksjonalitet
         var itemTouchHelper: ItemTouchHelperExtension? = null
         val itemTouchCallback = object : ItemTouchHelperExtension.SimpleCallback(
             0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT
@@ -103,7 +103,8 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int) {
                 if (viewHolder == null) return
-                // Swipe right: navigate to map
+
+                // Swipe høyre: Navigér til kart
                 if (direction == ItemTouchHelper.RIGHT) {
                     val locationModel: LocationModel = locationsViewModel.locationModels[viewHolder.bindingAdapterPosition]
                     val cameraPosition: CameraPosition = locationsViewModel.getCameraPositionFromLocation(
@@ -112,13 +113,12 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
                     moveCamera(cameraPosition, locationModel)
                 }
 
-                // Swipe left: delete
+                // Swipe venstre: Sletting
                 else if (direction == ItemTouchHelper.LEFT) {
                     locationsViewModel.deleteLocation(viewHolder.bindingAdapterPosition)
-                    //locationsAdapter.notifyItemRemoved(viewHolder.bindingAdapterPosition)
                     unfavouriteCurrent()
                 }
-                itemTouchHelper?.closeOpened() // close the swiped item
+                itemTouchHelper?.closeOpened() // Lukker swiped item
             }
 
             override fun onChildDraw(
@@ -133,7 +133,7 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
                 }
             }
 
-            /* Returns maximum swipe threshold (0F -> 1F) */
+            // Setter swipe-threshold
             override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float {
                 return 1F
             }
@@ -142,17 +142,12 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
-    /* Recyclerview item onClick */
+    /* OnClick relatert til RecyclerView
+     * Se Database-fil for informasjon om databaseinstans-variabler */
     override fun onLocationClick(position: Int, view: View) {
         val location = locationsViewModel.locationModels[position]
         val expandedView = view.findViewById<LinearLayout>(R.id.location_expanded)
         val arrowView = view.findViewById<ImageView>(R.id.arrow_expand)
-
-        /*TransitionManager.beginDelayedTransition(
-            view.findViewById(R.id.cv_location),
-            AutoTransition().setDuration(400)
-        )*/
-
 
         if (location.expanded) {
             animator.collapseItem(expandedView)
@@ -167,27 +162,8 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
         locationsAdapter.notifyItemChanged(position)
     }
 
+    // Fjern favoritt
     fun unfavouriteCurrent() {
         (activity as MainActivity).unfavouriteCurrent()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d("Lifecycle", "LocationsFragment onStart")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d("Lifecycle", "LocationsFragment onResume")
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Log.d("Lifecycle", "LocationsFragment onPause")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d("Lifecycle", "LocationsFragment onStop")
     }
 }

@@ -32,7 +32,7 @@ import com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM
 import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.LocationModel
 import com.team48.applikasjon.ui.main.MainActivity
-import com.team48.applikasjon.ui.favourites.LocationsViewModel
+import com.team48.applikasjon.ui.locations.LocationsViewModel
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.ui.map.adapters.SpinnerAdapter
 import com.team48.applikasjon.utils.Animator
@@ -41,39 +41,52 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
+/* Det største fragmentet i appen: Inneholder visning av alt relatert til kartet */
 class MapFragment : Fragment() {
 
+    /* Standardviews
+     * Det er uheldig at MapFragment trenger en referanse til locationsViewModel,
+     * men dette kommer som et resultat av vanskelige grensesnitt mot Mapbox */
     private lateinit var rootView: View
     private lateinit var viewModelFactory: ViewModelFactory
     private lateinit var mapViewModel: MapViewModel
     private lateinit var locationsViewModel: LocationsViewModel
+
+    // Relatert til spinner
     private lateinit var spinnerAdapter: SpinnerAdapter
     private lateinit var spinner: Spinner
+
+    // Lokasjonsknapp
     private lateinit var locationButton: ImageView
-    private lateinit var mapboxMap: MapboxMap
+    private var userLocation: Location? = null
+
+    // Lagring av tilstander
     private lateinit var sharedPref: SharedPreferences
     private var symbolManager: SymbolManager? = null
-    private var userLocation: Location? = null
-    var mapView: MapView? = null
 
+    // Diverse for visning av animasjoner
     private val converter = WeatherConverter()
     private val ID_ICON = "ic_marker"
     private var symbol: Symbol? = null
     private val animator = Animator()
 
+    // For visning av pop-up meny med vær- og lokasjonsinformasjon
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
+
+    // Mapbox-relatert
+    var mapView: MapView? = null
+    private lateinit var mapboxMap: MapboxMap
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Log.d("onCreateView", "MapFragment")
         rootView = inflater.inflate(R.layout.fragment_map, container, false)
         return rootView
     }
 
+    // Gjør setup av alle sentrale funksjonaliter i fragmentet
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getViewModelFactory()
@@ -85,11 +98,12 @@ class MapFragment : Fragment() {
         setupTipsToasts()
     }
 
+    // Henter referanse til ViewModelFactory
     private fun getViewModelFactory() {
         viewModelFactory = (activity as MainActivity).getViewModelFactory()
     }
 
-    // Oppsett av ViewModel
+    // Oppsett av ViewModels
     private fun setupViewModel() {
         mapViewModel = ViewModelProviders.of(
             this,
@@ -118,6 +132,7 @@ class MapFragment : Fragment() {
                 .build()
     }
 
+    // Setter en lokasjon i bottomsheet
     fun setLocation(cameraPosition: CameraPosition, locationModel: LocationModel) {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         mapboxMap.cameraPosition = cameraPosition
@@ -136,13 +151,16 @@ class MapFragment : Fragment() {
     // Endrer stil ved valg i innstillinger
     fun changeStyle(styleResource: Int, visualMode: Int) {
         mapboxMap.setStyle(Style.Builder().fromUri(getString(styleResource))) { style ->
-            // Layers må legges til på nytt.
+
+            // Layers må legges til på nytt ved style-endring
             createMarker(style)
+
             // visualMode = 0: Default/Light, = 1: Dark
             mapViewModel.addAllLayers(style, 1)
         }
     }
 
+    // Oppretter markør i kart
     fun createMarker(style: Style) {
         // Initialiserer SymbolManager til Marker
         if (mapView != null) {
@@ -160,7 +178,7 @@ class MapFragment : Fragment() {
         if (drawable != null) { style.addImage(ID_ICON, drawable) }
     }
 
-    // Kan bli tvinget gjennom av repo, ved endringer i settings
+    // Gjør oppsett av kart blant annet via kall mot Mapbox-server
     fun setupMap(savedInstanceState: Bundle?) {
 
         mapView = rootView.findViewById(R.id.mapView)
@@ -171,13 +189,12 @@ class MapFragment : Fragment() {
 
             // Lagre peker til map for Fragment og ViewModel
             mapboxMap = map
-
             locationsViewModel.setMapReference(map)
 
             // Setter kameraposisjon til over Norge initielt
             map.cameraPosition = mapViewModel.getCamNorwayPos()
 
-            // Henter status på darkmode-knapp
+            // Henter status på darkmode-knapp og setter stil deretter
             val status = (activity as MainActivity).getDarkModeActivatedStatus()
             val styleResource = if (status) mapViewModel.getDarkModeStyleResource()
                                 else        mapViewModel.getDefaultStyleResource()
@@ -187,16 +204,17 @@ class MapFragment : Fragment() {
 
                 // Oppretter layers når data er tilgjengelig etter API-kall
                 mapViewModel.updateWeather(style)
-
                 createMarker(style)
             }
 
+            // MapOnClick-håndtering
             map.addOnMapClickListener { point ->
                 addMarker(point)
                 getLocationFrom(map, point)
                 true
             }
 
+            // Fjerner bottomsheet ved bevegelse i kart
             map.addOnCameraMoveListener {
                 if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED)
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -204,7 +222,7 @@ class MapFragment : Fragment() {
         }
     }
 
-
+    // Legger til markør i kart
     private fun addMarker(point: LatLng) : Boolean {
         if (symbolManager == null) { return false }
 
@@ -212,12 +230,10 @@ class MapFragment : Fragment() {
         if (symbol != null) {
             symbol!!.latLng = point
             symbolManager?.update(symbol)
-            Log.d("addMarker", "Updating marker")
         }
 
         // Opprett ny markør
         else {
-            Log.d("addMarker", "Creating marker")
             symbol = symbolManager?.create(
                 SymbolOptions()
                     .withLatLng(point)
@@ -293,7 +309,7 @@ class MapFragment : Fragment() {
         }
     }
 
-
+    // Oppdatering av bottomsheet ved trykking i kart
     private fun updateBottomSheet(l: LocationModel) {
         rootView.findViewById<TextView>(R.id.text_location).text = l.name
         l.cloud_percentage?.let { rootView.findViewById<ImageView>(R.id.image_cloud).setImageLevel(it.toInt()) }
@@ -308,20 +324,26 @@ class MapFragment : Fragment() {
         rootView.findViewById<ImageButton>(R.id.add_favourites).isSelected = true
     }
 
+    // Toggling av favorittknapp
     fun unfavouriteCurrent() {
         rootView.findViewById<ImageButton>(R.id.add_favourites).isSelected = false
-        Log.d("unfavourite", locationsViewModel.locationModels.size.toString())
-        /* Don't show bottom sheet if no location is selected */
+
+        // Ikke vis bottomsheet hvis ingen lokasjon er valgt
         if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_HIDDEN) {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }
 
+    // Toggling av favorittknapp
     fun updateNoFavourites(status: Int) {
         (activity as MainActivity).updateNoFavourites(status)
     }
 
+    // Henter lokasjon fra LatLng ved trykking
     private fun getLocationFrom(map: MapboxMap, point: LatLng) {
+
+        /* Reverse Geocoding for å hente lokasjonsdata
+         * Mapbox-tjeneste */
         val reverseGeocode = MapboxGeocoding.builder()
             .accessToken(getString(R.string.mapbox_access_token))
             .query(Point.fromLngLat(point.longitude, point.latitude))
@@ -338,6 +360,7 @@ class MapFragment : Fragment() {
                 if (results.size > 0) {
                     placeName = results[0].placeName()!!.toString().substringBeforeLast(",")
 
+                    // Hvis det er værdata tilgjengelig for området trykket i
                     if (!locationsViewModel.getWeatherFrom(
                         map,
                         point,
@@ -386,6 +409,8 @@ class MapFragment : Fragment() {
         }
     }
 
+    /* Oppsett av first-time running tips
+     * Benytter Android-databasen Shared Preferences */
     private fun setupTipsToasts() {
         setupPreferences()
         if (!loadPreferences("notFirstRun")) {
@@ -398,11 +423,12 @@ class MapFragment : Fragment() {
         }
     }
 
-
+    // Oppsett av Shared Preferences
     private fun setupPreferences() {
         sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
     }
 
+    // Skriv en variabel til disk
     private fun commitPreference(key: String, value: Boolean) {
         with (sharedPref.edit()) {
             putBoolean(key, value)
@@ -410,6 +436,7 @@ class MapFragment : Fragment() {
         }
     }
 
+    // Les en variabel fra disk
     private fun loadPreferences(key: String): Boolean {
         return sharedPref.getBoolean(key, false)
     }
@@ -417,25 +444,21 @@ class MapFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         mapView?.onStart()
-        Log.d("Lifecycle", "MapFragment onStart")
     }
 
     override fun onResume() {
         super.onResume()
         mapView?.onResume()
-        Log.d("Lifecycle", "MapFragment onResume")
     }
 
     override fun onPause() {
         super.onPause()
         mapView?.onPause()
-        Log.d("Lifecycle", "MapFragment onPause")
     }
 
     override fun onStop() {
         super.onStop()
         mapView?.onStop()
-        Log.d("Lifecycle", "MapFragment onStop")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
