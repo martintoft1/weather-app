@@ -2,8 +2,6 @@ package com.team48.applikasjon.ui.favourites
 
 import android.graphics.Canvas
 import android.os.Bundle
-import android.transition.AutoTransition
-import android.transition.TransitionManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -22,7 +20,7 @@ import com.team48.applikasjon.R
 import com.team48.applikasjon.data.models.LocationModel
 import com.team48.applikasjon.ui.favourites.adapters.LocationsAdapter
 import com.team48.applikasjon.ui.main.MainActivity
-import com.team48.applikasjon.ui.main.SharedViewModel
+import com.team48.applikasjon.ui.main.LocationsViewModel
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import com.team48.applikasjon.utils.Animator
 
@@ -31,7 +29,7 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
 
     lateinit var recyclerView: RecyclerView
     private lateinit var rootView: View
-    private lateinit var sharedViewModel: SharedViewModel
+    private lateinit var locationsViewModel: LocationsViewModel
     private lateinit var locationsAdapter: LocationsAdapter
     private lateinit var viewModelFactory: ViewModelFactory
     val animator = Animator()
@@ -59,10 +57,10 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
     }
 
     private fun setupViewModel() {
-        sharedViewModel = ViewModelProviders.of(
+        locationsViewModel = ViewModelProviders.of(
             this,
             viewModelFactory
-        ).get(SharedViewModel::class.java)
+        ).get(LocationsViewModel::class.java)
     }
 
     fun moveCamera(cameraPosition: CameraPosition, locationModel: LocationModel) {
@@ -81,9 +79,9 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
         }
 
         /* Get favourite locations from database */
-        sharedViewModel.getAllLocations().observe(viewLifecycleOwner, {
+        locationsViewModel.getAllLocations().observe(viewLifecycleOwner, {
             locationsAdapter.setLocations(it)
-            sharedViewModel.locationModels = it
+            locationsViewModel.locationModels = it
 
             if (it.isEmpty()) {
                 rootView.findViewById<TextView>(R.id.tv_no_favourites).visibility = View.VISIBLE
@@ -108,8 +106,8 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
                 if (viewHolder == null) return
                 // Swipe right: navigate to map
                 if (direction == ItemTouchHelper.RIGHT) {
-                    val locationModel: LocationModel = sharedViewModel.locationModels[viewHolder.bindingAdapterPosition]
-                    val cameraPosition: CameraPosition = sharedViewModel.getCameraPositionFromLocation(
+                    val locationModel: LocationModel = locationsViewModel.locationModels[viewHolder.bindingAdapterPosition]
+                    val cameraPosition: CameraPosition = locationsViewModel.getCameraPositionFromLocation(
                         viewHolder.bindingAdapterPosition
                     )
                     moveCamera(cameraPosition, locationModel)
@@ -117,7 +115,7 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
 
                 // Swipe left: delete
                 else if (direction == ItemTouchHelper.LEFT) {
-                    sharedViewModel.deleteLocation(viewHolder.bindingAdapterPosition)
+                    locationsViewModel.deleteLocation(viewHolder.bindingAdapterPosition)
                     //locationsAdapter.notifyItemRemoved(viewHolder.bindingAdapterPosition)
                     unfavouriteCurrent()
                 }
@@ -147,7 +145,7 @@ class LocationsFragment() : Fragment(), LocationsAdapter.OnLocationClickListener
 
     /* Recyclerview item onClick */
     override fun onLocationClick(position: Int, view: View) {
-        val location = sharedViewModel.locationModels[position]
+        val location = locationsViewModel.locationModels[position]
         val expandedView = view.findViewById<LinearLayout>(R.id.location_expanded)
         val arrowView = view.findViewById<ImageView>(R.id.arrow_expand)
 

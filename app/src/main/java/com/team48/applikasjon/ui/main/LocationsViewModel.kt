@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -19,7 +20,7 @@ import com.team48.applikasjon.data.repository.Repository
 import com.team48.applikasjon.utils.WeatherConverter
 import kotlinx.coroutines.launch
 
-class SharedViewModel(private val repository: Repository) : ViewModel() {
+class LocationsViewModel(private val repository: Repository) : ViewModel() {
 
     lateinit var locationModels: MutableList<LocationModel>
     lateinit var selectedLocationModel: LocationModel
@@ -56,7 +57,6 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
 
 
     fun getCameraPositionFromLocation(position: Int): CameraPosition {
-
         val locationModel: LocationModel = locationModels[position]
 
         val lat = locationModel.latLong.substringBefore(" ").toDouble()
@@ -69,7 +69,7 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
             .build()
     }
 
-    fun getWeatherFrom(map: MapboxMap, point: LatLng, btb: BottomSheetBehavior<ConstraintLayout>, view: View, location: String) {
+    fun getWeatherFrom(map: MapboxMap, point: LatLng, btb: BottomSheetBehavior<ConstraintLayout>, view: View, location: String) : Boolean {
         // Convert LatLng coordinates to screen pixel and only query the rendered features.
         val pixel = map.projection.toScreenLocation(point)
         val dataArr = arrayOfNulls<Float>(3)
@@ -84,8 +84,7 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
                 }
             }
         } else {
-            Log.d("getWeatherFrom()", "Trykk innenfor Norden!")
-            return
+            return false
         }
 
         val l: List<LocationModel> = locationModels.filter { l -> l.name == location }
@@ -117,5 +116,7 @@ class SharedViewModel(private val repository: Repository) : ViewModel() {
         view.findViewById<TextView>(R.id.text_recommendation).text = String.format(
             recString, converter.getWeatherDesc(dataArr[0], dataArr[1], dataArr[2]))
         btb.state = BottomSheetBehavior.STATE_EXPANDED
+
+        return true
     }
 }

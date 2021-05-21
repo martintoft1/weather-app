@@ -1,12 +1,10 @@
 package com.team48.applikasjon.data.api
 
-import android.util.Log
 import androidx.core.text.isDigitsOnly
 import com.team48.applikasjon.data.models.VectorDataset
 import junit.framework.TestCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
 

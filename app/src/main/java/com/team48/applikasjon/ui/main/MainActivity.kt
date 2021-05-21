@@ -6,10 +6,12 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Looper.myLooper
 import android.util.Log
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.viewpager2.widget.ViewPager2
@@ -24,6 +26,10 @@ import com.team48.applikasjon.ui.favourites.LocationsFragment
 import com.team48.applikasjon.ui.main.adapters.FragmentContainerAdapter
 import com.team48.applikasjon.ui.map.MapFragment
 import com.team48.applikasjon.ui.settings.SettingsFragment
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import kotlin.system.exitProcess
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,9 +53,22 @@ class MainActivity : AppCompatActivity() {
 
         Log.d("Lifecycle", "MainActivity onCreate")
 
-        Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Sjekker om nettverk er tilgjengelig
+        if (!isNetworkAvailable()) {
+
+            // Hvis ikke tilgjengelig, print feilmelding og unngå at Mapbox kjøres opp
+            Toast.makeText(
+                this,
+                "Nettverk er utilgjengelig! Restart appen med nettverk.",
+                Toast.LENGTH_LONG).show();
+            return
+        }
+
+        // Validerer Mapbox-trafikken
+        Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
 
         repository = Repository(this)
         viewModelFactory = ViewModelFactory(repository)
@@ -66,6 +85,16 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    // Sjekker tilstand til nettverksforbindelsen
+    private fun isNetworkAvailable(): Boolean {
+        val manager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = manager.activeNetwork
+        var isAvailable = false
+        if (networkInfo != null)
+            isAvailable = true
+
+        return isAvailable
+    }
 
     fun getViewModelFactory(): ViewModelFactory {
         return viewModelFactory
@@ -103,7 +132,6 @@ class MainActivity : AppCompatActivity() {
            } else { // isLocationEnabled == false
                // Do nothing
                Log.d("isLocationEnabled()", "== false")
-               // TODO: Denne kan fjernes når vi har testet mer, usikker når alternativet forekommer
            }
 
         } else { // checkPermission == false

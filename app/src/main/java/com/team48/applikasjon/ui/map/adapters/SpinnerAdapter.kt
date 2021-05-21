@@ -44,8 +44,15 @@ class SpinnerAdapter(
                     R.layout.spinner_dropdown_item, parent, false
             )
         }
+
+        // Legge til tilhørende ikon
         val iconView: ImageView? = view?.findViewById(R.id.weather_icon)
         iconView?.setImageResource(icons[position])
-        return view!!
+
+        // Legge til tilhørende etikett
+        val contentDescriptions: Array<out String> = view!!.resources.getStringArray(R.array.descriptions_array)
+        view.contentDescription = contentDescriptions[position]
+
+        return view
     }
 }

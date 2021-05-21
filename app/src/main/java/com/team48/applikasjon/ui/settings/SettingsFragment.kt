@@ -13,7 +13,7 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.ViewModelProviders
 import com.team48.applikasjon.R
 import com.team48.applikasjon.ui.main.MainActivity
-import com.team48.applikasjon.ui.main.SharedViewModel
+import com.team48.applikasjon.ui.main.LocationsViewModel
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +25,7 @@ class SettingsFragment() : Fragment() {
     private lateinit var rootView: View
     private lateinit var viewModelFactory: ViewModelFactory
     private lateinit var settingsViewModel: SettingsViewModel
-    private lateinit var sharedViewModel: SharedViewModel
+    private lateinit var locationsViewModel: LocationsViewModel
     private lateinit var switchDarkMode: SwitchCompat
     private lateinit var switchLocation: SwitchCompat
     private lateinit var deleteButton: Button
@@ -58,10 +58,10 @@ class SettingsFragment() : Fragment() {
                 viewModelFactory
         ).get(SettingsViewModel::class.java)
 
-        sharedViewModel = ViewModelProviders.of(
+        locationsViewModel = ViewModelProviders.of(
                 this,
                 viewModelFactory
-        ).get(SharedViewModel::class.java)
+        ).get(LocationsViewModel::class.java)
     }
 
     private fun setupButtons() {
@@ -94,7 +94,7 @@ class SettingsFragment() : Fragment() {
 
         deleteButton.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
-                sharedViewModel.clearDatabase()
+                locationsViewModel.clearDatabase()
                 unFavouriteCurrent()
                 updateNoFavourites(View.VISIBLE)
             }
