@@ -15,22 +15,19 @@ import com.androidnetworking.AndroidNetworking.cancel
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import io.reactivex.internal.subscriptions.SubscriptionHelper.cancel
 
-
+/* Inneholder funksjoner for å animere ulike views */
 class Animator {
-
-    var valueAnimator = ValueAnimator()
 
     val DELAY_EXTRA: Float = 200F
     val ROTATE_DUR: Long = 400
 
-    fun expandArrow(view: View) {
-        view.animate().setDuration(ROTATE_DUR).rotation(0F).start();
+
+    /* Roterer pil gitt antall grader */
+    fun rotateArrow(view: View, degrees: Float) {
+        view.animate().setDuration(ROTATE_DUR).rotation(degrees).start()
     }
 
-    fun collapseArrow(view: View) {
-        view.animate().setDuration(ROTATE_DUR).rotation(180F).start();
-    }
-
+    /* Hjertepump-animasjon */
     fun expandHeart(view: View) {
         val scaleDown: ObjectAnimator = ObjectAnimator.ofPropertyValuesHolder(
                 view,
@@ -47,6 +44,7 @@ class Animator {
         view.startAnimation(animation)
     }
 
+    /* Utvider lokasjonsview */
     private fun expandAction(view: View): Animation {
         view.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         val actualheight: Int = view.measuredHeight + 30
@@ -66,6 +64,7 @@ class Animator {
         return animation
     }
 
+    /* Kollapser lokasjonsview */
     fun collapseItem(view: View) {
         val actualHeight: Int = view.measuredHeight
         val animation: Animation = object : Animation() {

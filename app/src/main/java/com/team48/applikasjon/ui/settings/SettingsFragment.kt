@@ -13,7 +13,7 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.ViewModelProviders
 import com.team48.applikasjon.R
 import com.team48.applikasjon.ui.main.MainActivity
-import com.team48.applikasjon.ui.main.LocationsViewModel
+import com.team48.applikasjon.ui.favourites.LocationsViewModel
 import com.team48.applikasjon.ui.main.ViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
